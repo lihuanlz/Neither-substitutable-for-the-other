@@ -5,22 +5,19 @@ doi.org itself for CSL metadata. A registered DOI returns the real title,
 authors and container, so this verifies not just that the DOI resolves but
 that it resolves to the work the manuscript claims.
 """
-import io
 import json
 import re
-import ssl
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
-MD = r"D:\lean_proj\source_identifiability\paper\manuscript.md"
+# Resolved relative to this file so verification always runs against the
+# manuscript in this checkout.
+MD = Path(__file__).resolve().parent / "manuscript.md"
 
 # A DOI runs to the first whitespace. The manuscript wraps none of them.
 DOI_RE = re.compile(r"https://doi\.org/(\S+)")
-
-CTX = ssl.create_default_context()
-CTX.check_hostname = False
-CTX.verify_mode = ssl.CERT_NONE
 
 
 def fetch(doi):
@@ -29,9 +26,8 @@ def fetch(doi):
         "Accept": "application/vnd.citationstyles.csl+json",
         "User-Agent": "doi-verify/1.0 (mailto:none@example.invalid)",
     })
-    op = urllib.request.build_opener(urllib.request.HTTPSHandler(context=CTX))
     try:
-        with op.open(req, timeout=40) as r:
+        with urllib.request.urlopen(req, timeout=40) as r:
             return r.status, json.loads(r.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as e:
         return e.code, None
@@ -40,8 +36,7 @@ def fetch(doi):
 
 
 def main():
-    with io.open(MD, encoding="utf-8") as f:
-        text = f.read()
+    text = MD.read_text(encoding="utf-8")
 
     dois, seen = [], set()
     for m in DOI_RE.finditer(text):

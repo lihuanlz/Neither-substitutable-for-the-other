@@ -96,28 +96,28 @@ example : accuracy (bayes pA pA) pA pA = 1 / 2 :=
 example : totalVariation pA pB = 1 / 3 := by
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 贝叶斯正确率 = `(1 + TV)/2 = 2/3`（原始分析公式的实例）。 -/
 example : accuracy (bayes pA pB) pA pB = 2 / 3 := by
   rw [bayes_optimal]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 贝叶斯错误率 = `(1 − TV)/2 = 1/3`（原始分析 `P_e = ½(1−TV)` 的实例）。 -/
 example : errRate (bayes pA pB) pA pB = 1 / 3 := by
   rw [bayes_errRate]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 优势幅度恰为 `TV/2 = 1/6`（`accuracy_bounds` 的实例）。 -/
 example : accuracy (bayes pA pB) pA pB - 1 / 2 = totalVariation pA pB / 2 := by
   rw [bayes_optimal]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-! ## 例 3：`TV = 1/6` 的弱可分情形
 
@@ -127,27 +127,27 @@ example : accuracy (bayes pA pB) pA pB - 1 / 2 = totalVariation pA pB / 2 := by
 example : totalVariation pA pC = 1 / 6 := by
   unfold totalVariation pA pC mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 example : accuracy (bayes pA pC) pA pC = 7 / 12 := by
   rw [bayes_optimal]
   unfold totalVariation pA pC mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-! ## 例 4：`TV = 1` 的完全可分情形 -/
 
 example : totalVariation pA pD = 1 := by
   unfold totalVariation pA pD mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 完全可分时存在**零错误**的检验：可识别性的极端情形。 -/
 example : errRate (bayes pA pD) pA pD = 0 := by
   rw [bayes_errRate]
   unfold totalVariation pA pD mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-! ## 例 5：污染的代价（`Contamination` 的数值对拍） -/
 
@@ -156,7 +156,7 @@ example : totalVariation (mix pA pA (1 / 2) hPi) (mix pA pB (1 / 2) hPi) = 1 / 6
   rw [totalVariation_mix pA pA pB hPi]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 污染后最优优势恰为 `π · TV₀/2 = 1/12`。 -/
 example : accuracy (bayes (mix pA pA (1 / 2) hPi) (mix pA pB (1 / 2) hPi))
@@ -164,7 +164,7 @@ example : accuracy (bayes (mix pA pA (1 / 2) hPi) (mix pA pB (1 / 2) hPi))
   rw [bayes_optimal, totalVariation_mix pA pA pB hPi]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 三轮自消费重混合后，信号衰减为 `π³ = 1/8` 倍：`1/8 · (1/3) = 1/24`。
 
@@ -174,7 +174,7 @@ example : totalVariation (contamIter pA (1 / 2) hPi 3 pA) (contamIter pA (1 / 2)
   rw [totalVariation_contamIter pA hPi 3 pA pB]
   unfold totalVariation pA pB mkPMF4
   simp_rw [Fin.sum_univ_succ]
-  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth] <;> ring
+  norm_num [absHalf, absThird, absSixth, absQuarter, absEighth, absTwelfth]
 
 /-- 累积方案（人类源每轮以满权重 `π = 1` 重新插入）时信号**完全不衰减**。
 

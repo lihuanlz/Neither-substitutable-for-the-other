@@ -1,8 +1,11 @@
-import io
 import re
+from pathlib import Path
 
-t = io.open(r"D:\lean_proj\source_identifiability\paper\manuscript.md",
-            encoding="utf-8").read()
+# Resolved relative to this file so the check runs against the checkout it
+# lives in, not against whatever happens to sit on the author's machine.
+MD = Path(__file__).resolve().parent / "manuscript.md"
+
+t = MD.read_text(encoding="utf-8")
 
 body = t.split("## References")[0]
 main = body.split("## Figure legends")[0]
