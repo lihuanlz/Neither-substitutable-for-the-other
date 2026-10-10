@@ -191,16 +191,18 @@ theorem submodular_union {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
   rw [hunion, covVal_union_inter]
   linarith
 
+-- `ha` is kept in the statement to record the intended setting (both `a` and
+-- `b` are new) even though the proof never needs it; dropping it would
+-- strengthen the theorem, which is a claim change rather than a cleanup.
+-- The option must sit above the doc comment: a `/-- ... -/` has to be
+-- immediately followed by the declaration it documents.
+set_option linter.unusedVariables false in
 /-- **边际增益递减**：先纳入 `a` 再纳入 `b`，总收益不超过反向顺序。
 
 这意味着"先获得的样本更值钱"，边际价值随集合变大而递减——
 是"把少量预算投在高价值人类数据上"这一策略的理论依据。
 
 注意需要区分退化情形 `a = b`（此时不等式退化为单调性）。 -/
--- `ha` is kept in the statement to record the intended setting (both `a` and
--- `b` are new) even though the proof never needs it; dropping it would
--- strengthen the theorem, which is a claim change rather than a cleanup.
-set_option linter.unusedVariables false in
 theorem diminishing_returns {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S : Finset (Fin n)} {a b : Fin n}
     (ha : a ∉ S) (hb : b ∉ S) :

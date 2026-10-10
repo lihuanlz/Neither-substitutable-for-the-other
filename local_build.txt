@@ -1,0 +1,4 @@
+﻿✔ [2530/2533] Built Provenance.Coverage
+✔ [2531/2533] Built Provenance.Examples
+✔ [2532/2533] Built Provenance
+Build completed successfully.
