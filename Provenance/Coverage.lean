@@ -53,7 +53,7 @@ theorem covVal_union (w : Fin m → ℝ) (A B : Finset (Fin m)) :
           + w z * (if z ∈ B \ A then 1 else 0) := by
     intro z
     by_cases hA : z ∈ A <;> by_cases hB : z ∈ B <;>
-      simp [hA, hB, Finset.mem_union, Finset.mem_sdiff] <;> ring
+      simp [hA, hB, Finset.mem_union, Finset.mem_sdiff]
   unfold covVal
   rw [Finset.sum_congr rfl (fun z _ => key z), Finset.sum_add_distrib]
 
@@ -67,7 +67,7 @@ theorem covVal_union_inter (w : Fin m → ℝ) (A B : Finset (Fin m)) :
           - w z * (if z ∈ A ∩ B then 1 else 0) := by
     intro z
     by_cases hA : z ∈ A <;> by_cases hB : z ∈ B <;>
-      simp [hA, hB, Finset.mem_union, Finset.mem_inter] <;> ring
+      simp [hA, hB, Finset.mem_union, Finset.mem_inter]
   unfold covVal
   rw [Finset.sum_congr rfl (fun z _ => key z),
       ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
@@ -197,6 +197,10 @@ theorem submodular_union {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
 是"把少量预算投在高价值人类数据上"这一策略的理论依据。
 
 注意需要区分退化情形 `a = b`（此时不等式退化为单调性）。 -/
+-- `ha` is kept in the statement to record the intended setting (both `a` and
+-- `b` are new) even though the proof never needs it; dropping it would
+-- strengthen the theorem, which is a claim change rather than a cleanup.
+set_option linter.unusedVariables false in
 theorem diminishing_returns {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S : Finset (Fin n)} {a b : Fin n}
     (ha : a ∉ S) (hb : b ∉ S) :
