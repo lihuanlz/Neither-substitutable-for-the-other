@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  lean:
+    name: Lean 4 build and proof audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Official Lean action. It installs the toolchain named in
+      # `lean-toolchain`, notices the Mathlib dependency and runs
+      # `lake exe cache get` before `lake build`, so the job does not spend
+      # an hour compiling Mathlib from source.
+      - name: Build the proofs
+        uses: leanprover/lean-action@v1
+
+      # `lake build` alone only says the kernel accepted the proofs. This asks
+      # Lean for the axiom dependencies of all 117 declarations, so a stray
+      # `sorry` or an unexplained assumption fails the build instead of
+      # quietly weakening a claim.
+      - name: Audit axiom dependencies
+        run: python tools/audit_axioms.py
+
+      - name: Manuscript consistency
+        run: python paper/final_check.py
+
+  references:
+    name: Reference DOIs resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Separate job on purpose: this one talks to the network, and a slow
+      # doi.org must not be able to fail the Lean build badge.
+      - name: Resolve every DOI against doi.org
+        run: python paper/verify_dois.py

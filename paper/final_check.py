@@ -1,4 +1,5 @@
 import re
+import sys
 from pathlib import Path
 
 # Resolved relative to this file so the check runs against the checkout it
@@ -46,4 +47,8 @@ for name, ok in checks:
     print("  %-30s %s" % (name, "OK" if ok else "*** FAIL ***"))
 
 print()
-print("ALL PASS" if all(v for _, v in checks) else "PROBLEMS REMAIN")
+ok = all(v for _, v in checks)
+print("ALL PASS" if ok else "PROBLEMS REMAIN")
+
+# Exit non-zero on failure so this can gate a CI job.
+sys.exit(0 if ok else 1)

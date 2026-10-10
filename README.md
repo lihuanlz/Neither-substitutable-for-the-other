@@ -1,5 +1,8 @@
 # Neither substitutable for the other
 
+[![CI](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml/badge.svg)](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml)
+[![Lean 4](https://img.shields.io/badge/lean-4.15.0-blue.svg)](https://github.com/leanprover/lean4/releases/tag/v4.15.0)
+
 **人机协同条件下，人与机器的作用都不可替代。**
 
 形式化载体：Lean 4 + Mathlib，117 条定理 + 20 个实例，零 `sorry`、零公理。
@@ -83,6 +86,8 @@
 
 ```
 Provenance.lean          总入口（模块导览 + 复现说明）
+.github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
+tools/audit_axioms.py    117 条定理的公理依赖审计（CI 关卡）
 Provenance/              9 个 Lean 模块
   Basic.lean             全变差距离、检验最优性、不可识别性
   Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界
@@ -154,6 +159,20 @@ cd paper
 python final_check.py      # 16 项：数字、定理数、引用、构建目标
 python verify_dois.py      # 18 条参考文献的 DOI 在线校验
 ```
+
+```powershell
+python tools\audit_axioms.py   # 117 条定理的公理依赖审计
+```
+
+### CI
+
+每次推送到 `main` 以及每个 PR，GitHub Actions 会自动跑三件事：
+
+1. `lake build` —— 用 [leanprover/lean-action](https://github.com/leanprover/lean-action) 装工具链、拉 Mathlib 缓存、编译全部证明
+2. `tools/audit_axioms.py` —— 对全部 117 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
+3. `paper/final_check.py` + `paper/verify_dois.py` —— 正文一致性与 DOI 在线解析
+
+第 2 条是关键：`lake build` 通过只说明内核接受了证明，公理审计才能挡住一个悄悄被 `sorry` 削弱的主张。
 
 ---
 
