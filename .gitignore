@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------
+# Lean / Lake build artifacts.  `.lake/` alone is ~5.2 GB of dependency
+# cache and object files; it is fully reproducible with `lake build`.
+# ---------------------------------------------------------------------
+/.lake/
+
+# ---------------------------------------------------------------------
+# Build logs dropped at the repository root during development.
+# ---------------------------------------------------------------------
+*.log
+BUILD_LOG.txt
+final_build.txt
+v_build.txt
+
+# ---------------------------------------------------------------------
+# LaTeX intermediates for the 11 rendered equations.  `render_eqs.py`
+# regenerates them; only the final PNGs in `assets_eq/` are tracked.
+# ---------------------------------------------------------------------
+/paper/docx_build/eq/
+
+# ---------------------------------------------------------------------
+# .NET build output for the OpenXML document generator (`Gen/`).
+# `Gen.csproj` + `Program.cs` are tracked so the DOCX can be rebuilt.
+# ---------------------------------------------------------------------
+/paper/docx_build/Gen/bin/
+/paper/docx_build/Gen/obj/
+
+# ---------------------------------------------------------------------
+# Python bytecode.
+# ---------------------------------------------------------------------
+__pycache__/
+*.pyc
+
+# ---------------------------------------------------------------------
+# Reference PDFs are NOT redistributed here.
+#
+# This directory holds full texts of other authors' published papers
+# (Xie et al., ACL 2026; Dorner et al., arXiv 2507.12399; Li et al.,
+# arXiv 2603.29121; plus two Zenodo mirrors).  They were downloaded
+# locally only to check that every citation in `paper/manuscript.md`
+# matches its source.  Publishing them in a public repository would be
+# redistributing copyrighted material, so they are excluded by policy
+# rather than by size.  `paper/verify_dois.py` checks DOIs over the
+# network and needs no local copies.
+# ---------------------------------------------------------------------
+/paper/refcheck/
+
+# ---------------------------------------------------------------------
+# Microsoft Office owner/lock files (`~$name.docx` appears while a
+# document is open).  They are transient and must not be committed.
+# ---------------------------------------------------------------------
+~$*
+
+# ---------------------------------------------------------------------
+# OS noise.
+# ---------------------------------------------------------------------
+Thumbs.db
+.DS_Store
