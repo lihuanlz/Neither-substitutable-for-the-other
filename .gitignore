@@ -11,6 +11,7 @@
 BUILD_LOG.txt
 final_build.txt
 v_build.txt
+local_build.txt
 
 # ---------------------------------------------------------------------
 # LaTeX intermediates for the 11 rendered equations.  `render_eqs.py`

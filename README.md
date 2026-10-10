@@ -5,7 +5,8 @@
 
 **人机协同条件下，人与机器的作用都不可替代。**
 
-形式化载体：Lean 4 + Mathlib，117 条定理 + 20 个实例，零 `sorry`、零公理。
+形式化载体：Lean 4 + Mathlib，**136 条定理 + 20 个实例**，零 `sorry`、零公理。
+其中主线（不可替代性）117 条，碎片化侧题 19 条。
 
 > Two operations, two objects. A machine compresses; a human refines. There is
 > no exchange rate between them — not because nobody has found one yet, but
@@ -72,13 +73,46 @@
 
 > 表面符号是标定的产物，不是测量的产物。
 
+### 侧题 · 碎片化
+
+上面三层回答的是"是什么"。`Provenance.Fragmentation` 换了一个问题：
+**人机协同下，人的创新会规模化，还是会碎片化？**
+
+这是独立课题，结论是**碎片化**，两截机制：
+
+**协作侧（内生）** —— 在同一层上，协作体达成的层移动**等于其中最好那个人的层移动**。
+第 N+1 个人的收益精确为 0，成本精确为 \(\log(\Phi/a)\)：
+
+```lean
+theorem marginal_agent_pure_waste ...
+  : gain Φ (insert a D) _ = gain Φ D hD          -- 收益不变
+    ∧ totalIndividual Φ (insert a D) = ... + log (Φ / a)   -- 成本严格增加
+```
+
+**时间侧（外生）** —— 把增量攒着不发，等的是一个会被盖掉的窗口。覆盖是吸收的，
+所以持有收益**单调不增**（`holdValue_antitone`）；一旦被盖掉，收益精确归零
+（`publish_dominates_when_covered`）。
+
+两截合起来（`fragmentation_squeeze`）堵死通往"大故事"的两条常规路径。
+**唯一的出口是换一个新的层** —— 而那正是 `human_gain_unbounded` 证过的无上界空间：
+
+> 大故事赚的是时间差，而时间差正是 AI 唯一拿走的东西。
+
+与主线的接口在 `saturation_duality`：AI 的收益**与步数无关**有硬上界
+（`ai_total_gain_bounded`），人的收益**与人数无关**也有硬上界
+（`marginal_agent_pure_waste`）。两边同时饱和 —— 不是谁替代谁，而是谁都加不上去。
+
+**可证伪点**：该模块把协作建模为"取最好成员"（`max` 型）。若现实中两人协作
+确实能超过其中较好的一人，`add_member_same_reach` 立刻失败。这是本课题最容易被
+现实推翻的地方，写成定理而不是留给直觉。
+
 ### 关键数字
 
 - 标定自 2,500 条 WildChat prompt；1,500 对中 95.9% 可分
 - \(T = 0.09\)（\(\lambda=1\), TV=0.09, q=0.5）时：\(N_c = 3.793\)、\(N_0 = 3.474\)，
   **83.97% 的参数组由地板起约束**
 - \(\bar s = 0.50\)；Llama-3 \(\bar\tau = 0.5496 \to -0.099\)；Mixtral \(\bar\tau = 0.4155 \to +0.169\)
-- 构建：2,532 / 2,533 个 target
+- 构建：主线口径 2,532 / 2,533 个 target（论文所述）；仓库现状 2,533 / 2,534（含侧题）
 
 ---
 
@@ -87,8 +121,8 @@
 ```
 Provenance.lean          总入口（模块导览 + 复现说明）
 .github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
-tools/audit_axioms.py    117 条定理的公理依赖审计（CI 关卡）
-Provenance/              9 个 Lean 模块
+tools/audit_axioms.py    136 条定理的公理依赖审计（CI 关卡）
+Provenance/              10 个 Lean 模块（+ Examples 对拍）
   Basic.lean             全变差距离、检验最优性、不可识别性
   Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界
   Coverage.lean          覆盖函数、次模性、单样本边际增益
@@ -98,6 +132,7 @@ Provenance/              9 个 Lean 模块
   VerifyBudget.lean      TV 地板下的最优验证预算 N*
   Incommensurable.lean   不可线性换算（分区间）
   Calibration.lean       标定不可识别性：符号不由数据决定
+  Fragmentation.lean     侧题：碎片化 —— 加人不加收益，等待收益单调不增
   Examples.lean          精确有理数实例对拍
 
 paper/
@@ -161,7 +196,7 @@ python verify_dois.py      # 18 条参考文献的 DOI 在线校验
 ```
 
 ```powershell
-python tools\audit_axioms.py   # 117 条定理的公理依赖审计
+python tools\audit_axioms.py   # 136 条定理的公理依赖审计
 ```
 
 ### CI
@@ -169,7 +204,7 @@ python tools\audit_axioms.py   # 117 条定理的公理依赖审计
 每次推送到 `main` 以及每个 PR，GitHub Actions 会自动跑三件事：
 
 1. `lake build` —— 用 [leanprover/lean-action](https://github.com/leanprover/lean-action) 装工具链、拉 Mathlib 缓存、编译全部证明
-2. `tools/audit_axioms.py` —— 对全部 117 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
+2. `tools/audit_axioms.py` —— 对全部 136 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
 3. `paper/final_check.py` + `paper/verify_dois.py` —— 正文一致性与 DOI 在线解析
 
 第 2 条是关键：`lake build` 通过只说明内核接受了证明，公理审计才能挡住一个悄悄被 `sorry` 削弱的主张。

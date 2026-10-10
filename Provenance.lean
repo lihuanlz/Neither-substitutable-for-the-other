@@ -94,6 +94,25 @@
 这一层把「符号不可识别」从散文式批评升级为可机器检查的定理：
 **表面符号是标定的产物，不是测量的产物。**
 
+## 侧题：碎片化 —— 为什么创新难以规模化
+
+`Provenance.Fragmentation` 是一条**独立课题**，与上面三层不是同一个问题。
+它问的不是"检测不检测得出来"，而是"人机协同下创新会不会规模化"。
+
+核心断言：**在同一层上，协作体达成的层移动等于其中最好那个人的层移动**
+（`marginal_agent_pure_waste`）；而把增量攒着不发，等的是一个会被盖掉的窗口
+（`holdValue_antitone`、`publish_dominates_when_covered`）。
+
+* `marginal_agent_pure_waste` —— 第 N+1 个人：收益精确为 0，成本精确为 `log(Φ/a)`
+* `waste_nonneg` / `headcount_adds_waste_only` —— 合并永不增产，人数只增大浪费
+* `saturation_duality` —— 把人侧的"与人数无关"和 AI 侧的"与步数无关"并置
+* `fragmentation_squeeze` —— 堆人和攒着两条路同时被堵死
+* `scale_by_new_layers_not_by_headcount` —— 唯一的出口是换一个新的层
+
+**可证伪点**：该模块把协作建模为"取最好成员"（`max` 型）。若现实中两人协作
+确实能超过其中较好的一人，`add_member_same_reach` 立刻失败。这是本课题最容易被
+现实推翻的地方，写成定理而不是留给直觉。
+
 ## 复现
 
 ```
@@ -113,3 +132,4 @@ import Provenance.VerifyBudget
 import Provenance.Incommensurable
 import Provenance.Calibration
 import Provenance.Examples
+import Provenance.Fragmentation

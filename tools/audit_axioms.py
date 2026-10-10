@@ -25,24 +25,45 @@ SRC = os.path.join(ROOT, "Provenance")
 STANDARD = {"Classical.choice", "Quot.sound", "propext"}
 
 DECL = re.compile(r"^\s*(theorem|lemma)\s+([A-Za-z_][A-Za-z0-9_'.]*)")
-NAMESPACE = re.compile(r"^\s*namespace\s+Provenance\b", re.M)
+NAMESPACE = re.compile(r"^\s*namespace\s+([A-Za-z_][A-Za-z0-9_']*)")
+END = re.compile(r"^\s*end\s+([A-Za-z_][A-Za-z0-9_']*)")
+COMMENT = re.compile(r"^\s*(/|-)")
 
 
 def collect():
-    """Return the fully-qualified name of every theorem/lemma in the package."""
+    """Return the fully-qualified name of every theorem/lemma in the package.
+
+    Namespaces nest (Provenance contains Fragmentation), so track the open
+    `namespace` stack rather than assuming a single fixed prefix.
+    """
     names = []
     for fn in sorted(os.listdir(SRC)):
         if not fn.endswith(".lean"):
             continue
         with open(os.path.join(SRC, fn), encoding="utf-8") as f:
             src = f.read()
-        # Most modules open `namespace Provenance`; Calibration.lean does not.
-        prefix = "Provenance." if NAMESPACE.search(src) else ""
+        stack = []
         for line in src.splitlines():
+            # Skip doc comments: they may contain the words namespace/end.
+            if COMMENT.match(line):
+                continue
+            m = NAMESPACE.match(line)
+            if m:
+                stack.append(m.group(1))
+                continue
+            m = END.match(line)
+            if m:
+                if stack:
+                    stack.pop()
+                continue
             m = DECL.match(line)
             if m:
-                names.append(prefix + m.group(2))
+                names.append(".".join(stack + [m.group(2)]))
     return names
+
+
+# Lean reports problems as "path:line:col: error: message", not from column 0.
+ERROR = re.compile(r"(^|\s)(error|unknown identifier|unknown constant)\b")
 
 
 def main():
@@ -53,11 +74,18 @@ def main():
     print("declarations found: %d\n" % len(names))
 
     # Written outside the repo so the audit never dirties the working tree.
+    # Import every module explicitly: `Provenance.Fragmentation` is not
+    # re-exported by the root module, so `import Provenance` alone would not
+    # make its declarations visible.
+    modules = sorted(fn[:-5] for fn in os.listdir(SRC) if fn.endswith(".lean"))
     fd, path = tempfile.mkstemp(suffix=".lean", prefix="axiom_audit_")
     os.close(fd)
     try:
         with open(path, "w", encoding="utf-8", newline="\n") as f:
-            f.write("import Provenance\n\n")
+            f.write("import Provenance\n")
+            for m in modules:
+                f.write("import Provenance.%s\n" % m)
+            f.write("\n")
             f.write("\n".join("#print axioms %s" % n for n in names))
             f.write("\n")
         r = subprocess.run(["lake", "env", "lean", path], cwd=ROOT,
@@ -68,7 +96,7 @@ def main():
 
     out = r.stdout + r.stderr
 
-    errors = [l for l in out.splitlines() if l.startswith("error")]
+    errors = [l for l in out.splitlines() if ERROR.search(l)]
     sorry = re.findall(r"\bsorryAx\b", out)
     verdicts = re.findall(r"depends on axioms: \[([^\]]*)\]", out)
     clean = len(re.findall(r"does not depend on any axioms", out))
@@ -88,6 +116,16 @@ def main():
 
     for e in errors[:10]:
         print("    %s" % e)
+
+    # Name the declarations that produced no verdict, so a namespace mistake
+    # is obvious instead of just showing up as a count mismatch.
+    if clean + len(verdicts) != len(names):
+        seen = set(re.findall(r"'([A-Za-z0-9_.']+)'", out))
+        missing = [n for n in names if n not in seen]
+        if missing:
+            print("\nno verdict for %d name(s):" % len(missing))
+            for n in missing[:15]:
+                print("    %s" % n)
 
     unexpected = sorted(used - STANDARD)
     failed = False
