@@ -18,10 +18,10 @@ fragmentation side topic, 17 the corpus-selection side topic.
 ## Citation
 
 > **Two saturating operators: non-substitutability of human and machine
-> contribution in AI-assisted discovery.** *Huanli.* Independent Researcher,
-> 2026.
+> contribution in AI-assisted discovery.** *Huan Li.* Independent Researcher,
+> 2026. [ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825).
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
-> PDF: [`paper/docx_build/Non-detection_is_not_absence.pdf`](paper/docx_build/Non-detection_is_not_absence.pdf) ·
+> PDF: [`paper/docx_build/two_saturating_operators.pdf`](paper/docx_build/two_saturating_operators.pdf) ·
 > DOI: *TODO (pending arXiv / Zenodo)*
 >
 > Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). Licensed
@@ -39,7 +39,10 @@ corpus, index `paper/manuscript.md`, not the PDF.
   "abstract": "Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound. 153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.",
   "author": {
     "@type": "Person",
-    "name": "Huanli",
+    "name": "Huan Li",
+    "givenName": "Huan",
+    "familyName": "Li",
+    "sameAs": "https://orcid.org/0009-0004-2695-6825",
     "affiliation": {
       "@type": "Organization",
       "name": "Independent Researcher"
@@ -248,7 +251,7 @@ paper/
     eq/                    LaTeX intermediates (ignored, regenerable)
     Gen/                   C# + OpenXML SDK generator
     preview/               DOCX page-by-page previews
-    Non-detection_is_not_absence.docx / .pdf
+    two_saturating_operators.docx / .pdf
   slides/                22-page explainer deck project (python-pptx)
     assets/                Figures
     output/                identifiability-boundary-popular.pptx / .pdf + 22 previews

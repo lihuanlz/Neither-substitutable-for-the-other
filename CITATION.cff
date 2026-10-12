@@ -1,8 +1,8 @@
 # Citation metadata for this repository.
 #
 # GitHub reads this file and renders a "Cite this repository" widget, and
-# reference managers read it directly. Add an `orcid:` line under the author
-# once one is registered. CFF 1.2.0 schema: https://citation-file-format.github.io/
+# reference managers read it directly. CFF 1.2.0 schema:
+# https://citation-file-format.github.io/
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
 title: "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery"
@@ -22,11 +22,13 @@ abstract: >-
   zero sorry and no axioms beyond Classical.choice, Quot.sound and propext.
 type: article
 authors:
-  # Single author, no family/given split: the name is used whole, which is how
-  # it appears on the paper. Add an `orcid:` line here once one is registered;
-  # a syntactically valid but unregistered ORCID is worse than none.
-  - family-names: "Huanli"
+  # Name and ORCID are the registered form: given name "Huan", family name
+  # "Li". Reference managers render this as "Huan Li", which is also how the
+  # paper header reads. Do not rejoin them into one token.
+  - given-names: "Huan"
+    family-names: "Li"
     affiliation: "Independent Researcher"
+    orcid: "https://orcid.org/0009-0004-2695-6825"
 repository-code: "https://github.com/lihuanlz/Neither-substitutable-for-the-other"
 license: MIT
 date-released: "2026-10-12"

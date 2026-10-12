@@ -1,8 +1,8 @@
 # Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery
 
-**Authors.** Huanli
+**Authors.** Huan Li ([ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825))
 **Affiliations.** Independent Researcher
-**Correspondence.** Huanli (email to be supplied)
+**Correspondence.** Huan Li, lihuanlz@163.com
 
 ---
 
