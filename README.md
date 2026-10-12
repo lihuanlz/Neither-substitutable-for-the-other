@@ -141,6 +141,8 @@ articulability（默会知识过滤器在类型层根本表达不出来）、语
 Provenance.lean          总入口（模块导览 + 复现说明）
 .github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
 tools/audit_axioms.py    153 条定理的公理依赖审计（CI 关卡）
+tools/sync_refs.py       从 manuscript.md 生成 docx 的参考文献块（防漂移）
+tools/strip_bom.py       清掉 Python 源码的 UTF-8 BOM（ast.parse 需要）
 Provenance/              11 个 Lean 模块（+ Examples 对拍）
   Basic.lean             全变差距离、检验最优性、不可识别性
   Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界
@@ -201,6 +203,7 @@ cd paper\docx_build
 python render_eqs.py        # LaTeX 渲染 12 条公式 → assets_eq/*.png
 python make_figs_en.py      # 重生成英文 Figure 4/5
 python make_figs_saturation.py  # 新增 Figure 6/7
+python ..\..\tools\sync_refs.py  # 从 manuscript.md 同步参考文献（先跑）
 python polish.py            # ASCII → 正式排版符号
 python emit_json.py         # content.py → content.json
 dotnet run --project Gen -- content.json out.docx
@@ -213,8 +216,8 @@ soffice --headless --convert-to pdf --outdir . out.docx
 
 ```powershell
 cd paper
-python final_check.py      # 16 项：数字、定理数、引用、构建目标
-python verify_dois.py      # 18 条参考文献的 DOI 在线校验
+python final_check.py      # 16 项：数字、定理数、引用编号、模块数
+python verify_dois.py      # 23 条参考文献的 16 个 DOI 在线校验
 ```
 
 ```powershell
