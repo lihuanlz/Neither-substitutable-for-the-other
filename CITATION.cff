@@ -1,0 +1,40 @@
+# Citation metadata for this repository.
+#
+# GitHub reads this file and renders a "Cite this repository" widget, and
+# reference managers read it directly. Before publishing, fill in every field
+# marked TODO. CFF 1.2.0 schema: https://citation-file-format.github.io/
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery"
+abstract: >-
+  Humans and AI systems are usually placed on one capability curve and asked who
+  is ahead. That framing has no formal content. We formalize the alternative:
+  the two parties act on different variables, and each saturates on a different
+  axis. A machine, holding the hypothesis space fixed, compresses the residual
+  toward a floor it cannot pass, with total gain bounded by log(e0/Phi) and no
+  improvement from more inference steps. A human, holding the hypothesis space
+  fixed, moves the floor itself, and the gain is unbounded. Two further
+  saturations fall out of the same currency: headcount saturates immediately
+  because a max-type coalition's marginal member earns exactly zero, and corpus
+  size saturates because only the single item certifying the lowest floor
+  determines the attainable bound. We formalize all of this in Lean 4: 153
+  machine-checked theorems and 20 worked examples across twelve modules, with
+  zero sorry and no axioms beyond Classical.choice, Quot.sound and propext.
+type: article
+authors:
+  # TODO: replace with the real author list. Use the family-name-given-names
+  # form below; add one entry per author, and an `orcid:` per author.
+  - family-names: "TODO Author"
+    given-names: "TODO"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/lihuanlz/Neither-substitutable-for-the-other"
+license: MIT
+date-released: "2026-10-12"
+keywords:
+  - AI-assisted discovery
+  - identifiability
+  - total variation
+  - formalization
+  - Lean 4
+  - theorem proving
+  - human-AI collaboration

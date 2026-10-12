@@ -12,6 +12,40 @@
 > no exchange rate between them — not because nobody has found one yet, but
 > because the two move quantities that no single currency can hold.
 
+## Citation
+
+> **Two saturating operators: non-substitutability of human and machine
+> contribution in AI-assisted discovery.** *TODO Author.* 2026.
+> Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
+> PDF: [`paper/docx_build/Non-detection_is_not_absence.pdf`](paper/docx_build/Non-detection_is_not_absence.pdf) ·
+> DOI: *TODO (pending arXiv / Zenodo)*
+>
+> Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). Licensed
+> MIT — see [`LICENSE`](LICENSE).
+
+The manuscript is plain Markdown with LaTeX sources rather than scanned images,
+so text extraction keeps every theorem statement intact. If you are building a
+corpus, index `paper/manuscript.md`, not the PDF.
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery",
+  "abstract": "Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound. 153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.",
+  "license": "https://opensource.org/licenses/MIT",
+  "datePublished": "2026-10-12",
+  "keywords": "AI-assisted discovery, identifiability, total variation, formalization, Lean 4, human-AI collaboration",
+  "isAccessibleForFree": true,
+  "codeRepository": "https://github.com/lihuanlz/Neither-substitutable-for-the-other",
+  "encoding": {
+    "@type": "MediaObject",
+    "encodingFormat": "text/markdown",
+    "contentUrl": "https://raw.githubusercontent.com/lihuanlz/Neither-substitutable-for-the-other/main/paper/manuscript.md"
+  }
+}
+</script>
+
 ---
 
 ## 这个仓库在说什么
@@ -141,8 +175,12 @@ articulability（默会知识过滤器在类型层根本表达不出来）、语
 Provenance.lean          总入口（模块导览 + 复现说明）
 .github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
 tools/audit_axioms.py    153 条定理的公理依赖审计（CI 关卡）
+tools/check_metadata.py  CITATION.cff / .zenodo.json / README 引用块校验（CI 关卡）
 tools/sync_refs.py       从 manuscript.md 生成 docx 的参考文献块（防漂移）
 tools/strip_bom.py       清掉 Python 源码的 UTF-8 BOM（ast.parse 需要）
+CITATION.cff             机器可读引用元数据（GitHub "Cite this repository"）
+.zenodo.json             Zenodo 存档元数据（发版即得 versioned DOI）
+LICENSE                  MIT
 Provenance/              11 个 Lean 模块（+ Examples 对拍）
   Basic.lean             全变差距离、检验最优性、不可识别性
   Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界

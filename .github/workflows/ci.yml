@@ -35,6 +35,14 @@ jobs:
       - name: Manuscript consistency
         run: python paper/final_check.py
 
+      # CITATION.cff, .zenodo.json and the README citation block are what a
+      # reference manager and a crawler actually read. A malformed one fails
+      # silently everywhere except in the one place you notice it.
+      - name: Scholarly metadata
+        run: |
+          python -m pip install --quiet pyyaml
+          python tools/check_metadata.py
+
   references:
     name: Reference DOIs resolve
     runs-on: ubuntu-latest

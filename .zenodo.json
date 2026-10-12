@@ -1,0 +1,39 @@
+{
+  "_comment": [
+    "Zenodo metadata. Connect the repository under Settings > Repositories on zenodo.org,",
+    "then pushing a GitHub release mints a versioned DOI with no further work here.",
+    "Publishing this file instead gives a snapshot DOI. Fill in every TODO first.",
+    "This is deliberately visible JSON with no comments stripped, so a human can",
+    "audit exactly what a crawler will be handed."
+  ],
+  "title": "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery",
+  "upload_type": "publication",
+  "publication_type": "article",
+  "description": "<p>Humans and AI systems are usually placed on one capability curve and asked who is ahead. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound.</p><p>153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.</p>",
+  "creators": [
+    {
+      "_note": "TODO: replace with the real author list and add ORCID identifiers.",
+      "name": "TODO Author",
+      "affiliation": "TODO Institution"
+    }
+  ],
+  "keywords": [
+    "AI-assisted discovery",
+    "identifiability",
+    "total variation",
+    "formalization",
+    "Lean 4",
+    "human-AI collaboration"
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/lihuanlz/Neither-substitutable-for-the-other",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ],
+  "keywords_source": "text"
+}
