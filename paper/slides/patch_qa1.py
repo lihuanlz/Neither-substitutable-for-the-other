@@ -95,9 +95,9 @@ DARK = {
          '         size=15, color="primary", first=True, line=1.5)',
          'para(tf, "把「这份工作里有多少是人做的」从一句立场之争，",\n'
          '         size=15, color="light", first=True, line=1.5)'),
-        ('para(tf, "变成 117 条能被机器逐条检查的定理。",\n'
+        ('para(tf, "变成 153 条能被机器逐条检查的定理。",\n'
          '         size=15, color="primary", line=1.5)',
-         'para(tf, "变成 117 条能被机器逐条检查的定理。",\n'
+         'para(tf, "变成 153 条能被机器逐条检查的定理。",\n'
          '         size=15, color="light", line=1.5)'),
         ('para(tf, num, size=30, color="accent", bold=True, font=FONT_NUM, first=True)',
          'para(tf, num, size=30, color="light", bold=True, font=FONT_NUM, first=True)'),

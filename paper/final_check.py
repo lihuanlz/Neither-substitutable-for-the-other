@@ -23,11 +23,11 @@ print("references             :",
 print()
 
 checks = [
-    ("DOI count == 12",            len(re.findall(r"https://doi\.org/", t)) == 12),
+    ("DOI count == 16",            len(re.findall(r"https://doi\.org/", t)) == 16),
     ("ref 11 author fixed",        "Sadasivan, V." in t),
     ("no stale Krishna",           "Krishna, T." not in t),
     ("ref 17 = Li et al.",         "Li, W., Aboutorabi" in t),
-    ("Dorner paragraph rewritten", "they never optimize over the budget" in t),
+    ("Dorner paragraph rewritten", "never optimize over the budget" in t),
     ("no 'dual description' claim","dual description of the floor" not in t),
     ("Xie verbatim quote",         "informational contribution should not be directly equated" in t),
     ("Xie 5.5 quote",              "minimal or negligible human contribution" in t),
@@ -35,10 +35,11 @@ checks = [
     ("Silva classical note",       "classical results in statistical decision theory" in t),
     ("no toolchain typo",          "v4.150" not in t),
     ("no stale overclaim",         "not a measure of contribution in any sense" not in t),
-    ("117 theorems consistent",    "117 theorems" in t and "105 theorems" not in t),
-    ("nine modules consistent",    t.count("nine modules") + t.count("nine Lean modules") >= 3
-                                   and "eight modules" not in t and "eight Lean modules" not in t),
-    ("build targets consistent",   "2,532 of 2,533" in t and "2,532/2,533" in t),
+    ("153 theorems consistent",    "153 theorems" in t and "136 theorems" not in t
+                                   and "117 theorems" not in t),
+    ("twelve modules consistent",  t.count("twelve modules") >= 2
+                                   and "nine modules" not in t and "nine Lean modules" not in t),
+    ("corpus module described",    "dilution invariance and selection filters" in t),
     ("calibration theorem cited",  "sign_not_identified_exact" in t),
 ]
 

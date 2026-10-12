@@ -1,57 +1,66 @@
 /-
-# 验证预算：TV 下界下的最优验证轮数 \(N^\star\)
+# Verification budget: the optimal number of verification rounds \(N^\star\) under a TV floor
 
-本文件回应原始分析第 6 节。该节的期望遗憾写作
+This file answers section 6 of the original analysis. The expected regret there is
+written
 
     R(N) = p·Φ(α) + (1−p)·L·(1−q)^N + c_v·N
 
-其中「验证 \(N\) 轮足够多 ⟹ 漏检率 \((1−q)^N \to 0\)」这一项，
-被 `Provenance.HypothesisTest` 的结果否掉了：
+where the term "verify enough rounds \(N\) ⟹ miss rate \((1−q)^N \to 0\)" is refuted by
+a result of `Provenance.HypothesisTest`:
 
-    |功效 − 假阳性率| ≤ TV(p, q)      （`Provenance.abs_mass_diff_le_tv`）
+    |power − false positive rate| ≤ TV(p, q)      (`Provenance.abs_mass_diff_le_tv`)
 
-**无论验证多少轮，净判别力都不超过 `TV`。** 故残差漏检率有一个**地板**：
+**However many rounds are run, net discrimination never exceeds `TV`.** The residual
+miss rate therefore has a **floor**:
 
-    漏检率(N) = max( (1−q)^N , T ),      T = λ·TV
+    missRate(N) = max( (1−q)^N , T ),      T = λ·TV
 
-## 修正后的模型
+## The corrected model
 
     R(N) = p·Φ(α) + A·max( (1−q)^N , T ) + c·N
 
-    A = (1−p)·L      漏检代价规模（人越不准越大）
-    T = λ·TV         **TV 地板**（与 N 无关）
-    s = 1−q ∈ (0,1)  单轮验证的残留系数，d = |ln s| > 0
+    A = (1−p)·L      miss-cost scale (larger when the human is less reliable)
+    T = λ·TV         **TV floor** (independent of N)
+    s = 1−q ∈ (0,1)  residual factor of one round, d = |ln s| > 0
 
-## 关键推导
+## Key derivation
 
-一阶条件 `c = A·s^N·d` 给出**无约束最优残差** `x_c = c/(A·d)`，
-而 TV 地板要求 `x ≥ T`。故最优可达残差
+The first-order condition `c = A·s^N·d` gives the **unconstrained optimal residual**
+`x_c = c/(A·d)`, while the TV floor requires `x ≥ T`. Hence the optimal attainable
+residual is
 
     x* = max( x_c , T )
 
-达到残差 `x` 需要 `N = −ln x / d`，它关于 `x` **递减**。于是
+Reaching residual `x` requires `N = −ln x / d`, which is **decreasing** in `x`. Therefore
 
 > **\(N^\star = \dfrac{-\ln\big(\max(x_c,\ T)\big)}{d} = \min(N_c,\ N_0)\)**
 
-`x*` 取 `max`、`N*` 取 `min`：**TV 地板只会让你少验，绝不会逼你多验。**
+`x*` takes a `max` and `N*` takes a `min`: **the TV floor only ever buys you fewer
+verification rounds, never more.**
 
-## 主结果
+## Main results
 
-* `starN_le_floorRounds` —— **硬上界，且与 \(p\) 无关**：
-  \(N^\star \le N_0 = \dfrac{\ln\frac{1}{\lambda\,TV}}{\ln\frac1{1-q}}\)。
-  这就是"人再不准也不能无限加验证"的数学形式。
-* `starN_mono_in_p` —— **\(N^\star\) 关于 \(p\) 单调非增**：人越准，验证预算越小。
-* `starN_strictly_mono_in_p` —— 当 TV 地板**不起作用**时严格递减。
-* `starN_mono_in_tv` —— **\(N^\star\) 关于 \(TV\) 单调非增**（反直觉但正确）：
-  两个分布差得越远，验证越早饱和，预算越小。
-* `regret_ge_floor` —— 遗憾的地板：`R(N) ≥ pΦ + A·T + cN`。
-* `missRate_eq_pow_of_tv_zero` —— `TV = 0` 时地板消失，**退回原始公式**。
-  即：TV 既是验证预算的天花板，也是它唯一的约束来源。
+* `starN_le_floorRounds` — **a hard upper bound, independent of \(p\)**:
+  \(N^\star \le N_0 = \dfrac{\ln\frac{1}{\lambda\,TV}}{\ln\frac1{1-q}}\).
+  This is the mathematical form of "an unreliable human does not license unbounded
+  verification".
+* `starN_mono_in_p` — **\(N^\star\) is non-increasing in \(p\)**: the more reliable the
+  human, the smaller the verification budget.
+* `starN_strictly_mono_in_p` — strictly decreasing when the TV floor is **not binding**.
+* `starN_mono_in_tv` — **\(N^\star\) is non-increasing in \(TV\)** (counterintuitive but
+  correct): the further apart the two distributions, the earlier verification saturates
+  and the smaller the budget.
+* `regret_ge_floor` — the floor of the regret: `R(N) ≥ pΦ + A·T + cN`.
+* `missRate_eq_pow_of_tv_zero` — when `TV = 0` the floor vanishes and the **original
+  formula is recovered**. That is: TV is both the ceiling of the verification budget and
+  its only binding constraint.
 
-## 与第 2 层的关系
+## Relation to layer 2
 
-`p·Φ(α)` 确实是第 2 层的东西，但它在 \(N\) 上是**常数**，不参与最优化。
-决定 \(N^\star\) 的全部是第 1 层的 `TV`。两个层次在 `R(N)` 里各占一项，互不干涉。
+`p·Φ(α)` is indeed a layer-2 quantity, but it is a **constant** in \(N\) and takes no part
+in the optimisation. Everything that determines \(N^\star\) comes from the layer-1 `TV`.
+The two levels occupy one term each in `R(N)` and do not interfere.
 
 -/
 
@@ -64,83 +73,87 @@ open scoped BigOperators
 
 namespace Provenance
 
-/-- 验证预算的参数。 -/
+/-- Parameters of the verification budget. -/
 structure VerifyParams where
-  /-- 人类判断正确概率 -/
+  /-- probability that the human judges correctly -/
   p : ℝ
-  /-- 层 α 的不可约误差下界 `Φ(α)` -/
+  /-- irreducible error lower bound `Φ(α)` of layer α -/
   Phi : ℝ
-  /-- 漏检代价尺度 -/
+  /-- scale of the miss cost -/
   L : ℝ
-  /-- 单轮验证的漏检概率 `q`（各轮独立） -/
+  /-- miss probability `q` of a single verification round (rounds independent) -/
   q : ℝ
-  /-- 单轮验证成本 -/
+  /-- cost of a single verification round -/
   c : ℝ
-  /-- 内容层全变差距离 `TV(p_H, p_A)` -/
+  /-- total variation distance of the content layer `TV(p_H, p_A)` -/
   tv : ℝ
-  /-- TV → 代价的换算系数 -/
+  /-- TV → cost conversion coefficient -/
   lam : ℝ
 
-/-- 参数的合法性。用结构而非合取，便于引用。 -/
+/-- Admissibility of the parameters. A structure rather than a conjunction, so that the
+fields can be cited individually. -/
 structure VOk (V : VerifyParams) : Prop where
-  /-- 概率非负 -/
+  /-- probability non-negative -/
   p_ge_0 : 0 ≤ V.p
-  /-- 人不可能永远对：漏检代价必须为正，否则 \(N^\star\) 无意义 -/
+  /-- no one is always right: the miss cost must be positive, otherwise \(N^\star\) is meaningless -/
   p_lt_1 : V.p < 1
-  /-- 不可约下界为正 -/
+  /-- irreducible lower bound positive -/
   Phi_pos : 0 < V.Phi
-  /-- 代价尺度为正 -/
+  /-- cost scale positive -/
   L_pos : 0 < V.L
-  /-- 单轮漏检概率为正 -/
+  /-- single-round miss probability positive -/
   q_pos : 0 < V.q
-  /-- 单轮漏检概率小于 1 -/
+  /-- single-round miss probability below 1 -/
   q_lt_1 : V.q < 1
-  /-- 单轮成本为正 -/
+  /-- single-round cost positive -/
   c_pos : 0 < V.c
-  /-- TV 严格为正（`TV = 0` 的退化情形单独处理） -/
+  /-- TV strictly positive (the degenerate case `TV = 0` is handled separately) -/
   tv_pos : 0 < V.tv
-  /-- TV 至多 1 -/
+  /-- TV at most 1 -/
   tv_le_1 : V.tv ≤ 1
-  /-- 换算系数为正 -/
+  /-- conversion coefficient positive -/
   lam_pos : 0 < V.lam
 
-/-- 单轮验证的**衰减率** `d = |ln(1−q)| = ln(1/(1−q)) > 0`。 -/
+/-- The **decay rate** of a single verification round, `d = |ln(1−q)| = ln(1/(1−q)) > 0`. -/
 noncomputable def decay (V : VerifyParams) : ℝ := |Real.log (1 - V.q)|
 
-/-- 漏检代价规模 `A = (1−p)·L`。人越不准，`A` 越大。 -/
+/-- The miss-cost scale `A = (1−p)·L`. The less reliable the human, the larger `A`. -/
 noncomputable def lossScale (V : VerifyParams) : ℝ := (1 - V.p) * V.L
 
-/-- **TV 地板** `T = λ·TV`：任何验证轮数都压不下去的残差漏检率。 -/
+/-- The **TV floor** `T = λ·TV`: the residual miss rate that no number of verification
+rounds can push down. -/
 noncomputable def tvFloor (V : VerifyParams) : ℝ := V.lam * V.tv
 
-/-- **残差漏检率** `max((1−q)^N, T)`。 -/
+/-- The **residual miss rate** `max((1−q)^N, T)`. -/
 noncomputable def missRate (V : VerifyParams) (N : ℝ) : ℝ :=
   max ((1 - V.q) ^ N) (tvFloor V)
 
-/-- **期望遗憾** `R(N) = p·Φ + A·max((1−q)^N, T) + c·N`。 -/
+/-- **Expected regret** `R(N) = p·Φ + A·max((1−q)^N, T) + c·N`. -/
 noncomputable def regret (V : VerifyParams) (N : ℝ) : ℝ :=
   V.p * V.Phi + lossScale V * missRate V N + V.c * N
 
-/-- 达到残差漏检率 `x ∈ (0,1]` 所需的验证轮数：`N = −ln x / d`。
+/-- Verification rounds needed to reach a residual miss rate `x ∈ (0,1]`:
+`N = −ln x / d`.
 
-**关于 `x` 严格递减**：想压得更低，就要验更多轮。 -/
+**Strictly decreasing in `x`**: the lower the target, the more rounds it takes. -/
 noncomputable def roundsFor (V : VerifyParams) (x : ℝ) : ℝ :=
   -(Real.log x) / decay V
 
-/-- 忽略 TV 地板时的最优残差（一阶条件 `c = A·s^N·d`）：`x_c = c/(A·d)`。 -/
+/-- Optimal residual ignoring the TV floor (first-order condition `c = A·s^N·d`):
+`x_c = c/(A·d)`. -/
 noncomputable def idealResidual (V : VerifyParams) : ℝ :=
   V.c / (lossScale V * decay V)
 
-/-- **最优验证预算**
+/-- **The optimal verification budget**
 
     N* = −ln( max( c/(A·d) , λ·TV ) ) / d
 
-无 TV 地板时（`TV = 0`，`T = 0`）退化为原第 6 节的闭式
-`ln(A·d/c)/d`，即 `ln((1−p)L·|ln(1−q)|/c) / ln(1/(1−q))`。 -/
+With no TV floor (`TV = 0`, `T = 0`) this degenerates to the closed form of section 6,
+`ln(A·d/c)/d`, that is `ln((1−p)L·|ln(1−q)|/c) / ln(1/(1−q))`. -/
 noncomputable def starN (V : VerifyParams) : ℝ :=
   roundsFor V (max (idealResidual V) (tvFloor V))
 
-/-! ## 1. 基本正性 -/
+/-! ## 1. Basic positivity -/
 
 theorem log_one_sub_q_neg {V : VerifyParams} (hV : VOk V) :
     Real.log (1 - V.q) < 0 := by
@@ -155,7 +168,7 @@ theorem decay_pos {V : VerifyParams} (hV : VOk V) : 0 < decay V := by
   rw [decay, abs_of_neg (log_one_sub_q_neg hV)]
   exact neg_pos.mpr (log_one_sub_q_neg hV)
 
-/-- `d = ln(1/(1−q))`，即闭式里通常写的那个分母。 -/
+/-- `d = ln(1/(1−q))`, the denominator the closed form usually writes. -/
 theorem decay_eq_log_inv {V : VerifyParams} (hV : VOk V) :
     decay V = Real.log (1 / (1 - V.q)) := by
   rw [decay, abs_of_neg (log_one_sub_q_neg hV)]
@@ -180,7 +193,7 @@ theorem maxResidual_pos {V : VerifyParams} (hV : VOk V) :
     0 < max (idealResidual V) (tvFloor V) :=
   lt_of_lt_of_le (idealResidual_pos hV) (le_max_left (idealResidual V) (tvFloor V))
 
-/-! ## 2. 单调性工具：目标残差越大，所需轮数越少 -/
+/-! ## 2. Monotonicity tools: the larger the target residual, the fewer the rounds -/
 
 theorem roundsFor_mono {V : VerifyParams} (hV : VOk V) {x x' : ℝ}
     (hx : 0 < x) (hx' : 0 < x') (h : x ≤ x') :
@@ -200,13 +213,14 @@ theorem roundsFor_strict_mono {V : VerifyParams} (hV : VOk V) {x x' : ℝ}
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_lt_mul_of_pos_right hlog (inv_pos.mpr (decay_pos hV))
 
-/-- 衰减率相同时 `roundsFor` 取值相同。 -/
+/-- With the same decay rate, `roundsFor` takes the same value. -/
 theorem roundsFor_congr {V V' : VerifyParams} (hd : decay V = decay V') (x : ℝ) :
     roundsFor V' x = roundsFor V x := by
   unfold roundsFor
   rw [hd]
 
-/-- `inv` 在正数上反单调（自备，避免依赖具体引理名）。 -/
+/-- `inv` is antitone on the positive reals (proved here to avoid depending on a
+specific lemma name). -/
 theorem inv_lt_inv_of_lt {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (h : a < b) :
     b⁻¹ < a⁻¹ := by
   by_contra hcon
@@ -217,16 +231,18 @@ theorem inv_lt_inv_of_lt {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (h : a < b) :
     exact absurd h (not_lt_of_ge hba)
   exact hnot hcon
 
-/-! ## 3. TV 地板：漏检率压不到 0 -/
+/-! ## 3. The TV floor: the miss rate cannot be pushed to 0 -/
 
-/-- **地板存在性**：任何验证轮数下，残差漏检率都不低于 `T = λ·TV`。
+/-- **The floor exists**: under any number of verification rounds, the residual miss
+rate is at least `T = λ·TV`.
 
-这就是 `|功效 − 假阳性率| ≤ TV` 在预算语言里的样子。 -/
+This is what `|power − false positive rate| ≤ TV` looks like in the language of budgets. -/
 theorem missRate_ge_tvFloor (V : VerifyParams) (N : ℝ) :
     tvFloor V ≤ missRate V N :=
   le_max_right _ _
 
-/-- **遗憾的地板**：`R(N) ≥ p·Φ + A·T + c·N`。与验证轮数的阶数无关。 -/
+/-- **The floor of the regret**: `R(N) ≥ p·Φ + A·T + c·N`. It does not depend on the
+order of growth in the number of verification rounds. -/
 theorem regret_ge_floor {V : VerifyParams} (hV : VOk V) {N : ℝ} :
     V.p * V.Phi + lossScale V * tvFloor V + V.c * N ≤ regret V N := by
   unfold regret
@@ -236,24 +252,26 @@ theorem regret_ge_floor {V : VerifyParams} (hV : VOk V) {N : ℝ} :
     mul_le_mul_of_nonneg_left hm hA
   linarith
 
-/-! ## 4. 主定理：\(N^\star\) 的硬上界（与 \(p\) 无关） -/
+/-! ## 4. Main theorem: a hard upper bound on \(N^\star\), independent of \(p\) -/
 
-/-- **核心：\(N^\star\) 有与 \(p\) 无关的硬上界。**
+/-- **Core: \(N^\star\) has a hard upper bound that does not depend on \(p\).**
 
     N*  ≤  N_0 = ln(1/(λ·TV)) / ln(1/(1−q))
 
-右端**不含 `p`**。所以：**人再不准（\(p \to 0\)），验证预算也不能无限加**
-——因为 TV 给了残差漏检率一个地板，加再多验证也压不下去。
+The right-hand side contains **no `p`**. So: **an unreliable human (\(p \to 0\)) does
+not license unbounded verification** — TV puts a floor under the residual miss rate, and
+no amount of extra verification pushes it below that floor.
 
-这条改写了原第 6 节「\(p\) 越小、\(N^\star\) 越大」的结论：
-\(N^\star\) 确实随 \(p\) 减小而增大，但**有天花板**。 -/
+This revises the conclusion of section 6 that "smaller \(p\) means larger \(N^\star\)":
+\(N^\star\) does indeed grow as \(p\) falls, but **it has a ceiling**. -/
 theorem starN_le_floorRounds {V : VerifyParams} (hV : VOk V) :
     starN V ≤ roundsFor V (tvFloor V) := by
   rw [starN]
   exact roundsFor_mono hV (tvFloor_pos hV) (maxResidual_pos hV)
     (le_max_right (idealResidual V) (tvFloor V))
 
-/-- 上界的闭式：`N_0 = ln(1/(λ·TV)) / ln(1/(1−q))`，**不含 \(p\)**。 -/
+/-- Closed form of the upper bound: `N_0 = ln(1/(λ·TV)) / ln(1/(1−q))`, **with no
+\(p\)**. -/
 theorem starN_le_floorRounds_closed {V : VerifyParams} (hV : VOk V) :
     starN V ≤ Real.log (1 / tvFloor V) / Real.log (1 / (1 - V.q)) := by
   have h1 : starN V ≤ -(Real.log (tvFloor V)) / decay V := starN_le_floorRounds hV
@@ -264,14 +282,16 @@ theorem starN_le_floorRounds_closed {V : VerifyParams} (hV : VOk V) :
   rw [h2, decay_eq_log_inv hV] at h1
   exact h1
 
-/-! ## 5. 主定理：\(N^\star\) 关于 \(p\) 单调 -/
+/-! ## 5. Main theorem: \(N^\star\) is monotone in \(p\) -/
 
-/-- **\(N^\star\) 关于人的可靠度单调非增**（同一验证器、同一代价尺度下）。
+/-- **\(N^\star\) is non-increasing in the human's reliability** (same verifier, same
+cost scale).
 
-**方向**：人越准（`p` 越大），最优验证预算越小或不变。
+**Direction**: the more reliable the human (the larger `p`), the smaller or unchanged the
+optimal verification budget.
 
-这证实了原第 6 节的方向判断（`N*` 关于 `p` 递减），
-而 `starN_le_floorRounds` 给它加上了天花板。 -/
+This confirms the directional claim of section 6 (`N*` decreasing in `p`), while
+`starN_le_floorRounds` puts a ceiling on it. -/
 theorem lossScale_mono_in_p {V V' : VerifyParams} (hV : VOk V)
     (hp : V.p ≤ V'.p) (hL : V'.L = V.L) :
     lossScale V' ≤ lossScale V := by
@@ -286,7 +306,9 @@ theorem lossScale_strict_mono_in_p {V V' : VerifyParams} (hV : VOk V)
   rw [lossScale, lossScale, hL]
   exact mul_lt_mul_of_pos_right h1 hV.L_pos
 
-/-- 无约束最优残差 `x_c = c/(A·d)` 关于 `p` 单调非增：人越准，代价规模越小、可达残差越低。 -/
+/-- The unconstrained optimal residual `x_c = c/(A·d)` is non-increasing in `p`: the
+more reliable the human, the smaller the cost scale and the lower the attainable
+residual. -/
 theorem idealResidual_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c)
     (hp : V.p ≤ V'.p) (hL : V'.L = V.L) :
@@ -328,12 +350,14 @@ theorem idealResidual_strict_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' :
           simpa [mul_comm] using mul_lt_mul_of_pos_left hinv hV.c_pos
     _ = V'.c / (lossScale V' * decay V') := by rw [div_eq_mul_inv, mul_comm, hc]
 
-/-- **\(N^\star\) 关于人的可靠度单调非增**（同一验证器、同一代价尺度下）。
+/-- **\(N^\star\) is non-increasing in the human's reliability** (same verifier, same
+cost scale).
 
-**方向**：人越准（`p` 越大），最优验证预算越小或不变。
+**Direction**: the more reliable the human (the larger `p`), the smaller or unchanged the
+optimal verification budget.
 
-这证实了原第 6 节的方向判断（`N*` 关于 `p` 递减），
-而 `starN_le_floorRounds` 给它加上了天花板。 -/
+This confirms the directional claim of section 6 (`N*` decreasing in `p`), while
+`starN_le_floorRounds` puts a ceiling on it. -/
 theorem starN_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam) (htv : V'.tv = V.tv)
     (hL : V'.L = V.L) (hp : V.p ≤ V'.p) :
@@ -346,12 +370,13 @@ theorem starN_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
   rw [starN, starN, ← roundsFor_congr hdc (max (idealResidual V') (tvFloor V'))]
   exact roundsFor_mono hV (maxResidual_pos hV) (maxResidual_pos hV') hmax
 
-/-- **严格性**：当 TV 地板**不起作用**时（`T < x_c`），
-\(N^\star\) 关于 `p` **严格**递减。
+/-- **Strictness**: when the TV floor is **not binding** (`T < x_c`), \(N^\star\) is
+**strictly** decreasing in `p`.
 
-即：验证预算要真正随人的可靠度变化，前提是「TV 不是瓶颈」。
-一旦 TV 成为瓶颈，`N*` 就被钉死成常数 `N_0`，再信任谁也没用
-——**瓶颈在内容层的可区分性，不在验证的力度。** -/
+For the verification budget to genuinely respond to the human's reliability, TV has to
+be non-binding. Once TV is the bottleneck, `N*` is pinned to the constant `N_0` and
+trusting anyone more changes nothing — **the bottleneck is the distinguishability of
+the content layer, not the intensity of verification**. -/
 theorem starN_strictly_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam) (htv : V'.tv = V.tv)
     (hL : V'.L = V.L) (hp : V.p < V'.p) (hfree : tvFloor V' < idealResidual V') :
@@ -370,12 +395,13 @@ theorem starN_strictly_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V
   rw [starN, starN, ← roundsFor_congr hdc (max (idealResidual V') (tvFloor V'))]
   exact roundsFor_strict_mono hV (maxResidual_pos hV) (maxResidual_pos hV') key
 
-/-! ## 6. 主定理：\(N^\star\) 关于 `TV` 单调 -/
+/-! ## 6. Main theorem: \(N^\star\) is monotone in `TV` -/
 
-/-- **\(N^\star\) 关于 `TV` 单调非增**。
+/-- **\(N^\star\) is non-increasing in `TV`**.
 
-反直觉但正确：两个分布差得**越远**，验证越早饱和，所需预算**越小**。
-所以提高 `TV` 不是"让人工审核更安全"，而是"让机器验证更省"。 -/
+Counterintuitive but correct: the further apart the two distributions, the earlier
+verification saturates and the **smaller** the budget needed. Raising `TV` therefore does
+not make human review safer; it makes machine verification cheaper. -/
 theorem starN_mono_in_tv {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam)
     (hL : V'.L = V.L) (hp : V'.p = V.p) (htv : V.tv ≤ V'.tv) :
@@ -396,12 +422,14 @@ theorem starN_mono_in_tv {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
   rw [starN, starN, roundsFor_congr hdc.symm (max (idealResidual V') (tvFloor V'))]
   exact hstep
 
-/-! ## 7. 退化情形：`TV = 0` 退回原始公式 -/
+/-! ## 7. Degenerate case: `TV = 0` recovers the original formula -/
 
-/-- **`TV = 0` 时地板消失**：漏检率就是 `(1−q)^N`，验证可以无限逼近 0。
+/-- **When `TV = 0` the floor disappears**: the miss rate is just `(1−q)^N`, and
+verification can approach 0 arbitrarily closely.
 
-即：TV 既是验证预算的天花板，也是它唯一的约束来源。
-`TV = 0` 意味着两个分布完全重合——那时才谈得上"多验几轮"。 -/
+That is: TV is both the ceiling of the verification budget and its only binding
+constraint. `TV = 0` means the two distributions coincide exactly, and only then is it
+worth speaking of "a few more rounds". -/
 theorem missRate_eq_pow_of_tv_zero {V : VerifyParams} (hV : VOk V) (htv : V.tv = 0)
     (N : ℝ) : missRate V N = (1 - V.q) ^ N := by
   unfold missRate tvFloor

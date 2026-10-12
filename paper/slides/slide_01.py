@@ -23,10 +23,10 @@ def build(prs):
     tf = tbox(s, 0.80, 2.72, 6.0, 1.25)
     para(tf, "把「这份工作里有多少是人做的」从一句立场之争，",
          size=15, color="light", first=True, line=1.5)
-    para(tf, "变成 117 条能被机器逐条检查的定理。",
+    para(tf, "变成 153 条能被机器逐条检查的定理。",
          size=15, color="light", line=1.5)
 
-    stats = [("117", "条已证定理"), ("0", "个 sorry 与公理"), ("9", "个形式化模块")]
+    stats = [("153", "条已证定理"), ("0", "个 sorry 与公理"), ("11", "个形式化模块")]
     for i, (num, lab) in enumerate(stats):
         x = 0.80 + i * 2.10
         tf = tbox(s, x, 4.14, 2.0, 0.58)

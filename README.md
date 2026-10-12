@@ -5,8 +5,8 @@
 
 **人机协同条件下，人与机器的作用都不可替代。**
 
-形式化载体：Lean 4 + Mathlib，**136 条定理 + 20 个实例**，零 `sorry`、零公理。
-其中主线（不可替代性）117 条，碎片化侧题 19 条。
+形式化载体：Lean 4 + Mathlib，**153 条定理 + 20 个实例**，零 `sorry`、零公理。
+其中主线（不可替代性）117 条，碎片化侧题 19 条，语料筛选 17 条。
 
 > Two operations, two objects. A machine compresses; a human refines. There is
 > no exchange rate between them — not because nobody has found one yet, but
@@ -77,9 +77,7 @@
 
 上面三层回答的是"是什么"。`Provenance.Fragmentation` 换了一个问题：
 **人机协同下，人的创新会规模化，还是会碎片化？**
-
 这是独立课题，结论是**碎片化**，两截机制：
-
 **协作侧（内生）** —— 在同一层上，协作体达成的层移动**等于其中最好那个人的层移动**。
 第 N+1 个人的收益精确为 0，成本精确为 \(\log(\Phi/a)\)：
 
@@ -106,13 +104,34 @@ theorem marginal_agent_pure_waste ...
 确实能超过其中较好的一人，`add_member_same_reach` 立刻失败。这是本课题最容易被
 现实推翻的地方，写成定理而不是留给直觉。
 
+### 侧题 · 语料即筛选
+
+`Provenance.Corpus` 问第三个问题：**语料越滚越大，筛选能力会跟着涨吗？**
+答案是不会，而且它和碎片化共用同一个 `max`/`min` 对称结构 ——
+人数饱和在**最好的人**身上，语料饱和在**最好的一条**身上。
+
+认证地板 `floorOf D = D.min'`（只认最好的那一条），于是：
+
+- **稀释不变性**：`floorOf (D₁ ∪ D₂) = min (floorOf D₁) (floorOf D₂)`。
+  99 条噪声 + 1 条信号，与那 1 条信号本身认证到的东西**完全一样**
+  （`selection_filter_survives_dilution`）
+- **换语料零收益**：不把地板压低就换语料，收益精确为 0
+  （`uninformative_corpus_gains_nothing`）
+- **地板定上界**：`floor_determines_bound` 说两条认证到同一地板的语料，
+  不管规模、成分、新旧程度，一律不可区分
+
+**刻意没有形式化的两件事**（和 \(\Phi>0\) 那条焊点同性质，写进了 §8）：
+articulability（默会知识过滤器在类型层根本表达不出来）、语料是 stream 而非 set
+（recency 与重加权都建模不了）。这两个缺口和 \(\Phi>0\) 一样，是留下来的焊点，
+不是遗漏。
+
 ### 关键数字
 
 - 标定自 2,500 条 WildChat prompt；1,500 对中 95.9% 可分
 - \(T = 0.09\)（\(\lambda=1\), TV=0.09, q=0.5）时：\(N_c = 3.793\)、\(N_0 = 3.474\)，
   **83.97% 的参数组由地板起约束**
 - \(\bar s = 0.50\)；Llama-3 \(\bar\tau = 0.5496 \to -0.099\)；Mixtral \(\bar\tau = 0.4155 \to +0.169\)
-- 构建：主线口径 2,532 / 2,533 个 target（论文所述）；仓库现状 2,533 / 2,534（含侧题）
+- 公理审计：153 条声明全部解析，只依赖 `Classical.choice` / `Quot.sound` / `propext`，零 `sorryAx`
 
 ---
 
@@ -121,8 +140,8 @@ theorem marginal_agent_pure_waste ...
 ```
 Provenance.lean          总入口（模块导览 + 复现说明）
 .github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
-tools/audit_axioms.py    136 条定理的公理依赖审计（CI 关卡）
-Provenance/              10 个 Lean 模块（+ Examples 对拍）
+tools/audit_axioms.py    153 条定理的公理依赖审计（CI 关卡）
+Provenance/              11 个 Lean 模块（+ Examples 对拍）
   Basic.lean             全变差距离、检验最优性、不可识别性
   Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界
   Coverage.lean          覆盖函数、次模性、单样本边际增益
@@ -133,21 +152,23 @@ Provenance/              10 个 Lean 模块（+ Examples 对拍）
   Incommensurable.lean   不可线性换算（分区间）
   Calibration.lean       标定不可识别性：符号不由数据决定
   Fragmentation.lean     侧题：碎片化 —— 加人不加收益，等待收益单调不增
+  Corpus.lean            侧题：语料即筛选 —— 稀释不变性与选择过滤上限
   Examples.lean          精确有理数实例对拍
 
 paper/
   manuscript.md          正式论文原始稿（事实基准，全程未被改写）
   human_value.md         图解长文（面向普通读者）
-  final_check.py         对 manuscript.md 的 16 项一致性检查
-  verify_dois.py         18 条参考文献的 DOI 在线校验（12/12 通过）
-  figures/               Figure 1–6（PNG + PDF），anime/ 为 AI 生成科普插画
+  final_check.py         对 manuscript.md 的一致性检查
+  verify_dois.py         23 条参考文献的 DOI 在线校验（16/16 通过）
+  figures/               Figure 1–7（PNG + PDF），anime/ 为 AI 生成科普插画
   docx_build/            Word/PDF 生成工程
     content.py             论文正文与参考文献（唯一编辑入口）
-    render_eqs.py          LaTeX → 600 dpi PNG，渲染 11 条公式
+    render_eqs.py          LaTeX → 600 dpi PNG，渲染 12 条公式
     make_figs_en.py        重生成英文版 Figure 4/5（色盲安全配色）
+    make_figs_saturation.py 新增 Figure 6/7：人数饱和、语料饱和
     polish.py              ASCII → 正式排版符号
     emit_json.py           content.py → content.json
-    assets_eq/             11 条公式的最终 PNG（已跟踪）
+    assets_eq/             12 条公式的最终 PNG（已跟踪）
     eq/                    LaTeX 中间产物（已忽略，可重新生成）
     Gen/                   C# + OpenXML SDK 生成器
     preview/               DOCX 逐页预览
@@ -177,8 +198,9 @@ lake build
 
 ```powershell
 cd paper\docx_build
-python render_eqs.py        # LaTeX 渲染 11 条公式 → assets_eq/*.png
+python render_eqs.py        # LaTeX 渲染 12 条公式 → assets_eq/*.png
 python make_figs_en.py      # 重生成英文 Figure 4/5
+python make_figs_saturation.py  # 新增 Figure 6/7
 python polish.py            # ASCII → 正式排版符号
 python emit_json.py         # content.py → content.json
 dotnet run --project Gen -- content.json out.docx
@@ -196,7 +218,7 @@ python verify_dois.py      # 18 条参考文献的 DOI 在线校验
 ```
 
 ```powershell
-python tools\audit_axioms.py   # 136 条定理的公理依赖审计
+python tools\audit_axioms.py   # 153 条定理的公理依赖审计
 ```
 
 ### CI
@@ -204,7 +226,7 @@ python tools\audit_axioms.py   # 136 条定理的公理依赖审计
 每次推送到 `main` 以及每个 PR，GitHub Actions 会自动跑三件事：
 
 1. `lake build` —— 用 [leanprover/lean-action](https://github.com/leanprover/lean-action) 装工具链、拉 Mathlib 缓存、编译全部证明
-2. `tools/audit_axioms.py` —— 对全部 136 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
+2. `tools/audit_axioms.py` —— 对全部 153 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
 3. `paper/final_check.py` + `paper/verify_dois.py` —— 正文一致性与 DOI 在线解析
 
 第 2 条是关键：`lake build` 通过只说明内核接受了证明，公理审计才能挡住一个悄悄被 `sorry` 削弱的主张。

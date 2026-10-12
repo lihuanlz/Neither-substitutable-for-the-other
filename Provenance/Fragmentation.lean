@@ -1,44 +1,56 @@
 /-
-# 碎片化：为什么人机协同下创新难以规模化
+# Fragmentation: why human-AI innovation does not scale
 
-这是独立于主线的一个课题，主张是：
+This is a topic held apart from the main line. Its claim is:
 
-> **AI 不会让人的创新规模化，只会让它碎片化。**
+> **AI does not scale human innovation. It fragments it.**
 
-机制有两截，本文各给一组定理：
+The mechanism has two halves, and this file gives a set of theorems for each.
 
-1. **协作侧（内生）**：在同一层上，协作体达成的层移动等于其中最好那个人的层移动。
-   多来一个人，最终压到的层一个数字都不变 —— `marginal_agent_pure_waste`。
-   人数不是变量。
-2. **时间侧（外生）**：把增量攒着不发，等的是一个会被盖掉的窗口。
-   覆盖是吸收的，等待收益**单调不增** —— `holdValue_antitone`；
-   一旦被盖掉，持有收益精确为 0 —— `publish_dominates_when_covered`。
+1. **The coalition side (endogenous)**: within a single layer, the layer change
+   a coalition achieves equals the layer change of its best member. One more
+   person leaves the final layer numerically unchanged:
+   `marginal_agent_pure_waste`. Headcount is not a variable.
+2. **The time side (exogenous)**: holding an increment back instead of
+   publishing waits for a window that will be superseded. Coverage is
+   absorbing, and the value of waiting is **monotone non-increasing**:
+   `holdValue_antitone`. Once superseded, the value of holding is exactly 0:
+   `publish_dominates_when_covered`.
 
-两截合起来，`fragmentation_squeeze` 说明通往"大故事"的两条常规路径同时被堵死。
-**唯一的出口是换一个新的层**，而那正是 `Refinement.human_gain_unbounded`
-已经证过的无上界空间。
+The two halves together give `fragmentation_squeeze`, which blocks both
+ordinary routes to "a big story" at once. **The only exit is to move to a new
+layer**, and that is precisely the unbounded space already proved by
+`Refinement.human_gain_unbounded`.
 
-## 与主线的接口
+## Interface with the main line
 
-本文件全程使用 `Provenance.Refinement` 的同一套货币：层是 \(\Phi > 0\)，
-人类切层的收益是对数增益 \(\log(\Phi_{\text{old}}/\Phi_{\text{new}})\)。
-`saturation_duality` 把两侧的饱和性并置：
+The file uses the same currency as `Provenance.Refinement` throughout: a layer
+is \(\Phi > 0\), and the gain from a human layer change is the logarithmic gain
+\(\log(\Phi_{\text{old}}/\Phi_{\text{new}})\).
+`saturation_duality` sets the saturation of the two sides side by side:
 
-* AI 侧：`Refinement.ai_total_gain_bounded` —— 上界 `log(e₀/Φ)`，**与步数无关**
-* 人侧：本文 `marginal_agent_pure_waste` —— 上界由最好成员决定，**与人数无关**
+* AI side: `Refinement.ai_total_gain_bounded`, upper bound `log(e₀/Φ)`,
+  **independent of the number of steps**
+* human side: `marginal_agent_pure_waste` here, the upper bound being set by
+  the best member, **independent of headcount**
 
-两边同时饱和。这就是"不可替代性"在规模化问题上的投影：
-**不是谁替代谁，而是谁都加不上去。**
+Both sides saturate at once. This is "irreplaceability" projected onto the
+scaling problem: nobody substitutes for anybody, and nobody adds anything on
+top either.
 
-## 本文的建模选择，以及它为什么可以被证伪
+## The modelling choice here, and why it is falsifiable
 
-一个协作体被建模为"成员各自能独立达到的层的集合"，成果取其中最好者（`max` 型）。
-这是比"合并打折"更强、也更容易被现实推翻的断言：本文说的是
-**合并精确等于最优个体，其余成员贡献为零**。
+A coalition is modelled as "the set of layers its members can each reach
+independently", with the result taken to be the best of them (a `max`-type
+combination). This is a stronger claim than "merging with a discount", and one
+that reality can knock over more easily. What this file asserts is that
+**the merge is exactly the best individual and every other member contributes
+zero**.
 
-如果现实中的协作确实存在互补性 —— 两人一起做能超过其中最好的一人 ——
-那么 `add_member_same_reach` 立刻失效。所以本文给出的是**可证伪的立场**，
-而不是把次模性换个说辞。
+If collaboration really does have complementarity, so that two people together
+beat the better of them, then `add_member_same_reach` fails immediately. What
+is given here is a **falsifiable position**, not submodularity restated in
+other words.
 
 -/
 
@@ -53,30 +65,34 @@ noncomputable section
 open Classical
 
 /-
-## 1. 协作体
+## 1. The coalition
 
-一个协作体建模为**它的成员各自能独立达到的层的集合**。
+A coalition is modelled as **the set of layers its members can each reach
+independently**.
 
-这不是偷懒。`Provenance.Basic` 已经证明内容层在最优检验下不可识别，
-两个成员"达到同一层"在观测上无法区分 —— 所以能观测的只有可达层的集合，
-不是"谁做了什么"的对应关系。
+This is not a shortcut. `Provenance.Basic` has already proved that content
+layers are non-identifiable under the optimal test, so two members "reaching
+the same layer" cannot be told apart observationally. What is observable is
+therefore the set of reachable layers, not a correspondence of who did what.
 -/
 
-/-- 协作体 = 成员各自能独立达到的层的集合。 -/
+/-- A coalition: the set of layers its members can each reach independently. -/
 abbrev Coalition := Finset ℝ
 
-/-- 协作体最终压到的层：成员中最好的那个。 -/
+/-- The layer the coalition finally pushes down to: the best of its members. -/
 def reach (D : Coalition) (hD : D.Nonempty) : ℝ := D.min' hD
 
-/-- 协作体把起层 `Φ` 压低的幅度，用与 `Refinement` 相同的对数货币度量。 -/
+/-- How far the coalition pushes the starting layer `Φ` down, measured in the
+same logarithmic currency as `Refinement`. -/
 def gain (Φ : ℝ) (D : Coalition) (hD : D.Nonempty) : ℝ :=
   Real.log (Φ / reach D hD)
 
-/-- 各成员单独达到的层移动之和。 -/
+/-- The sum of the layer changes reached by each member on their own. -/
 def totalIndividual (Φ : ℝ) (D : Coalition) : ℝ :=
   D.sum fun a => Real.log (Φ / a)
 
-/-- 协作的合法状态：每个成员达到的层都在 `(0, Φ]` 内。 -/
+/-- A legitimate state of collaboration: every layer a member reaches lies in
+`(0, Φ]`. -/
 def Admissible (Φ : ℝ) (D : Coalition) : Prop := ∀ a ∈ D, 0 < a ∧ a ≤ Φ
 
 theorem reach_mem (D : Coalition) (hD : D.Nonempty) : reach D hD ∈ D := by
@@ -90,15 +106,17 @@ theorem reach_pos {D : Coalition} {hD : D.Nonempty} (h : ∀ a ∈ D, 0 < a) :
     0 < reach D hD := h _ (reach_mem D hD)
 
 /-
-## 2. 主定理：加人不加收益
+## 2. Main theorem: adding a member adds nothing
 -/
 
-/-- **加一个成员，最终压到的层一个数字都不变**。
+/-- **Adding a member leaves the final layer numerically unchanged.**
 
-只要新成员不优于现有最好者，协作体的成果就是原来的成果。
+As long as the newcomer does not beat the best member so far, the coalition
+achieves exactly what it achieved before.
 
-这条同时是本课题最强的**可证伪点**：若现实中两人协作能超过其中较好的一人，
-这里立刻失败。 -/
+This is also the sharpest **falsification point** of the whole topic. If
+collaboration between two people can beat the better of them in reality, this
+statement fails immediately. -/
 theorem add_member_same_reach {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (ha : reach D hD ≤ a) :
     reach (insert a D) ⟨a, Finset.mem_insert_self a D⟩ = reach D hD := by
@@ -106,9 +124,10 @@ theorem add_member_same_reach {D : Coalition} {hD : D.Nonempty} {a : ℝ}
   rw [Finset.min'_insert a D hD]
   exact min_eq_left ha
 
-/-- **协作体的层移动 = 其中最好成员的层移动**。
+/-- **The layer change of the coalition equals the layer change of its best
+member.**
 
-其余所有成员对最终层的贡献精确为 0。 -/
+Every other member contributes exactly 0 to the final layer. -/
 theorem gain_eq_best_member {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (hΦ : 0 < Φ) (hpos : ∀ b ∈ D, 0 < b) (hmem : a ∈ D)
     (hbest : reach D hD = a) : gain Φ D hD = Real.log (Φ / a) := by
@@ -116,7 +135,7 @@ theorem gain_eq_best_member {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : �
   unfold gain
   rw [hbest, Real.log_div (ne_of_gt hΦ) (ne_of_gt ha)]
 
-/-- **成员的个体收益不超过协作体收益**。 -/
+/-- **An individual member's gain never exceeds the coalition's gain.** -/
 theorem member_gain_le_gain {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (hΦ : 0 < Φ) (hpos : ∀ b ∈ D, 0 < b) (hmem : a ∈ D) :
     Real.log (Φ / a) ≤ gain Φ D hD := by
@@ -129,9 +148,10 @@ theorem member_gain_le_gain {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : �
       Real.log_div (ne_of_gt hΦ) (ne_of_gt ha)]
   linarith
 
-/-- **第 N+1 个人：收益精确为 0，成本精确为 `log(Φ/a)`**。
+/-- **The (N+1)-th person: gain exactly 0, cost exactly `log(Φ/a)`.**
 
-碎片化命题的全部内容就在这一行：左边不随人数变化，右边严格增加。 -/
+The whole content of the fragmentation claim sits on this one line. The left
+side does not vary with headcount; the right side increases strictly. -/
 theorem marginal_agent_pure_waste {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (hnew : a ∉ D) (hreach : reach D hD ≤ a) :
     gain Φ (insert a D) ⟨a, Finset.mem_insert_self a D⟩ = gain Φ D hD
@@ -147,12 +167,14 @@ theorem marginal_agent_pure_waste {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {
     rw [hsum, add_comm]
 
 /-
-## 3. 浪费
+## 3. Waste
 
-`totalIndividual` 与 `gain` 的差额就是协作中被丢掉的部分。
+The gap between `totalIndividual` and `gain` is the part that collaboration
+throws away.
 -/
 
-/-- 协作浪费 = 各成员层移动之和减去实际达成的层移动。 -/
+/-- Collaboration waste = the sum of the members' layer changes minus the layer
+change actually achieved. -/
 def waste (Φ : ℝ) (D : Coalition) (hD : D.Nonempty) : ℝ :=
   totalIndividual Φ D - gain Φ D hD
 
@@ -162,7 +184,8 @@ theorem term_nonneg {Φ a : ℝ} (hΦ : 0 < Φ) (ha : 0 < a) (hle : a ≤ Φ) :
   rw [Real.log_div (ne_of_gt hΦ) (ne_of_gt ha)]
   linarith
 
-/-- 任何单个成员的收益都不超过总和（其余项非负）。 -/
+/-- No single member's gain exceeds the total, since every other term is
+nonnegative. -/
 theorem member_le_total {Φ : ℝ} {D : Coalition} {a : ℝ}
     (hΦ : 0 < Φ) (adm : Admissible Φ D) (hmem : a ∈ D) :
     Real.log (Φ / a) ≤ totalIndividual Φ D := by
@@ -174,20 +197,22 @@ theorem member_le_total {Φ : ℝ} {D : Coalition} {a : ℝ}
     · exact adm b (Finset.mem_of_mem_erase hb) |>.2
   linarith
 
-/-- 协作体成果不超过成员收益之和：合并永不增产。 -/
+/-- The coalition's result never exceeds the sum of the members' gains: merging
+never adds output. -/
 theorem gain_le_total {Φ : ℝ} {D : Coalition} {hD : D.Nonempty}
     (hΦ : 0 < Φ) (adm : Admissible Φ D) :
     gain Φ D hD ≤ totalIndividual Φ D := by
   unfold gain
   exact member_le_total hΦ adm (reach_mem D hD)
 
-/-- **浪费非负**：协作从不产生超过最优个体的额外层移动。 -/
+/-- **Waste is nonnegative**: collaboration never produces extra layer change
+beyond the best individual. -/
 theorem waste_nonneg {Φ : ℝ} {D : Coalition} {hD : D.Nonempty}
     (hΦ : 0 < Φ) (adm : Admissible Φ D) : 0 ≤ waste Φ D hD := by
   unfold waste
   linarith [gain_le_total (hD := hD) hΦ adm]
 
-/-- **人数增加只增大浪费，不改变成果**。 -/
+/-- **More members only increase waste; they do not change the result.** -/
 theorem headcount_adds_waste_only {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (hΦ : 0 < Φ) (adm : Admissible Φ D) (ha : 0 < a) (hle : a ≤ Φ) (hnew : a ∉ D)
     (hreach : reach D hD ≤ a) :
@@ -201,15 +226,18 @@ theorem headcount_adds_waste_only {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {
   · exact adm b hb
 
 /-
-## 4. 与 AI 上界的对偶
+## 4. Duality with the AI upper bound
 -/
 
-/-- **两侧同时饱和**。
+/-- **Both sides saturate.**
 
-* AI 侧：`Refinement.ai_total_gain_bounded`，上界 `log(e₀/Φ)`，**与步数无关**；
-* 人侧：`marginal_agent_pure_waste`，上界由最好成员决定，**与人数无关**。
+* AI side: `Refinement.ai_total_gain_bounded`, upper bound `log(e₀/Φ)`,
+  **independent of the number of steps**;
+* human side: `marginal_agent_pure_waste`, the upper bound being set by the best
+  member, **independent of headcount**.
 
-这是"不可替代性"在规模化问题上的投影：不是谁替代谁，而是谁都加不上去。 -/
+This is "irreplaceability" projected onto the scaling problem: nobody
+substitutes for anybody, and nobody adds anything on top either. -/
 theorem saturation_duality {M : ℝ} (hM : 0 ≤ M)
     {e0 Φ eN : ℝ} (he0 : 0 < e0) (hΦ : 0 < Φ) (heN : 0 < eN) (hΦle : Φ ≤ eN) :
     (Real.log (e0 / eN) ≤ Real.log (e0 / Φ))
@@ -217,10 +245,11 @@ theorem saturation_duality {M : ℝ} (hM : 0 ≤ M)
   ⟨ai_total_gain_bounded he0 hΦ heN hΦle, human_gain_unbounded hM⟩
 
 /-
-## 5. 时间侧：独占窗口
+## 5. The time side: exclusive windows
 -/
 
-/-- 攒着不发所能拿到的收益：到期若已被盖掉，精确为 0。 -/
+/-- What holding an increment back is worth: at expiry, if it has been
+superseded, exactly 0. -/
 def holdValue (vBig d : ℝ) (covered : ℝ → Prop) : ℝ :=
   if covered d then 0 else vBig
 
@@ -232,19 +261,22 @@ theorem holdValue_eq_of_not_covered (vBig d : ℝ) {covered : ℝ → Prop} (h :
     holdValue vBig d covered = vBig := by
   simp [holdValue, h]
 
-/-- **到期被盖住，则立刻发严格更优**。
+/-- **If the window is superseded at expiry, publishing immediately is
+strictly better.**
 
-这是碎片化的时间机制：大故事的收益是条件收益，条件一旦不成立就归零；
-而小的立刻拿到手就是确定的。 -/
+This is the temporal mechanism of fragmentation. The payoff of a big story is
+conditional and collapses to zero once the condition fails, whereas a small
+payoff taken immediately is already certain. -/
 theorem publish_dominates_when_covered (vBig vSmall d : ℝ) {covered : ℝ → Prop}
     (h : covered d) (hsmall : 0 < vSmall) : vSmall > holdValue vBig d covered := by
   rw [holdValue_eq_zero_of_covered vBig d h]
   linarith
 
-/-- **等待的收益单调不增**。
+/-- **The value of waiting is monotone non-increasing.**
 
-覆盖是吸收的 —— 一旦被盖掉就永远被盖掉。所以把增量压在手里不是一个期权：
-越等越不划算，只有"没被盖住"和"已被盖掉"两种结局，不存在第三种。 -/
+Coverage is absorbing: once superseded, always superseded. Holding an increment
+back is therefore not an option. There are only two outcomes, still open and
+already superseded, and no third one worth waiting for. -/
 theorem holdValue_antitone (vBig : ℝ) (hbig : 0 ≤ vBig) {covered : ℝ → Prop}
     (hmono : ∀ d d', d ≤ d' → covered d → covered d') :
     ∀ d d', d ≤ d' → holdValue vBig d' covered ≤ holdValue vBig d covered := by
@@ -261,16 +293,17 @@ theorem holdValue_antitone (vBig : ℝ) (hbig : 0 ≤ vBig) {covered : ℝ → P
     · rw [holdValue_eq_of_not_covered vBig d h1]
 
 /-
-## 6. 双夹击
+## 6. The double squeeze
 
-堆人零收益，攒着会被抢。于是通往大故事的两条常规路径同时关闭。
+Adding people yields zero gain; holding back gets pre-empted. Both ordinary
+routes to a big story are therefore closed at the same time.
 -/
 
-/-- **碎片化均衡**。
+/-- **The fragmentation equilibrium.**
 
-两条路同时被堵死：
-* 协作侧 —— 加人不改变最终层；
-* 时间侧 —— 等待到期若被盖掉，收益归零。 -/
+Both routes are blocked at once:
+* on the coalition side, adding a member does not change the final layer;
+* on the time side, waiting until expiry yields zero if superseded. -/
 theorem fragmentation_squeeze {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : ℝ}
     (hnew : a ∉ D) (hreach : reach D hD ≤ a)
     {vBig d : ℝ} {covered : ℝ → Prop} (hcov : covered d) :
@@ -279,10 +312,11 @@ theorem fragmentation_squeeze {Φ : ℝ} {D : Coalition} {hD : D.Nonempty} {a : 
   ⟨(marginal_agent_pure_waste hnew hreach).1,
     holdValue_eq_zero_of_covered vBig d hcov⟩
 
-/-- **规模化只能靠换层，不能靠堆人**。
+/-- **Scaling comes from changing layers, never from adding headcount.**
 
-这是本课题的落点，也解释了为什么人的空间仍然无上界：
-无上界不是因为人更多，而是因为**层可以换**。 -/
+This is where the topic lands, and it explains why the human side is still
+unbounded. The boundlessness does not come from there being more people. It
+comes from **layers being changeable**. -/
 theorem scale_by_new_layers_not_by_headcount {M : ℝ} (hM : 0 ≤ M) :
     ∃ Φα Φβ : ℝ, 0 < Φβ ∧ Φβ ≤ Φα ∧ Real.log (Φα / Φβ) = M :=
   human_gain_unbounded hM

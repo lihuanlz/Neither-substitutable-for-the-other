@@ -25,7 +25,7 @@ def main():
 
     prs.core_properties.title = "人机贡献的能识别边界"
     prs.core_properties.subject = "形式化研究：人机贡献度量的可识别性边界"
-    prs.core_properties.comments = "117 条 Lean 4 定理，零 sorry 零公理"
+    prs.core_properties.comments = "153 条 Lean 4 定理，零 sorry 零公理"
 
     for i in range(1, N_SLIDES + 1):
         name = "slide_%02d" % i

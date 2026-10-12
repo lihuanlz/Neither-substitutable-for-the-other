@@ -1,21 +1,22 @@
 /-
-# 覆盖度与边际增益：形式化"人类只贡献一点点，却很有价值"
+# Coverage and marginal gain: formalising "the human contributes a little and it is worth a lot"
 
-对应原始分析第 3 节的**覆盖度**部分：
+This is the **coverage** part of section 3 of the original analysis:
 
     F(S) = ∑_z w_z · min(1, ∑_{i∈S} 1[z ∈ C_i])
 
-本文件在有限空间上用**指示函数**形式重写该式（计数为整数时与 `min(1,·)` 等价），
-并证明：
+On a finite space this file rewrites that expression using **indicator functions**,
+equivalent to `min(1,·)` when the count is an integer, and proves:
 
-* `coverage_mono` —— 覆盖函数单调：样本越多覆盖越全；
-* `submodular_union` —— **次模性**（等价形式 `F(S∪T) + F(S∩T) ≤ F(S) + F(T)`）；
-* `diminishing_returns` —— **边际增益递减**；
-* `single_sample_marginal` —— **核心定理**：若某人类样本覆盖了一个
-  当前未被覆盖的状态 `z`，则它**单独贡献的边际增益至少为 `w_z`**。
+* `coverage_mono` - the coverage function is monotone: the more samples, the more complete the coverage;
+* `submodular_union` - **submodularity** (in the equivalent form `F(S∪T) + F(S∩T) ≤ F(S) + F(T)`);
+* `diminishing_returns` - **diminishing returns**;
+* `single_sample_marginal` - **the core theorem**: if a human sample covers a state `z` that is
+  currently uncovered, its **standalone marginal gain is at least `w_z`**.
 
-`single_sample_marginal` 正是"在大库里只占一点点、却极有价值"的严格形式化：
-**价值由它填补的空洞决定，而非由数量比例决定。**
+`single_sample_marginal` is the strict formalisation of "a tiny share of a large
+corpus, worth a great deal": **value is decided by the hole it fills, not by the
+share of the total.**
 
 -/
 
@@ -30,21 +31,22 @@ namespace Provenance
 
 variable {m n : ℕ}
 
-/-- 样本 `i` 覆盖的世界状态集合（一个样本可覆盖多个状态）。 -/
+/-- The set of world states covered by sample `i` (one sample may cover several
+states). -/
 def cover (C : Fin n → Finset (Fin m)) (S : Finset (Fin n)) : Finset (Fin m) :=
   S.biUnion C
 
-/-- 覆盖价值：集合 `X` 中所有状态权重之和。 -/
+/-- Coverage value: the sum of the weights of all states in `X`. -/
 def covVal (w : Fin m → ℝ) (X : Finset (Fin m)) : ℝ :=
   ∑ z : Fin m, w z * (if z ∈ X then 1 else 0)
 
-/-- 覆盖函数 `F(S) = covVal(w, ⋃_{i∈S} C_i)`。 -/
+/-- The coverage function `F(S) = covVal(w, ⋃_{i∈S} C_i)`. -/
 def coverage (w : Fin m → ℝ) (C : Fin n → Finset (Fin m)) (S : Finset (Fin n)) : ℝ :=
   covVal w (cover C S)
 
-/-! ## 指示函数的集合恒等式 -/
+/-! ## Set identities for indicator functions -/
 
-/-- `covVal(w, A ∪ B) = covVal(w, A) + covVal(w, B \ A)`。 -/
+/-- `covVal(w, A ∪ B) = covVal(w, A) + covVal(w, B \ A)`. -/
 theorem covVal_union (w : Fin m → ℝ) (A B : Finset (Fin m)) :
     covVal w (A ∪ B) = covVal w A + covVal w (B \ A) := by
   have key : ∀ z : Fin m,
@@ -57,7 +59,7 @@ theorem covVal_union (w : Fin m → ℝ) (A B : Finset (Fin m)) :
   unfold covVal
   rw [Finset.sum_congr rfl (fun z _ => key z), Finset.sum_add_distrib]
 
-/-- `1[A ∪ B] = 1[A] + 1[B] − 1[A ∩ B]`。 -/
+/-- `1[A ∪ B] = 1[A] + 1[B] − 1[A ∩ B]`. -/
 theorem covVal_union_inter (w : Fin m → ℝ) (A B : Finset (Fin m)) :
     covVal w (A ∪ B) = covVal w A + covVal w B - covVal w (A ∩ B) := by
   have key : ∀ z : Fin m,
@@ -72,7 +74,7 @@ theorem covVal_union_inter (w : Fin m → ℝ) (A B : Finset (Fin m)) :
   rw [Finset.sum_congr rfl (fun z _ => key z),
       ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
 
-/-- `covVal` 非负（权重非负时）。 -/
+/-- `covVal` is non-negative when the weights are non-negative. -/
 theorem covVal_nonneg {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z) (X : Finset (Fin m)) :
     0 ≤ covVal w X := by
   unfold covVal
@@ -81,9 +83,11 @@ theorem covVal_nonneg {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z) (X : Finset (F
     · rw [if_pos hz]; exact mul_nonneg (hw z) (by norm_num)
     · rw [if_neg hz]; simp
 
-/-- `covVal` 的下界：集合 `X` 中任一元素的权重都不超过其总价值。
+/-- A lower bound for `covVal`: the weight of any element of `X` is at most its
+total value.
 
-这是"单项 ≤ 总和（其余项非负）"的直接应用。 -/
+This is a direct application of "one term ≤ the sum, the remaining terms being
+non-negative". -/
 theorem covVal_ge {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z) {X : Finset (Fin m)} (hz : z ∈ X) :
     w z ≤ covVal w X := by
   have hpos : ∀ u ∈ (Finset.univ : Finset (Fin m)),
@@ -99,7 +103,7 @@ theorem covVal_ge {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z) {X : Finset (Fin m
   rw [if_pos hz] at h1
   linarith
 
-/-! ## 覆盖算子的基本性质 -/
+/-! ## Basic properties of the cover operator -/
 
 theorem cover_mono {C : Fin n → Finset (Fin m)} {S T : Finset (Fin n)}
     (hST : S ⊆ T) : cover C S ⊆ cover C T := by
@@ -123,10 +127,12 @@ theorem cover_union (C : Fin n → Finset (Fin m)) (S T : Finset (Fin n)) :
     · rcases Finset.mem_biUnion.mp hz with ⟨i, hi, hzi⟩
       exact Finset.mem_biUnion.mpr ⟨i, Finset.mem_union_right _ hi, hzi⟩
 
-/-- **交集的单向包含**：`cover C (S ∩ T) ⊆ cover C S ∩ cover C T`。
+/-- **One-sided containment under intersections**:
+`cover C (S ∩ T) ⊆ cover C S ∩ cover C T`.
 
-注意只有单向包含成立：反向不成立，因为 `z ∈ cover C S` 与 `z ∈ cover C T`
-的见证样本未必是同一个。`submodular_union` 只需要这一方向。 -/
+Note that only this direction holds. The converse fails, because the samples
+witnessing `z ∈ cover C S` and `z ∈ cover C T` need not be the same one.
+`submodular_union` needs only this direction. -/
 theorem cover_inter_subset (C : Fin n → Finset (Fin m)) (S T : Finset (Fin n)) :
     cover C (S ∩ T) ⊆ cover C S ∩ cover C T := by
   intro z hz
@@ -150,9 +156,10 @@ theorem cover_insert (C : Fin n → Finset (Fin m)) (h : Fin n) (S : Finset (Fin
       exact Finset.mem_biUnion.mpr ⟨i, Finset.mem_insert_of_mem hi, hzi⟩
     · exact Finset.mem_biUnion.mpr ⟨h, Finset.mem_insert_self h S, hz⟩
 
-/-! ## 单调性与次模性 -/
+/-! ## Monotonicity and submodularity -/
 
-/-- **单调性**：样本集合变大，覆盖价值不减（权重非负）。 -/
+/-- **Monotonicity**: enlarging the sample set does not decrease the coverage
+value (weights non-negative). -/
 theorem coverage_mono {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S T : Finset (Fin n)} (hST : S ⊆ T) :
     coverage w C S ≤ coverage w C T := by
@@ -169,10 +176,12 @@ theorem coverage_mono {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
   unfold coverage covVal
   exact Finset.sum_le_sum fun z _ => key z
 
-/-- **次模性**（等价形式）：`F(S∪T) + F(S∩T) ≤ F(S) + F(T)`。
+/-- **Submodularity** (in equivalent form):
+`F(S∪T) + F(S∩T) ≤ F(S) + F(T)`.
 
-证明：先用指示函数恒等式展开 `F(S∪T)`，再用 `cover C (S∩T) ⊆ cover C S ∩ cover C T`
-与权重非负，把差额吸收掉。 -/
+Proof: first expand `F(S∪T)` with the indicator identity, then use
+`cover C (S∩T) ⊆ cover C S ∩ cover C T` together with non-negative weights to
+absorb the difference. -/
 theorem submodular_union {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     (C : Fin n → Finset (Fin m)) (S T : Finset (Fin n)) :
     coverage w C (S ∪ T) + coverage w C (S ∩ T)
@@ -197,12 +206,15 @@ theorem submodular_union {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
 -- The option must sit above the doc comment: a `/-- ... -/` has to be
 -- immediately followed by the declaration it documents.
 set_option linter.unusedVariables false in
-/-- **边际增益递减**：先纳入 `a` 再纳入 `b`，总收益不超过反向顺序。
+/-- **Diminishing returns**: taking in `a` and then `b` yields no more total gain
+than taking them in the reverse order.
 
-这意味着"先获得的样本更值钱"，边际价值随集合变大而递减——
-是"把少量预算投在高价值人类数据上"这一策略的理论依据。
+This means "the sample obtained first is worth more", so marginal value decreases
+as the set grows. It is the theoretical basis for the strategy of "spending a small
+budget on high-value human data".
 
-注意需要区分退化情形 `a = b`（此时不等式退化为单调性）。 -/
+Note that the degenerate case `a = b` must be treated separately, where the
+inequality degenerates to monotonicity. -/
 theorem diminishing_returns {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S : Finset (Fin n)} {a b : Fin n}
     (ha : a ∉ S) (hb : b ∉ S) :
@@ -246,15 +258,17 @@ theorem diminishing_returns {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     rw [hun, hinter] at hsub
     linarith
 
-/-! ## 核心定理：一个样本的边际贡献 -/
+/-! ## Core theorem: the marginal contribution of one sample -/
 
-/-- **单样本边际定理**（"一点点很有价值"的严格形式）。
+/-- **The single-sample marginal theorem** (the strict form of "a little goes a
+long way").
 
-若样本 `h` 覆盖了一个尚未被 `S` 覆盖的状态 `z`，则
+If sample `h` covers a state `z` not already covered by `S`, then
 
     w_z  ≤  F(S ∪ {h}) − F(S)
 
-即：**该样本单独提供的价值至少等于它填补的那个空洞的权重。** -/
+That is: **the value the sample provides on its own is at least the weight of the
+hole it fills.** -/
 theorem single_sample_marginal {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S : Finset (Fin n)} {h : Fin n} {z : Fin m}
     (hz : z ∉ cover C S) (hzc : z ∈ C h) :
@@ -265,13 +279,17 @@ theorem single_sample_marginal {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     covVal_ge hw (Finset.mem_sdiff.mpr ⟨hzc, hz⟩)
   linarith
 
-/-- **推论（数量无关性）**：单样本边际增益的下界 `w_z` 与其在大库中的占比无关。
+/-- **Corollary (independence of quantity)**: the lower bound `w_z` on the
+single-sample marginal gain does not depend on the sample's share of a large
+corpus.
 
-若样本 `h` 只占全部样本的很小一部分，但它覆盖了一个权重为 `w_z` 的
-**未被覆盖**的状态，则其边际贡献仍被 `w_z` 从下方界定。
+If sample `h` is a very small part of the full sample set but covers an
+**uncovered** state of weight `w_z`, its marginal contribution is still bounded
+below by `w_z`.
 
-这在 Lean 中排除了"价值 ∝ 数量比例"这一主张：
-占比再小，只要填补了 `w_z` 大的空洞，边际增益就 `≥ w_z`。 -/
+This rules out the claim "value ∝ share of the total" inside Lean. However small
+the share, as long as it fills a hole of weight `w_z`, the marginal gain is
+`≥ w_z`. -/
 theorem marginal_independent_of_share {w : Fin m → ℝ} (hw : ∀ z, 0 ≤ w z)
     {C : Fin n → Finset (Fin m)} {S : Finset (Fin n)} {h : Fin n} {z : Fin m}
     (hz : z ∉ cover C S) (hzc : z ∈ C h) :

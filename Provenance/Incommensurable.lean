@@ -1,61 +1,79 @@
 /-
-# 不可通约性：层间收益 \(v_H\) 与层内收益 \(v_A\)
+# Incommensurability: the between-layer gain \(v_H\) against the within-layer
+gain \(v_A\)
 
-本文件处理原始分析第 8 节第 1 条：不可通约性。
+This file handles item 1 of Section 8 of the original analysis:
+incommensurability.
 
-## 效用函数类 \(\mathcal U\) 的选择（建模决策）
+## Choosing the utility class \(\mathcal U\) (a modelling decision)
 
-用户选定**方向 B**：保序 + 保加法 + \(\phi(1)=1\)，定义域取有符号 \(\mathbb{R}\)
-（层间价值可以为负——粗化等价类就是负贡献，见 `Provenance.influence_value_separable`）。
+The user chose **direction B**: order-preserving + additive + \(\phi(1)=1\),
+over a signed domain \(\mathbb{R}\). The between-layer value can be negative:
+coarsening an equivalence class is a negative contribution, see
+`Provenance.influence_value_separable`.
 
-> **为什么取有符号**：原第 5 稿把 \(v_H\) 当作"比特数"（非负），
-> 但粗化观测层（引入错误约束）是**负**的。用非负域会把这个方向信息抹掉，
-> 恰好重犯 KL 的错误。
+> **Why the domain is signed**: draft 5 of the original took \(v_H\) to be a
+> "number of bits" (nonnegative), but coarsening an observation layer, which
+> introduces an error constraint, is **negative**. A nonnegative domain wipes
+> out that directional information and repeats the KL mistake exactly.
 
-**已知事实（本文件未证）**：在 \(\mathbb{R}\) 上，加性 + 单调强制线性，
-故 \(\mathcal U\) 只含仿射映射；再由 \(\phi(1)=1\) 定出斜率。
-\(\mathcal U = \{\text{斜率为 }1\text{ 的仿射映射}\}\)。
+**Known fact (not proved in this file)**: on \(\mathbb{R}\), additivity plus
+monotonicity forces linearity, so \(\mathcal U\) contains only affine maps, and
+\(\phi(1)=1\) then fixes the slope.
+\(\mathcal U = \{\text{affine maps with slope }1\}\).
 
-下面每一条结论都对 \(\mathcal U\) 中**每一个**元素成立，所以不需要这条分类。
+Every result below holds for **each** element of \(\mathcal U\), so this
+classification is not needed.
 
-## 判决：不可通约性**分两个区间**，只在一半上成立
+## Verdict: incommensurability **falls into two regimes** and holds on only
+half of the range
 
-### 区间 ①：TV 地板 bind（\(T \ge x_c\)）—— **完全不可通约**
+### Regime ①: the TV floor binds (\(T \ge x_c\)) — **fully incommensurable**
 
-`starN_indep_of_p_when_floor_binds`：**任意两个不同可靠度的人，
-给出完全相同的 \(N^\star\)**。AI 的工作量携带不了关于人的**任何**信息。
-这一段上，连单调性都没有，更不用说线性换算。
+`starN_indep_of_p_when_floor_binds`: **any two people of differing reliability
+give exactly the same \(N^\star\)**. The AI's effort carries no information at
+all about the person. Over this stretch there is not even monotonicity, let
+alone a linear conversion.
 
-### 区间 ②：TV 地板不 bind（\(T < x_c\)）—— **可通约，但非线性**
+### Regime ②: the TV floor does not bind (\(T < x_c\)) — **commensurable, but
+nonlinear**
 
-`starN_exp_formula`：
+`starN_exp_formula`:
 
     exp( d·N* )  =  A·d / c ,     A = (1−p)L,   d = ln(1/(1−q))
 
-即 \(A = \frac{c}{d}\,e^{dN^\star}\)。所以：
+that is, \(A = \frac{c}{d}\,e^{dN^\star}\). Hence:
 
-* **保序**（单调递增）——`starN_strictly_mono_in_p` 已证；
-* **但不是仿射**——是指数。故**不存在** \(\phi \in \mathcal U\) 使
-  \(\phi(N^\star) = A\)。
+* **order-preserving** (monotone increasing), proved as
+  `starN_strictly_mono_in_p`;
+* **but not affine**: it is exponential. So there **exists no**
+  \(\phi \in \mathcal U\) with \(\phi(N^\star) = A\).
 
-> **这修正了原命题**：这一段不是"不可通约"，而是"可通约但非线性"。
-> 把整条命题说成"完全不可通约"是**过强**的，会被 Lean 判死。
+> **This corrects the original claim**: over this stretch the situation is not
+> "incommensurable" but "commensurable but nonlinear". Stating the whole claim
+> as "fully incommensurable" is **too strong**, and Lean kills it.
 
-### 两条极端的量化陈述（原第 8 节第 1 条的字面形式）
+### The two extreme quantified statements (the literal form of item 1 of
+Section 8)
 
-* `ai_effort_arbitrarily_large` —— AI 的工作量**无上界**（`TV → 0` 时）。
-* `human_value_arbitrarily_small` —— 人的不可靠性成本**可任意小**（`p → 1` 时）。
-* `incommensurable_witness` —— **同一个过程里同时成立**：
-  AI 工作量任意大、人的成本任意小。
-  故任何保序映射都无法把层内量换算成层间量。
+* `ai_effort_arbitrarily_large` — the AI's effort is **unbounded** (as
+  `TV → 0`).
+* `human_value_arbitrarily_small` — the human cost of unreliability is
+  **arbitrarily small** (as `p → 1`).
+* `incommensurable_witness` — **both hold in the same process**: the AI effort is
+  arbitrarily large and the human cost arbitrarily small. No order-preserving
+  map can therefore convert a within-layer quantity into a between-layer one.
 
-### 层间 vs 层内的取值范围（打包 `Provenance.Refinement`）
+### Range of between-layer against within-layer gains (packaging
+`Provenance.Refinement`)
 
-* `human_gain_unbounded` —— 层间收益 `log(Φα/Φβ)` **无上界**。
-* `ai_total_gain_bounded` —— 层内收益 `log(e₀/e)` **有硬上界** `log(e₀/Φ)`，
-  且该上界只由层决定、与步数无关。
+* `human_gain_unbounded` — the between-layer gain `log(Φα/Φβ)` is **unbounded**.
+* `ai_total_gain_bounded` — the within-layer gain `log(e₀/e)` has a **hard
+  upper bound** `log(e₀/Φ)`, and that bound is decided by the layer alone,
+  independently of the number of steps.
 
-一个是 \([0,\infty)\)，一个是 \([0,K]\)。这是"两个尺度"最朴素的形式化。
+One is \([0,\infty)\), the other is \([0,K]\). This is the plainest
+formalisation of "two scales".
 
 -/
 
@@ -68,21 +86,26 @@ open scoped BigOperators
 
 namespace Provenance
 
-/-- 允许的效用函数类 \(\mathcal U\)：保序 + 保加法 + 保正 + \(\phi(1)=1\)。
+/-- The permitted utility class \(\mathcal U\): order-preserving + additive +
+positivity-preserving + \(\phi(1)=1\).
 
-**定义域取有符号 \(\mathbb{R}\)**：层间价值可以为负。 -/
+**The domain is the signed \(\mathbb{R}\)**: a between-layer value can be
+negative. -/
 def U (φ : ℝ → ℝ) : Prop :=
   (∀ a b, a ≤ b → φ a ≤ φ b)
     ∧ (∀ a b, φ (a + b) = φ a + φ b)
     ∧ (∀ a, 0 ≤ a → 0 ≤ φ a)
     ∧ φ 1 = 1
 
-/-- **区间 ①：TV 地板 bind ⟹ AI 工作量与人的可靠度完全无关。**
+/-- **Regime ①: the TV floor binds ⟹ the AI's effort is entirely independent of
+the person's reliability.**
 
-这是不可通约性真正成立的那一半：连单调性都没有。
+This is the half of incommensurability that genuinely holds: there is not even
+monotonicity.
 
-推论：一旦 `λ·TV ≥ c/(A·d)`，**再多验证也不解决问题**，而且
-**再信任谁也没用**——因为 `N*` 已经不随 \(p\) 变了。 -/
+Consequence: once `λ·TV ≥ c/(A·d)`, **no amount of further verification solves
+the problem**, and **trusting anyone else is no use either**, since `N*` no
+longer varies with \(p\). -/
 theorem starN_indep_of_p_when_floor_binds {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam) (htv : V'.tv = V.tv)
     (hL : V'.L = V.L) (hp : V.p ≤ V'.p)
@@ -100,12 +123,14 @@ theorem starN_indep_of_p_when_floor_binds {V V' : VerifyParams} (hV : VOk V) (hV
   have h2 : max (idealResidual V') (tvFloor V') = tvFloor V' := max_eq_right hfill
   rw [starN, starN, h1, h2, hdt, roundsFor_congr hdc.symm (tvFloor V)]
 
-/-- **区间 ②：TV 地板不 bind ⟹ \(A\) 与 \(N^\star\) 是指数关系。**
+/-- **Regime ②: the TV floor does not bind ⟹ \(A\) and \(N^\star\) are related
+exponentially.**
 
     exp( d·N* )  =  A·d / c ,    A = (1−p)L,  d = ln(1/(1−q))
 
-这条把"不可线性换算"精确化了：
-关系**存在**（保序），但它是 `exp` 而**非仿射**，故 \(\mathcal U\) 里没有它。 -/
+This makes "not linearly convertible" precise. The relation **does** exist and
+is order-preserving, but it is `exp` and **not affine**, so \(\mathcal U\)
+contains no such map. -/
 theorem starN_exp_formula {V : VerifyParams} (hV : VOk V)
     (hfill : tvFloor V ≤ idealResidual V) :
     Real.exp (decay V * starN V) = lossScale V * decay V / V.c := by
@@ -119,11 +144,12 @@ theorem starN_exp_formula {V : VerifyParams} (hV : VOk V)
   rw [show idealResidual V = V.c / (lossScale V * decay V) from rfl]
   field_simp [ne_of_gt hV.c_pos, ne_of_gt (mul_pos (lossScale_pos hV) (decay_pos hV))]
 
-/-- **AI 的工作量无上界。**
+/-- **The AI's effort is unbounded.**
 
-`TV → 0` 时地板消失，验证轮数可以任意大。
-（构造：取 `d = 1`，即 `1−q = e^{−1}`；再取 `λ = e^{−2M}`、`TV = 1`，
-  于是 `N_0 = −ln(e^{−2M}) = 2M > M`。） -/
+As `TV → 0` the floor disappears and the number of verification rounds can be
+arbitrarily large.
+(Construction: take `d = 1`, that is `1−q = e^{−1}`, then `λ = e^{−2M}` and
+`TV = 1`, so `N_0 = −ln(e^{−2M}) = 2M > M`.) -/
 theorem ai_effort_arbitrarily_large {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ M < roundsFor V (tvFloor V) := by
   have he1 : 0 < Real.exp (-1) := Real.exp_pos (-1)
@@ -152,10 +178,10 @@ theorem ai_effort_arbitrarily_large {M : ℝ} (hM : 0 < M) :
   rw [roundsFor, htf, hd, Real.log_exp]
   linarith
 
-/-- **人的不可靠性成本可任意小。**
+/-- **The human cost of unreliability can be arbitrarily small.**
 
-人几乎总是对时，AI 几乎不用干活。
-（构造：`p = 1/2`、`L = M`，则 `A = M/2 < M`。） -/
+The person is almost always right and the AI almost never has to work.
+(Construction: `p = 1/2` and `L = M` give `A = M/2 < M`.) -/
 theorem human_value_arbitrarily_small {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ lossScale V < M := by
   set V : VerifyParams :=
@@ -168,10 +194,12 @@ theorem human_value_arbitrarily_small {M : ℝ} (hM : 0 < M) :
   norm_num
   linarith
 
-/-- **原第 8 节第 1 条的字面形式：同一个过程里，AI 工作量任意大而人的成本任意小。**
+/-- **The literal form of item 1 of Section 8: in the same process the AI's
+effort is arbitrarily large while the human cost is arbitrarily small.**
 
-故任何保序映射都无法把层内量 \(v_A\) 换算成层间量 \(v_H\)：
-两个量在同一族里**互不控制**。 -/
+No order-preserving map can therefore convert the within-layer quantity
+\(v_A\) into the between-layer quantity \(v_H\): in one and the same family the
+two quantities **control neither other**. -/
 theorem incommensurable_witness {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ M < roundsFor V (tvFloor V) ∧ lossScale V < M := by
   set V : VerifyParams :=
@@ -210,12 +238,13 @@ theorem incommensurable_witness {M : ℝ} (hM : 0 < M) :
     rw [lossScale, hVdef, hid, mul_one]
     exact hsmall
 
-/-- **打包：区间 ①② + 两条极端。**
+/-- **Packaged: regimes ①② plus the two extremes.**
 
-不可通约性的完整判决：
-* 地板 bind ⟹ 完全无关（`starN_indep_of_p_when_floor_binds`）；
-* 地板不 bind ⟹ 指数相关、非线性（`starN_exp_formula`）；
-* 两端 ⟹ 互不控制（`incommensurable_witness`）。 -/
+The complete verdict on incommensurability:
+* floor binds ⟹ fully independent (`starN_indep_of_p_when_floor_binds`);
+* floor does not bind ⟹ exponentially related and nonlinear
+  (`starN_exp_formula`);
+* both ends together ⟹ neither controls the other (`incommensurable_witness`). -/
 theorem incommensurable_two_regime {M : ℝ} (hM : 0 < M) :
     (∃ V : VerifyParams, VOk V ∧ M < roundsFor V (tvFloor V))
       ∧ (∃ V : VerifyParams, VOk V ∧ lossScale V < M)
@@ -223,10 +252,12 @@ theorem incommensurable_two_regime {M : ℝ} (hM : 0 < M) :
   ⟨ai_effort_arbitrarily_large hM, human_value_arbitrarily_small hM,
     incommensurable_witness hM⟩
 
-/-- **层间无上界 vs 层内有硬上界**：两个尺度不相交。
+/-- **Unbounded between layers against a hard ceiling within a layer**: the two
+scales are disjoint.
 
-层间收益 `log(Φα/Φβ)` 取遍 \([0,\infty)\)；层内收益 `log(e₀/e)` 恒 `≤ log(e₀/Φ)`，
-且该上界**只由层决定、与步数无关**。 -/
+The between-layer gain `log(Φα/Φβ)` ranges over \([0,\infty)\), while the
+within-layer gain `log(e₀/e)` is always `≤ log(e₀/Φ)`, and that bound is
+**decided by the layer alone, independently of the number of steps**. -/
 theorem layer_scales_disjoint {M e0 Φ : ℝ} (hM : 0 ≤ M) (he0 : 0 < e0) (hΦ : 0 < Φ) :
     (∃ Φα Φβ : ℝ, 0 < Φβ ∧ Φβ ≤ Φα ∧ Real.log (Φα / Φβ) = M)
       ∧ (∀ _eN : ℝ, 0 < _eN → Φ ≤ _eN → Real.log (e0 / _eN) ≤ Real.log (e0 / Φ)) :=

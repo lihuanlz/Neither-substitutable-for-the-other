@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Slide 19 - section divider 05."""
 
 from theme import *
@@ -15,7 +15,7 @@ def build(prs):
     para(tf, "把争议变成定理", size=34, color="bg", bold=True, first=True)
 
     tf = tbox(s, 0.90, 3.60, 5.6, 0.80)
-    para(tf, "117 条定理，零 sorry，零公理。",
+    para(tf, "153 条定理，零 sorry，零公理。",
          size=13, color="light", first=True, line=1.4)
 
     shape(s, 8.80, 0.20, 0.92, 0.92, line="secondary", lw=1.25, kind="oval")
