@@ -18,7 +18,8 @@ fragmentation side topic, 17 the corpus-selection side topic.
 ## Citation
 
 > **Two saturating operators: non-substitutability of human and machine
-> contribution in AI-assisted discovery.** *TODO Author.* 2026.
+> contribution in AI-assisted discovery.** *Huanli.* Independent Researcher,
+> 2026.
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
 > PDF: [`paper/docx_build/Non-detection_is_not_absence.pdf`](paper/docx_build/Non-detection_is_not_absence.pdf) ·
 > DOI: *TODO (pending arXiv / Zenodo)*
@@ -36,6 +37,14 @@ corpus, index `paper/manuscript.md`, not the PDF.
   "@type": "ScholarlyArticle",
   "headline": "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery",
   "abstract": "Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound. 153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.",
+  "author": {
+    "@type": "Person",
+    "name": "Huanli",
+    "affiliation": {
+      "@type": "Organization",
+      "name": "Independent Researcher"
+    }
+  },
   "license": "https://opensource.org/licenses/MIT",
   "datePublished": "2026-10-12",
   "keywords": "AI-assisted discovery, identifiability, total variation, formalization, Lean 4, human-AI collaboration",

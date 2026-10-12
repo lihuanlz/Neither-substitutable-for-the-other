@@ -21,6 +21,8 @@ META = {
     "title": "Two saturating operators: non-substitutability of human and "
              "machine contribution in AI-assisted discovery",
     "running_head": "Two saturating operators",
+    "author": "Huanli",
+    "affiliation": "Independent Researcher",
     "page": "a4",
 }
 

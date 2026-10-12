@@ -47,6 +47,12 @@ internal static class Program
         string title = meta.GetProperty("title").GetString();
         string runningHead = meta.GetProperty("running_head").GetString();
 
+        // Author and affiliation come from content.json rather than being
+        // hardcoded here, so renaming the author is a one-line change in
+        // content.py instead of a rebuild-and-hunt in the generator.
+        string author = meta.TryGetProperty("author", out var a) ? a.GetString() : null;
+        string affiliation = meta.TryGetProperty("affiliation", out var af) ? af.GetString() : null;
+
         if (File.Exists(outPath)) File.Delete(outPath);
         using var doc = WordprocessingDocument.Create(outPath, WordprocessingDocumentType.Document);
         var main = doc.AddMainDocumentPart();
@@ -106,8 +112,15 @@ internal static class Program
         // ── title block ──
         body.Append(Para(title, sizeHalfPts: 28, bold: true, centered: true, indent: false,
                          spaceBefore: 0, spaceAfter: 240));
-        body.Append(Para("[Authors to be assigned]", sizeHalfPts: 24, centered: true, indent: false,
-                         spaceAfter: 360));
+        if (!string.IsNullOrEmpty(author))
+        {
+            bool hasAffiliation = !string.IsNullOrEmpty(affiliation);
+            body.Append(Para(author, sizeHalfPts: 24, centered: true, indent: false,
+                             spaceAfter: hasAffiliation ? 60 : 360));
+            if (hasAffiliation)
+                body.Append(Para(affiliation, sizeHalfPts: 22, centered: true, indent: false,
+                                 spaceAfter: 360));
+        }
 
         // ── body blocks ──
         int nRefs = 0;

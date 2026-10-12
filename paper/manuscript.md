@@ -1,8 +1,8 @@
 # Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery
 
-**Authors.** [To be assigned]
-**Affiliations.** [To be assigned]
-**Correspondence.** [To be assigned]
+**Authors.** Huanli
+**Affiliations.** Independent Researcher
+**Correspondence.** Huanli (email to be supplied)
 
 ---
 
@@ -268,15 +268,16 @@ Provenance search was conducted against the published literature on AI-text dete
 
 ## Acknowledgements
 
-[To be assigned]
+TODO: to be supplied.
 
 ## Author contributions
 
-[To be assigned]
+The author conceived the work, developed the formalization, produced the
+figures and the Word build, and wrote the paper.
 
 ## Competing interests
 
-[To be assigned]
+TODO: to be supplied.
 
 ## Code availability
 

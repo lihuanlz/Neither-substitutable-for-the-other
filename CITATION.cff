@@ -1,8 +1,8 @@
 # Citation metadata for this repository.
 #
 # GitHub reads this file and renders a "Cite this repository" widget, and
-# reference managers read it directly. Before publishing, fill in every field
-# marked TODO. CFF 1.2.0 schema: https://citation-file-format.github.io/
+# reference managers read it directly. Add an `orcid:` line under the author
+# once one is registered. CFF 1.2.0 schema: https://citation-file-format.github.io/
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
 title: "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery"
@@ -22,11 +22,11 @@ abstract: >-
   zero sorry and no axioms beyond Classical.choice, Quot.sound and propext.
 type: article
 authors:
-  # TODO: replace with the real author list. Use the family-name-given-names
-  # form below; add one entry per author, and an `orcid:` per author.
-  - family-names: "TODO Author"
-    given-names: "TODO"
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+  # Single author, no family/given split: the name is used whole, which is how
+  # it appears on the paper. Add an `orcid:` line here once one is registered;
+  # a syntactically valid but unregistered ORCID is worse than none.
+  - family-names: "Huanli"
+    affiliation: "Independent Researcher"
 repository-code: "https://github.com/lihuanlz/Neither-substitutable-for-the-other"
 license: MIT
 date-released: "2026-10-12"
