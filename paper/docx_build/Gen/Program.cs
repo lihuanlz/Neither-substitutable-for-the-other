@@ -53,6 +53,12 @@ internal static class Program
         string author = meta.TryGetProperty("author", out var a) ? a.GetString() : null;
         string affiliation = meta.TryGetProperty("affiliation", out var af) ? af.GetString() : null;
 
+        // Likewise the two identifiers. A preprint that carries its ORCID and
+        // DOI on the title page can be disambiguated from every other preprint
+        // of the same title; one without them cannot.
+        string orcid = meta.TryGetProperty("orcid", out var or) ? or.GetString() : null;
+        string doi = meta.TryGetProperty("doi", out var d) ? d.GetString() : null;
+
         if (File.Exists(outPath)) File.Delete(outPath);
         using var doc = WordprocessingDocument.Create(outPath, WordprocessingDocumentType.Document);
         var main = doc.AddMainDocumentPart();
@@ -122,6 +128,15 @@ internal static class Program
                                  spaceAfter: 360));
         }
 
+        // Identifiers last on the title block, in the order a reader looks for
+        // them: who, which author record, which archived copy.
+        foreach (var id in new[] { orcid, doi })
+        {
+            if (!string.IsNullOrEmpty(id))
+                body.Append(Para(id, sizeHalfPts: 18, centered: true, indent: false,
+                                 spaceAfter: 60, color: "595959"));
+        }
+
         // ── body blocks ──
         int nRefs = 0;
         foreach (var b in root.GetProperty("blocks").EnumerateArray())
@@ -189,7 +204,7 @@ internal static class Program
 
     static Paragraph Para(string text, bool bold = false, bool italic = false, bool centered = false,
                           bool indent = true, int spaceBefore = 0, int spaceAfter = 0,
-                          int sizeHalfPts = BodyHalfPts, bool keepNext = false)
+                          int sizeHalfPts = BodyHalfPts, bool keepNext = false, string color = null)
     {
         var pPr = new ParagraphProperties();
         if (keepNext) pPr.Append(new KeepNext());
@@ -208,6 +223,7 @@ internal static class Program
             new FontSize { Val = sizeHalfPts.ToString() });
         if (bold) rPr.Append(new Bold());
         if (italic) rPr.Append(new Italic());
+        if (!string.IsNullOrEmpty(color)) rPr.Append(new Color { Val = color });
 
         return new Paragraph(pPr, new Run(rPr, new Text(text) { Space = SpaceProcessingModeValues.Preserve }));
     }

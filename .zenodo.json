@@ -4,7 +4,15 @@
     "then pushing a GitHub release mints a versioned DOI with no further work here.",
     "Publishing this file directly instead gives a snapshot DOI.",
     "This is deliberately visible JSON with no comments stripped, so a human can",
-    "audit exactly what a crawler will be handed."
+    "audit exactly what a crawler will be handed.",
+    "",
+    "Cite the concept DOI 10.5281/zenodo.23276356, not a version DOI. The concept",
+    "DOI always resolves to the newest version, so it stays correct as new versions",
+    "are published; a version DOI pins a reader to one immutable snapshot.",
+    "",
+    "The licence is split on purpose. The paper is CC-BY-4.0, which is what the",
+    "first published version carries. The code and documentation in LICENSE stay",
+    "MIT. tools/check_metadata.py fails if the two are collapsed into one."
   ],
   "title": "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery",
   "upload_type": "publication",
@@ -25,7 +33,7 @@
     "Lean 4",
     "human-AI collaboration"
   ],
-  "license": "MIT",
+  "license": "CC-BY-4.0",
   "access_right": "open",
   "related_identifiers": [
     {

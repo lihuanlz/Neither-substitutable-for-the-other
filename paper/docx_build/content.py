@@ -23,6 +23,10 @@ META = {
     "running_head": "Two saturating operators",
     "author": "Huan Li",
     "affiliation": "Independent Researcher",
+    # The concept DOI, not a version DOI: it resolves to the newest archived
+    # copy, so it stays correct after later Zenodo versions are published.
+    "orcid": "ORCID 0009-0004-2695-6825",
+    "doi": "doi:10.5281/zenodo.23276356",
     "page": "a4",
 }
 

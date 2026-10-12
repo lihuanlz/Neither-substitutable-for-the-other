@@ -23,7 +23,12 @@ print("references             :",
 print()
 
 checks = [
-    ("DOI count == 16",            len(re.findall(r"https://doi\.org/", t)) == 16),
+    # Scoped to the reference list on purpose. The front matter now carries the
+    # paper's own DOI, which is an identifier for this work, not a citation of
+    # someone else's, and counting it here would silently change the meaning of
+    # the check the first time either one moved.
+    ("DOI count == 16",            len(re.findall(r"https://doi\.org/",
+                                                  t.split("## References")[-1])) == 16),
     ("ref 11 author fixed",        "Sadasivan, V." in t),
     ("no stale Krishna",           "Krishna, T." not in t),
     ("ref 17 = Li et al.",         "Li, W., Aboutorabi" in t),

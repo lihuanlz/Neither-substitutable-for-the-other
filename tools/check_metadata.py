@@ -184,6 +184,37 @@ def main() -> int:
             problems.append("%s: author name written 'Huanli', expected 'Huan Li'"
                             % rel)
 
+    # --- licence split -----------------------------------------------------
+    # The paper is CC-BY-4.0 and the code is MIT. Collapsing the two is the
+    # likely drift: one side gets edited and the other keeps its old value,
+    # leaving the repository making two incompatible promises about one PDF.
+    PAPER_LICENCE = "CC-BY-4.0"
+    zen_licence = str(zen.get("license", "")) if isinstance(zen, dict) else ""
+    cff_licence = str(data.get("license", "")) if isinstance(data, dict) else ""
+
+    if zen_licence and zen_licence != PAPER_LICENCE:
+        problems.append(".zenodo.json: paper licence is %s, expected %s"
+                        % (zen_licence, PAPER_LICENCE))
+    if cff_licence and cff_licence != PAPER_LICENCE:
+        problems.append("CITATION.cff: paper licence is %s, expected %s"
+                        % (cff_licence, PAPER_LICENCE))
+    lic_text = read(ROOT / "LICENSE")
+    if lic_text and "MIT License" not in lic_text:
+        problems.append("LICENSE: code licence is no longer MIT; the paper and "
+                        "code licences are meant to differ")
+
+    # --- DOI ---------------------------------------------------------------
+    # A version DOI pins a reader to one immutable snapshot. The concept DOI
+    # resolves to the newest version and stays correct across releases, so it
+    # is the one that belongs in metadata.
+    cff_doi = str(data.get("doi", "")).strip() if isinstance(data, dict) else ""
+    readme_dois = sorted(set(re.findall(r"10\.5281/zenodo\.\d+", readme)))
+    if cff_doi and cff_doi not in readme_dois:
+        problems.append("README.md: does not carry the DOI from CITATION.cff")
+    if len(set(readme_dois)) > 1:
+        problems.append("README.md: more than one Zenodo DOI: %s"
+                        % ", ".join(readme_dois))
+
     todo = sorted(
         str(p.relative_to(ROOT)) for p in ROOT.rglob("*")
         if p.is_file()

@@ -19,6 +19,22 @@ MD = Path(__file__).resolve().parent / "manuscript.md"
 # A DOI runs to the first whitespace. The manuscript wraps none of them.
 DOI_RE = re.compile(r"https://doi\.org/(\S+)")
 
+# The reference list, and nothing else. The front matter carries this paper's
+# own DOI, which identifies the work rather than citing another, and verifying
+# it here would report the manuscript as citing itself.
+REFERENCES_HEADING = "\n## References"
+
+
+def reference_section(text: str) -> str:
+    """The part of the manuscript that holds citations."""
+    head, sep, tail = text.partition(REFERENCES_HEADING)
+    if not sep:
+        raise SystemExit(
+            "verify_dois: no '## References' heading found. The DOI harvest is "
+            "scoped to the reference list so that it does not pick up the "
+            "paper's own DOI from the front matter.")
+    return tail
+
 
 def fetch(doi):
     url = "https://doi.org/" + doi
@@ -36,11 +52,16 @@ def fetch(doi):
 
 
 def main():
-    text = MD.read_text(encoding="utf-8")
+    text = reference_section(MD.read_text(encoding="utf-8"))
 
     dois, seen = [], set()
     for m in DOI_RE.finditer(text):
-        d = m.group(1).rstrip(".")
+        # A DOI may legitimately contain brackets and semicolons, so only
+        # unambiguous sentence punctuation is trimmed, and only when the DOI
+        # does not already contain a balanced one of its own.
+        d = m.group(1).rstrip(".,")
+        while d.endswith(")") and d.count(")") > d.count("("):
+            d = d[:-1]
         if d not in seen:
             seen.add(d)
             dois.append(d)

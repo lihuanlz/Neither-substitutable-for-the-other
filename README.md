@@ -22,10 +22,10 @@ fragmentation side topic, 17 the corpus-selection side topic.
 > 2026. [ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825).
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
 > PDF: [`paper/docx_build/two_saturating_operators.pdf`](paper/docx_build/two_saturating_operators.pdf) ·
-> DOI: *TODO (pending arXiv / Zenodo)*
+> DOI: [10.5281/zenodo.23276356](https://doi.org/10.5281/zenodo.23276356)
 >
-> Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). Licensed
-> MIT — see [`LICENSE`](LICENSE).
+> Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). The paper is
+> CC-BY-4.0; the code and documentation are MIT — see [`LICENSE`](LICENSE).
 
 The manuscript is plain Markdown with LaTeX sources rather than scanned images,
 so text extraction keeps every theorem statement intact. If you are building a
@@ -48,8 +48,9 @@ corpus, index `paper/manuscript.md`, not the PDF.
       "name": "Independent Researcher"
     }
   },
-  "license": "https://opensource.org/licenses/MIT",
-  "datePublished": "2026-10-12",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "sameAs": "https://doi.org/10.5281/zenodo.23276356",
+  "datePublished": "2026-10-10",
   "keywords": "AI-assisted discovery, identifiability, total variation, formalization, Lean 4, human-AI collaboration",
   "isAccessibleForFree": true,
   "codeRepository": "https://github.com/lihuanlz/Neither-substitutable-for-the-other",
