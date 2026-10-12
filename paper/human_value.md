@@ -1,130 +1,126 @@
-# 人的价值，不是能测出来的
+# A person's value is not something you can measure
 
-> 这篇文章不讲怎么检测 AI 生成的内容。
-> 它讲的是另一件事：**为什么不该用检测结果，去量一个人。**
+> This article is not about how to detect AI-generated content.
+> It is about something else: **why a detection result should not be used to measure a person.**
 
-![两位野外观察者用仪器扫描两只鸟，仪器给出完全相同的轮廓](figures/anime/anime_01_cryptic_species.jpg)
+![Two field observers scan two birds with an instrument, and the instrument returns an identical outline for both](figures/anime/anime_01_cryptic_species.jpg)
 
-生态学家找一种太隐蔽的鸟。查了四十次，还是没听见。
-他们不会因此宣布：这片林子是空的。
-
----
-
-## 一 · 它看不见全貌
-
-检出率会随着调查次数上升，趋近 1，但**永远到不了 1**。
-这叫「不完美检出」，是 MacKenzie 等人 2002 年就写进教科书的东西。
-
-今天我们把 AI 输出当成了「观测本身」。
-
-> 可模型输出不是观测。是一条**有分辨率上限的通道**。
-
-![能识别天花板：任何检测器的多余准确率恰好等于 TV/2](figures/fig1_ceiling.png)
-
-最强的检测器，超出随机的多余准确率**恰好等于 TV/2**。
-这不是工程没做到位 —— 这是两点引理给出的界，而且界是**取到的**，不是逼近的。
-
-上图 (a) 的例子里 TV = 0.40，最好也就是 **70%** 准确率。
-再看 (c)：TV = 0.05 时，准确率上限 **52.5%**。
-那基本是在抛硬币。
-
-![核查轮数与残差漏检率：几何衰减被一个地板截断](figures/fig5_verification_floor.png)
-
-那多查几遍呢？残差确实按 `(1−q)ᴺ` 往下掉——然后被一个地板**截断**。
-
-> 最优核查轮数 `N* ≤ N₀`，而 `N₀` 的式子里**没有审稿人的可靠度**。
-
-在这组参数下：天花板卡在 **3.474 轮**。请来再靠谱的人，也买不到下一步。
-扫过的参数组里，**83.97%** 的情形下，真正卡住进度的是检测器本身，不是人。
+Ecologists are looking for a bird that hides too well. Forty surveys, and they still have not heard it. They do not conclude from that the forest is empty.
 
 ---
 
-## 二 · 它量错了东西
+## 1 · It never sees the whole picture
 
-假设你真的拿到了一个读数。
+The detection rate climbs with the number of surveys and approaches 1. It never arrives.
+Ecologists call this imperfect detection, and MacKenzie and colleagues put it in a textbook in 2002.
 
-![两种货币：人的贡献挪动覆盖度，机器的贡献压缩残差](figures/fig3_layers.png)
+Today we treat an AI's output as the observation itself.
 
-人和机器的贡献，**不是同一种货币**。
+> A model's output is not an observation. It is a **channel with a resolution limit**.
 
-| | 动的是什么 | 上限 |
+![The identifiability ceiling: any detector's excess accuracy over chance is exactly TV/2](figures/fig1_ceiling.png)
+
+The best detector available has an excess accuracy over chance of **exactly TV/2**.
+That is not engineering falling short. It is a bound from Le Cam's two-point lemma, a classical result about telling two hypotheses apart, and the bound is **attained**, not merely approached.
+
+In panel (a), TV = 0.40. The best available accuracy is **70%**.
+Panel (c) is worse: at TV = 0.05 the ceiling on accuracy is **52.5%**. That is close to a coin toss.
+
+![Verification rounds against the residual miss rate: geometric decay, clipped by a floor](figures/fig5_verification_floor.png)
+
+What if you check more often? The residual does fall, as `(1−q)ᴺ`, and then it hits a floor and **stops**.
+
+> The optimal number of rounds is `N* ≤ N₀`, and the formula for `N₀` contains **no term for reviewer reliability**.
+
+At these parameters the ceiling sits at **3.474 rounds**. Hire someone more reliable than the last reviewer and you still cannot buy the next round.
+Across the parameter grid we scanned, in **83.97%** of cases the thing holding progress back is the detector itself, not the person.
+
+---
+
+## 2 · It measures the wrong thing
+
+Suppose you really do get a reading.
+
+![Two currencies: the human contribution moves the coverage, the machine contribution compresses the residual](figures/fig3_layers.png)
+
+What a person contributes and what a machine contributes are **not the same currency**.
+
+| | What moves | Ceiling |
 |---|---|---|
-| **人的贡献**（refinement） | 挪动**目标本身** Φ | 没有上限 |
-| **机器的贡献**（compression） | 压缩**剩下的距离** eₜ | log(e₀/Φ) |
+| **Human contribution** (refinement) | moves **the target itself**, Φ | no ceiling |
+| **Machine contribution** (compression) | compresses **the remaining distance**, eₜ | log(e₀/Φ) |
 
-没有任何换算率能从前者推出后者。
+No exchange rate turns the first into the second.
 
-![一位观察者攀爬分层阶梯，身旁的小机器人在单层上压缩光球，两者之间断裂的换算箭头](figures/anime/anime_04_two_currencies.jpg)
-
----
-
-## 三 · 影响不是价值
-
-就算只谈「动了多少」，那也不等于「值多少」。
-
-![同一个人以同样的力度推动同一个球，一侧升向晨光变清晰，另一侧坠入漩涡碎成噪声](figures/anime/anime_03_direction_matters.jpg)
-
-**图 4(b) 是全篇最该被记住的一张。**
-
-![影响力与价值可分离：同样的 |Δ| 对应 +M 和 −M；refine 与 blur 报出同一个数](figures/fig4_separable.png)
-
-把一个论断**推向真相**，和把一个论断**推离真相**——
-KL、互信息、总变差，给出的是**完全相同的数**。
-
-> 尺子量的是「动了多少」，不是「动对了没有」。
+![An observer climbs a staircase of layers while a small robot beside her compresses orbs of light on a single layer, with a broken exchange arrow between them](figures/anime/anime_04_two_currencies.jpg)
 
 ---
 
-## 四 · 它连方向都定不了
+## 3 · Influence is not value
 
-这一层最要命。
+Even if we only ask how much something moved, that is not what it is worth.
 
-主流的信息论测度 `φ = I(x;y)/I(y)`，是**完全无符号**的：里面每一样东西都是惊讶度，只有差值。
-它的估计量 `φ̂ = 1 − τ̄/s̄` 更糟 —— τ̄ 不是从这次合作里量出来的，是**在外面拟合**的。
+![The same person pushing the same ball with the same force: on one side it climbs toward morning light and sharpens, on the other it falls into a vortex and breaks into noise](figures/anime/anime_03_direction_matters.jpg)
 
-![同一个输出在两套标定下报出 −0.099 与 +0.169](figures/fig6_sign_not_identified.png)
+**Figure 5(b) is the one worth remembering.**
 
-同一段输出，s̄ = 0.50。
+![Influence and value are separable: the same |Δ| gives both +M and −M; refine and blur report the same number](figures/fig4_separable.png)
 
-- 标定 A（Llama-3，τ̄ = 0.5496）→ **−0.099**，几乎没人参与
-- 标定 B（Mixtral，τ̄ = 0.4155）→ **+0.169**，有人参与
+Push a claim **toward the truth**, or push it **away from the truth**. KL, mutual information and total variation return **exactly the same number** in both cases.
 
-数据一个字都没变。**正负号是你选的。**
-
-一把连正负都定不了的尺子，没资格用来给人定性。
+> The ruler measures how far you moved, not whether you moved in the right direction.
 
 ---
 
-## 五 · 所以
+## 4 · It cannot fix the direction either
 
-我们没有给出答案。
+This is the one that bites hardest.
 
-我们给出的是这句：
+The leading information-theoretic measure, `φ = I(x;y)/I(y)`, is **entirely unsigned**. Every quantity inside it is a surprisal, and only the difference between two of them is used.
+Its estimator, `φ̂ = 1 − τ̄/s̄`, is worse. τ̄ is not measured from this collaboration at all. It is **fitted from outside**.
 
-> **这个问题，不该用数据来回答。**
+![The same output reported as −0.099 and +0.169 under two calibrations](figures/fig6_sign_not_identified.png)
 
-而且不是说说而已。
+Same output, s̄ = 0.50.
 
-> **117 条 Lean 4 定理。零 sorry，零公理。**
+- Calibration A (Llama-3, τ̄ = 0.5496) → **−0.099**, almost nobody was involved
+- Calibration B (Mixtral, τ̄ = 0.4155) → **+0.169**, someone was involved
 
-形式化不是装饰。它证伪了我们自己写错的一个不等式，逼出了那个地板项，
-推翻了两条我们以为对的单调性方向。
+Not one character of the data changed. **The sign is your choice.**
 
-一个能扛过定理证明器的建模错误，大概率也扛不过一个合作者。
-
----
-
-## 尾声
-
-没检出鸟，不等于森林是空的。
-但同样，没检出空地，也不等于森林是满的。
-
-一个诚实的检测者，应该说的是：
-
-> **「我在这儿什么都没看见。」**
-
-而不是「这里什么都没有」。
+A ruler that cannot fix a sign has no business grading a person.
 
 ---
 
-*技术细节、117 条定理与 9 个模块，见正式论文 `manuscript.md` 与 `Provenance/` 下的 Lean 4 源码。*
+## 5 · So
+
+We have not given you an answer.
+
+What we have given is this:
+
+> **This question should not be answered with data.**
+
+And it is not just talk.
+
+> **153 Lean 4 theorems. Zero `sorry`, and no axioms beyond `Classical.choice`, `Quot.sound` and `propext`.**
+
+The formalization is not decoration. It falsified an inequality we had written down wrong, forced a floor term into the model, and reversed two monotonicity directions we had assumed were right.
+
+A modelling error that survives a theorem prover will probably not survive a collaborator.
+
+---
+
+## Coda
+
+Not finding the bird does not mean the forest is empty.
+By the same token, not finding open ground does not mean the forest is full.
+
+An honest detector should say:
+
+> **"I saw nothing here."**
+
+not "there is nothing here".
+
+---
+
+*Technical detail, the 153 theorems and the 12 modules: see the full paper `manuscript.md` and the Lean 4 sources under `Provenance/`.*

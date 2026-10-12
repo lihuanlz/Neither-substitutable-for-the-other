@@ -12,10 +12,10 @@ def build(prs):
     para(tf, "03", size=104, color="light", bold=True, font=FONT_NUM, first=True)
 
     tf = tbox(s, 0.90, 2.78, 5.7, 0.72)
-    para(tf, "真相不是一个点", size=34, color="bg", bold=True, first=True)
+    para(tf, "Truth Is Not a Point", size=34, color="bg", bold=True, first=True)
 
     tf = tbox(s, 0.90, 3.60, 5.6, 0.80)
-    para(tf, "换一个观测协议，「真相」就换了一个位置。",
+    para(tf, "Change the protocol and the truth moves.",
          size=13, color="light", first=True, line=1.4)
 
     shape(s, 8.80, 0.20, 0.92, 0.92, line="secondary", lw=1.25, kind="oval")

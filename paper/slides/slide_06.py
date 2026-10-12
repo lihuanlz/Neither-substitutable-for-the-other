@@ -12,10 +12,10 @@ def build(prs):
     para(tf, "02", size=104, color="light", bold=True, font=FONT_NUM, first=True)
 
     tf = tbox(s, 0.90, 2.78, 5.7, 0.72)
-    para(tf, "检测能力的上限", size=34, color="bg", bold=True, first=True)
+    para(tf, "The Detection Ceiling", size=34, color="bg", bold=True, first=True)
 
     tf = tbox(s, 0.90, 3.60, 5.6, 0.80)
-    para(tf, "这不是新发现，是几十年前的定理。但很少有人把它用到位。",
+    para(tf, "Not new. A theorem from decades ago, rarely pushed.",
          size=13, color="light", first=True, line=1.4)
 
     s.shapes.add_picture(anime("anime_02_verification_floor.jpg"),

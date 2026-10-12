@@ -18,7 +18,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace", line_buffering=True)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PPTX = os.path.join(HERE, "output", "人机贡献的能识别边界-科普版.pptx")
+PPTX = os.path.join(HERE, "output", "identifiability-boundary-popular.pptx")
 W_IN, H_IN = 10.0, 5.625
 EMU_IN = 914400.0
 

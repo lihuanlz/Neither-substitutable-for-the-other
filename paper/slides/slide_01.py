@@ -14,19 +14,19 @@ def build(prs):
     shape(s, 6.92, 3.02, 0.18, 0.18, fill="secondary", kind="oval")
 
     tf = tbox(s, 0.80, 1.02, 6.0, 0.30)
-    para(tf, "形式化研究 · Lean 4 + Mathlib", size=12.5,
+    para(tf, "Formalization · Lean 4 + Mathlib", size=12.5,
          color="light", bold=True, first=True)
 
     tf = tbox(s, 0.80, 1.44, 8.6, 1.05)
-    para(tf, "人机贡献的能识别边界", size=44, color="bg", bold=True, first=True)
+    para(tf, "The Identifiability Limit", size=44, color="bg", bold=True, first=True)
 
     tf = tbox(s, 0.80, 2.72, 6.0, 1.25)
-    para(tf, "把「这份工作里有多少是人做的」从一句立场之争，",
+    para(tf, "How much of this work is human?",
          size=15, color="light", first=True, line=1.5)
-    para(tf, "变成 153 条能被机器逐条检查的定理。",
+    para(tf, "Now 153 machine-checked theorems.",
          size=15, color="light", line=1.5)
 
-    stats = [("153", "条已证定理"), ("0", "个 sorry 与公理"), ("11", "个形式化模块")]
+    stats = [("153", "proved theorems"), ("0", "sorry, added axioms"), ("12", "formalized modules")]
     for i, (num, lab) in enumerate(stats):
         x = 0.80 + i * 2.10
         tf = tbox(s, x, 4.14, 2.0, 0.58)

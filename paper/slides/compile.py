@@ -15,7 +15,7 @@ import theme  # noqa: E402
 
 N_SLIDES = 22
 OUTDIR = os.path.join(HERE, "output")
-OUTFILE = os.path.join(OUTDIR, "人机贡献的能识别边界-科普版.pptx")
+OUTFILE = os.path.join(OUTDIR, "identifiability-boundary-popular.pptx")
 
 
 def main():
@@ -23,9 +23,12 @@ def main():
     prs.slide_width = Inches(theme.W)
     prs.slide_height = Inches(theme.H)
 
-    prs.core_properties.title = "人机贡献的能识别边界"
-    prs.core_properties.subject = "形式化研究：人机贡献度量的可识别性边界"
-    prs.core_properties.comments = "153 条 Lean 4 定理，零 sorry 零公理"
+    prs.core_properties.title = "The Identifiability Limit"
+    prs.core_properties.subject = ("Identifiability of human and machine "
+                                   "contribution")
+    prs.core_properties.comments = (
+        "153 Lean 4 theorems, zero sorry, no axioms beyond Classical.choice, "
+        "Quot.sound and propext")
 
     for i in range(1, N_SLIDES + 1):
         name = "slide_%02d" % i

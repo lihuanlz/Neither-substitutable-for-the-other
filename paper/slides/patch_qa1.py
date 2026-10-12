@@ -9,6 +9,9 @@ Fixes:
                fills and hairlines.
   3. NOTATION   restore tau-bar / s-bar to match the manuscript and chart.
   4. POLISH     divider image margin, module label, lambda note, orphan lines.
+
+Historical one-shot fixer: the fixes it applies are already present in the
+slide sources, so re-running it is a no-op.
 """
 
 import io
@@ -87,17 +90,17 @@ for fn in sorted(os.listdir(HERE)):
 # ------------------------------------------------- dark-background overrides
 DARK = {
     "slide_01.py": [
-        ('para(tf, "形式化研究 · Lean 4 + Mathlib", size=12.5,\n'
+        ('para(tf, "Formalization · Lean 4 + Mathlib", size=12.5,\n'
          '         color="primary", bold=True, first=True)',
-         'para(tf, "形式化研究 · Lean 4 + Mathlib", size=12.5,\n'
+         'para(tf, "Formalization · Lean 4 + Mathlib", size=12.5,\n'
          '         color="light", bold=True, first=True)'),
-        ('para(tf, "把「这份工作里有多少是人做的」从一句立场之争，",\n'
+        ('para(tf, "How much of this work is human?",\n'
          '         size=15, color="primary", first=True, line=1.5)',
-         'para(tf, "把「这份工作里有多少是人做的」从一句立场之争，",\n'
+         'para(tf, "How much of this work is human?",\n'
          '         size=15, color="light", first=True, line=1.5)'),
-        ('para(tf, "变成 153 条能被机器逐条检查的定理。",\n'
+        ('para(tf, "Now 153 machine-checked theorems.",\n'
          '         size=15, color="primary", line=1.5)',
-         'para(tf, "变成 153 条能被机器逐条检查的定理。",\n'
+         'para(tf, "Now 153 machine-checked theorems.",\n'
          '         size=15, color="light", line=1.5)'),
         ('para(tf, num, size=30, color="accent", bold=True, font=FONT_NUM, first=True)',
          'para(tf, num, size=30, color="light", bold=True, font=FONT_NUM, first=True)'),
@@ -136,9 +139,9 @@ DARK = {
         ('badge(s, 6)', 'badge(s, 6, dark=True)'),
     ],
     "slide_13.py": [
-        ('para(tf, "这不是工程问题，是定义问题。", size=12.5, color="primary",\n'
+        ('para(tf, "That is a defect of definition.", size=12.5, color="primary",\n'
          '         line=1.35)',
-         'para(tf, "这不是工程问题，是定义问题。", size=12.5, color="light",\n'
+         'para(tf, "That is a defect of definition.", size=12.5, color="light",\n'
          '         line=1.35)'),
         ('para(tf, "+M", size=40, color="accent", bold=True, align="center",',
          'para(tf, "+M", size=40, color="primary", bold=True, align="center",'),
@@ -159,8 +162,8 @@ ACCENT_TEXT = {
                      'size=38, color="primary", bold=True, font=FONT_NUM')],
     "slide_09.py": [('color=("accent" if style == "peach" else txt),',
                      'color=txt,')],
-    "slide_14.py": [('para(tf, "完全不可通约", size=22, color="accent", bold=True, first=True)',
-                     'para(tf, "完全不可通约", size=22, color="primary", bold=True, first=True)')],
+    "slide_14.py": [('para(tf, "Incommensurable", size=22, color="accent", bold=True, first=True)',
+                     'para(tf, "Incommensurable", size=22, color="primary", bold=True, first=True)')],
 }
 for fn, pairs in ACCENT_TEXT.items():
     path = os.path.join(HERE, fn)

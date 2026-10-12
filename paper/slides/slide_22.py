@@ -4,18 +4,18 @@
 from theme import *
 
 TAKEAWAYS = [
-    "看不见 ≠ 不存在。AI 把模型输出当成了观测本身。",
-    "检测能力有物理天花板，努力压不过去。",
-    "验证预算有一个与人的能力无关的硬上界。",
-    "影响力测不了价值 —— 价值必须带符号。",
-    "符号本身也不可识别：正负由一条分布外拟合的门槛决定。",
-    "153 条定理，零 sorry 零公理，全量构建可复跑。",
+    "Unseen ≠ absent. AI treats model output as the observation.",
+    "Detection has a ceiling. Effort does not move it.",
+    "The verification budget has a cap with no human in it.",
+    "Influence does not measure value. Value needs a sign.",
+    "The sign is not identified either; an out-of-distribution bar decides it.",
+    "153 theorems, zero sorry, zero added axioms, reproducible build.",
 ]
 
 
 def build(prs):
     s = new_slide(prs)
-    header(s, "结语", "我们证明了什么", 22)
+    header(s, "CLOSING", "What We Proved", 22)
 
     for i, t in enumerate(TAKEAWAYS):
         y = 1.32 + i * 0.52
@@ -25,8 +25,10 @@ def build(prs):
 
     card(s, 0.55, 4.38, 8.90, 0.64, style="teal")
     tf = tbox(s, 0.85, 4.44, 8.30, 0.52)
-    para(tf, "我们不打击任何已有度量 —— 它们对各自声明的用途是有效的。",
+    para(tf, "We do not attack existing measures; they work for their "
+             "stated purpose.",
          size=11, color="bg", first=True, line=1.25)
-    para(tf, "我们做的，是把他们散文式的警告，变成机器可以逐条检查的定理。",
+    para(tf, "We turned their prose warnings into theorems a machine can "
+             "check.",
          size=11, color="light", line=1.25)
     return s

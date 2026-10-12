@@ -43,20 +43,20 @@ def floor_figure(path):
     fig.patch.set_facecolor(BG)
     ax.set_facecolor(BG)
 
-    ax.plot(N, true, "-o", color=PRI, lw=3, ms=7, label="真实残余漏检率（截断后）")
-    ax.plot(N, naive, "--s", color=ACC, lw=2.2, ms=6, label="朴素估计（不截断）")
+    ax.plot(N, true, "-o", color=PRI, lw=3, ms=7, label="True residual miss rate (clipped)")
+    ax.plot(N, naive, "--s", color=ACC, lw=2.2, ms=6, label="Naive estimate (unclipped)")
     ax.axhline(T, color=ACC, lw=1.2, ls=":", alpha=0.85)
     ax.axvline(N0, color=SEC, lw=1.6, ls="--")
 
-    ax.annotate("地板 T = 0.09\n从第 4 轮起，再验证也没用",
+    ax.annotate("Floor T = 0.09\nfrom round 4 on, more rounds change nothing",
                 xy=(5.2, T), xytext=(3.6, 0.30), color=PRI, fontsize=11,
                 arrowprops=dict(arrowstyle="->", color=PRI, lw=1.4))
     ax.text(N0 + 0.12, 0.52, "N* = 3.474", color=PRI, fontsize=11)
-    ax.text(0.06, 0.045, "没有地板的话，验证越多漏检越少",
+    ax.text(0.06, 0.045, "No floor: every round helps",
             color=ACC, fontsize=11)
 
-    ax.set_xlabel("验证轮数 N", color=PRI, fontsize=12)
-    ax.set_ylabel("残余漏检率", color=PRI, fontsize=12)
+    ax.set_xlabel("Verification rounds N", color=PRI, fontsize=12)
+    ax.set_ylabel("Residual miss rate", color=PRI, fontsize=12)
     ax.set_xticks(N)
     ax.set_ylim(0, 1.02)
     ax.tick_params(colors=PRI, labelsize=10)
@@ -84,8 +84,8 @@ def signflip_figure(path):
     """
     TBAR = r"$\bar{\tau}$"
     SBAR = r"$\bar{s}$"
-    labels = ["标定 A\nLlama-3\n%s = 0.5496" % TBAR,
-              "标定 B\nMixtral\n%s = 0.4155" % TBAR]
+    labels = ["Calibration A\nLlama-3\n%s = 0.5496" % TBAR,
+              "Calibration B\nMixtral\n%s = 0.4155" % TBAR]
     vals = [1 - 0.5496 / 0.50, 1 - 0.4155 / 0.50]
 
     fig, ax = plt.subplots(figsize=(8, 5), dpi=200)
@@ -101,12 +101,12 @@ def signflip_figure(path):
         ax.text(b.get_x() + b.get_width() / 2, v + off, "%+.3f" % v,
                 ha="center", color=PRI, fontsize=15, fontweight="bold")
 
-    ax.text(0.5, 0.33, "同一个输出  %s = 0.50" % SBAR, ha="center",
+    ax.text(0.5, 0.33, "One output  %s = 0.50" % SBAR, ha="center",
             color=PRI, fontsize=13)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(labels, fontsize=11, color=PRI)
     ax.set_ylim(-0.22, 0.42)
-    ax.set_ylabel("报告值", color=PRI, fontsize=12)
+    ax.set_ylabel("Reported value", color=PRI, fontsize=12)
     ax.tick_params(colors=PRI, labelsize=10)
     for sp in ("top", "right"):
         ax.spines[sp].set_visible(False)

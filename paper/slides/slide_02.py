@@ -4,17 +4,17 @@
 from theme import *
 
 ITEMS = [
-    ("01", "看不见的鸟", "「观测不到」从来不等于「不存在」"),
-    ("02", "检测能力的上限", "再怎么努力，也压不过那道物理天花板"),
-    ("03", "真相不是一个点", "观测协议决定了你能看见什么"),
-    ("04", "符号不由数据决定", "一个估计量连自己的正负都做不了主"),
-    ("05", "把争议变成定理", "153 条 Lean 4 证明，零 sorry 零公理"),
+    ("01", "The Bird You Miss", "Not detected is not the same as absent"),
+    ("02", "The Detection Ceiling", "Effort never passes that ceiling"),
+    ("03", "Truth Is Not a Point", "The protocol decides what you can see"),
+    ("04", "The Sign Is Unidentified", "One estimator cannot fix its own sign"),
+    ("05", "Claims Become Theorems", "153 Lean 4 proofs, zero sorry, zero added axioms"),
 ]
 
 
 def build(prs):
     s = new_slide(prs)
-    header(s, "CONTENTS", "这份报告讲什么", 2)
+    header(s, "CONTENTS", "What This Deck Covers", 2)
 
     for i, (num, title, desc) in enumerate(ITEMS):
         y = 1.32 + i * 0.73

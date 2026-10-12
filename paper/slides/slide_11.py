@@ -4,28 +4,28 @@
 from theme import *
 
 ROWS = [
-    ("协议严格", 3),
-    ("协议中等", 2),
-    ("协议宽松", 6),
+    ("Strict", 3),
+    ("Medium", 2),
+    ("Loose", 6),
 ]
 
 
 def build(prs):
     s = new_slide(prs)
-    header(s, "系统层 · 概念", "「真相」不是一个点，是一个等价类", 11)
+    header(s, "SYSTEM LAYER · CONCEPT", "Truth Is a Class, Not a Point", 11)
 
     tf = tbox(s, 0.55, 1.40, 4.35, 0.85)
-    para(tf, "老做法：把真实答案当成一个确定的点，然后去估计它离这个点有多远。",
+    para(tf, "Old way: the answer is one point; estimate the distance.",
          size=12.5, color="primary", first=True, line=1.45)
 
     tf = tbox(s, 0.55, 2.34, 4.35, 0.85)
-    para(tf, "我们的做法：先问一句 —— 在这个观测协议下，哪些状态看起来完全一样？",
+    para(tf, "Our way: which states look identical under this protocol?",
          size=12.5, color="primary", first=True, line=1.45)
 
     card(s, 0.55, 3.34, 4.35, 1.06, style="peach")
     tf = tbox(s, 0.80, 3.54, 3.90, 0.70)
-    para(tf, "它们组成一个等价类 [s*]。于是误差从一个数字，"
-             "变成一个随协议变化的层级函数。",
+    para(tf, "They form a class [s*]. Error becomes a function of the "
+             "protocol.",
          size=12, color="primary", first=True, line=1.4)
 
     for i, (lab, k) in enumerate(ROWS):
@@ -42,6 +42,6 @@ def build(prs):
         tf = tbox(s, 5.28, y + 0.04, 0.95, 0.28)
         para(tf, lab, size=11, color="primary", first=True)
     tf = tbox(s, 5.28, 4.24, 4.17, 0.70)
-    para(tf, "同一个「真相」，在不同协议下被混在一起的状态并不相同。",
+    para(tf, "The same truth mixes different states under different protocols.",
          size=11, color="primary", first=True, line=1.45)
     return s

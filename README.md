@@ -3,10 +3,13 @@
 [![CI](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml/badge.svg)](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml)
 [![Lean 4](https://img.shields.io/badge/lean-4.15.0-blue.svg)](https://github.com/leanprover/lean4/releases/tag/v4.15.0)
 
-**人机协同条件下，人与机器的作用都不可替代。**
+**Under human-AI collaboration, neither the human nor the machine role is
+substitutable for the other.**
 
-形式化载体：Lean 4 + Mathlib，**153 条定理 + 20 个实例**，零 `sorry`、零公理。
-其中主线（不可替代性）117 条，碎片化侧题 19 条，语料筛选 17 条。
+Formalization: Lean 4 + Mathlib, **153 theorems + 20 worked examples**, zero
+`sorry`, and no axioms beyond `Classical.choice`, `Quot.sound` and `propext`.
+117 cover the main line (non-substitutability), 19 the
+fragmentation side topic, 17 the corpus-selection side topic.
 
 > Two operations, two objects. A machine compresses; a human refines. There is
 > no exchange rate between them — not because nobody has found one yet, but
@@ -48,241 +51,275 @@ corpus, index `paper/manuscript.md`, not the PDF.
 
 ---
 
-## 这个仓库在说什么
+## What this repository says
 
-人们习惯把"AI 贡献了多少"换算成一个百分比。这个换算预设了人机在同一
-种货币里记账。形式化的结果是：**这个预设不成立。**
+People habitually convert "how much did AI contribute" into a percentage. The
+conversion presupposes that human and machine are kept in the same currency. The
+formalized result: **that presupposition does not hold.**
 
-论文里唯一的一组"两种货币"（式 1）：
+The paper's only pair of "two currencies" (Eq. 1):
 
-| | 动的东西 | 有没有上限 |
+| | What it moves | Upper bound |
 |---|---|---|
-| 人类做**精炼 refinement** | 目标本身 \(\Phi(\alpha)\)，即层 | 无上限 |
-| 机器做**压缩 compression** | 编码熵 \(e_t^\alpha\) | 硬上界 \(\log(e_0/\Phi(\alpha))\) |
+| Human **refinement** | The target itself \(\Phi(\alpha)\), i.e. the layer | No upper bound |
+| Machine **compression** | Code entropy \(e_t^\alpha\) | Hard bound \(\log(e_0/\Phi(\alpha))\) |
 
-压缩的天花板只由层决定，与步数无关；精炼可以把层推到任意远。
-方向相反、量纲不同，所以没有换算率。
+The ceiling on compression is set by the layer alone and does not depend on the
+number of steps; refinement can push the layer arbitrarily far. Opposite
+directions, different dimensions, so no exchange rate exists.
 
 > A machine that compresses perfectly has not moved the target.
 > A human who refines perfectly has not closed the distance.
 
 ---
 
-## 三层结论
+## Three layers of results
 
-### 第 1 层 · 内容层 —— 事后溯源能识别到什么程度
+### Layer 1 · Content — what post hoc provenance can identify
 
-最优检测优势 \(=\mathrm{TV}/2\)，错误率 \(=(1-\mathrm{TV})/2\)，且这个界**可取到**。
-所以瓶颈不是"检验不够好"，而是 TV 本身。
+Maximal detection advantage \(=\mathrm{TV}/2\), error rate \(=(1-\mathrm{TV})/2\),
+and both bounds are **attained**. So the bottleneck is TV itself, not the quality
+of the test.
 
-重复验证也压不下去，因为存在一个 **TV 地板**：
+Repeated verification does not push it lower, because a **TV floor** exists:
 
 ```
-漏检率(N) = max( (1−q)^N , λ·TV )
+miss rate(N) = max( (1−q)^N , λ·TV )
 ```
 
-于是最优验证预算 \(N^\star\) 有与人的准确率 \(p\) **无关**的硬上界。
+The optimal verification budget \(N^\star\) therefore has a hard upper bound
+**independent** of reviewer accuracy \(p\).
 
-### 第 2 层 · 系统层 —— 事前定价为什么做不了
+### Layer 2 · System — why ex ante pricing fails
 
-影响力不能代理价值：`influence_value_separable` 构造出影响力绝对值相同、
-价值一正一负、且幅度 \(M\) 任意大的两条输出。用信息增益代理价值的方案在
-数学上失效。
+Influence does not proxy for value: `influence_value_separable` constructs two
+outputs with identical absolute influence, opposite signed values, and
+arbitrarily large magnitude \(M\). Any scheme that proxies value with information
+gain fails mathematically.
 
-不可通约性要分两个区间说：
+Incommensurability has to be stated over two regimes:
 
-- **TV 地板 bind**（\(T \ge x_c\)）：完全不可通约，两个不同可靠度的人给出
-  **完全相同**的 \(N^\star\)；
-- **地板不 bind**：可通约但非线性（保序、非仿射），故不落在线性效用 \(\mathcal U\) 里。
+- **TV floor binds** (\(T \ge x_c\)): fully incommensurable; two reviewers of
+  different reliability produce **identical** \(N^\star\);
+- **Floor does not bind**: commensurable but nonlinear (order-preserving, not
+  affine), so it does not fall inside the linear utility \(\mathcal U\).
 
-准确的说法是"**不可线性换算**"，不是"完全不可通约"——后者过强，会被 Lean 判死。
+The exact term is "**not linearly convertible**", not "fully incommensurable".
+The latter is too strong and Lean would refute it.
 
-### 第 3 层 · 标定层 —— 连符号都不是测出来的
+### Layer 3 · Calibration — even the sign is not measured
 
-用文献里最通行的"最小必要人类贡献"估计量 \(\hat\varphi = 1 - \bar\tau/\bar s\)。
-主定理 `sign_not_identified`：对任意一个输出，**都存在两组标定使符号取相反值**
-（见证钉死为 \(\tau = s/2\) 与 \(\tau = 3s/2\)）。
+Take the most widely used estimator of "minimum necessary human contribution",
+\(\hat\varphi = 1 - \bar\tau/\bar s\).
+The main theorem `sign_not_identified`: for any output, **there are two
+calibrations under which the reported sign differs** (witnesses pinned at
+\(\tau = s/2\) and \(\tau = 3s/2\)).
 
-门槛 \(\tau\) 恰恰是分布外拟合的，所以：
+The bar \(\tau\) is fitted out of distribution, so:
 
-> 表面符号是标定的产物，不是测量的产物。
+> The apparent sign is a property of the calibration, not of the measurement.
 
-### 侧题 · 碎片化
+### Side topic · Fragmentation
 
-上面三层回答的是"是什么"。`Provenance.Fragmentation` 换了一个问题：
-**人机协同下，人的创新会规模化，还是会碎片化？**
-这是独立课题，结论是**碎片化**，两截机制：
-**协作侧（内生）** —— 在同一层上，协作体达成的层移动**等于其中最好那个人的层移动**。
-第 N+1 个人的收益精确为 0，成本精确为 \(\log(\Phi/a)\)：
+The three layers above answer "what". `Provenance.Fragmentation` asks a different
+question: **under human-AI collaboration, does human innovation scale up, or
+fragment?**
+This is a separate problem and the answer is **fragmentation**, through two
+mechanisms.
+**Collaboration side (endogenous)** — on a given layer, the layer movement the
+coalition achieves **equals that of its best member**. The N+1th person earns
+exactly 0 and costs exactly \(\log(\Phi/a)\):
 
 ```lean
 theorem marginal_agent_pure_waste ...
-  : gain Φ (insert a D) _ = gain Φ D hD          -- 收益不变
-    ∧ totalIndividual Φ (insert a D) = ... + log (Φ / a)   -- 成本严格增加
+  : gain Φ (insert a D) _ = gain Φ D hD          -- gain unchanged
+    ∧ totalIndividual Φ (insert a D) = ... + log (Φ / a)   -- cost strictly increases
 ```
 
-**时间侧（外生）** —— 把增量攒着不发，等的是一个会被盖掉的窗口。覆盖是吸收的，
-所以持有收益**单调不增**（`holdValue_antitone`）；一旦被盖掉，收益精确归零
-（`publish_dominates_when_covered`）。
+**Time side (exogenous)** — hold the increment back rather than publishing it,
+waiting for a window that will be superseded. Coverage is absorbing, so the
+value of holding is **non-increasing** (`holdValue_antitone`); once superseded,
+the gain is exactly zero (`publish_dominates_when_covered`).
 
-两截合起来（`fragmentation_squeeze`）堵死通往"大故事"的两条常规路径。
-**唯一的出口是换一个新的层** —— 而那正是 `human_gain_unbounded` 证过的无上界空间：
+Together (`fragmentation_squeeze`) the two cut off both routine routes to a "big
+story". **The only exit is to change the layer**, and that is exactly the
+unbounded space already proved by `human_gain_unbounded`:
 
-> 大故事赚的是时间差，而时间差正是 AI 唯一拿走的东西。
+> A big story profits from the time gap, and the time gap is the one thing AI
+> takes away.
 
-与主线的接口在 `saturation_duality`：AI 的收益**与步数无关**有硬上界
-（`ai_total_gain_bounded`），人的收益**与人数无关**也有硬上界
-（`marginal_agent_pure_waste`）。两边同时饱和 —— 不是谁替代谁，而是谁都加不上去。
+The interface to the main line is `saturation_duality`: the AI's gain is
+**independent of the step count** and hard-bounded (`ai_total_gain_bounded`), and
+the human's gain is **independent of headcount** and also hard-bounded
+(`marginal_agent_pure_waste`). Both sides saturate. Not one substituting for the
+other, but neither able to add anything.
 
-**可证伪点**：该模块把协作建模为"取最好成员"（`max` 型）。若现实中两人协作
-确实能超过其中较好的一人，`add_member_same_reach` 立刻失败。这是本课题最容易被
-现实推翻的地方，写成定理而不是留给直觉。
+**Falsification point**: the module models collaboration as "take the best
+member" (a `max`-type coalition). If two people in practice do better than the
+better of the two, `add_member_same_reach` fails immediately. This is the
+assumption most easily overturned by reality, so it is written as a theorem
+instead of left to intuition.
 
-### 侧题 · 语料即筛选
+### Side topic · The corpus is the filter
 
-`Provenance.Corpus` 问第三个问题：**语料越滚越大，筛选能力会跟着涨吗？**
-答案是不会，而且它和碎片化共用同一个 `max`/`min` 对称结构 ——
-人数饱和在**最好的人**身上，语料饱和在**最好的一条**身上。
+`Provenance.Corpus` asks a third question: **as the corpus keeps growing, does
+its selection power keep rising?**
+The answer is no, and it shares the same `max`/`min` symmetry as fragmentation:
+headcount saturates at the **best person**, corpus size at the **best single
+item**.
 
-认证地板 `floorOf D = D.min'`（只认最好的那一条），于是：
+The certified floor is `floorOf D = D.min'` (only the best item counts), so:
 
-- **稀释不变性**：`floorOf (D₁ ∪ D₂) = min (floorOf D₁) (floorOf D₂)`。
-  99 条噪声 + 1 条信号，与那 1 条信号本身认证到的东西**完全一样**
-  （`selection_filter_survives_dilution`）
-- **换语料零收益**：不把地板压低就换语料，收益精确为 0
-  （`uninformative_corpus_gains_nothing`）
-- **地板定上界**：`floor_determines_bound` 说两条认证到同一地板的语料，
-  不管规模、成分、新旧程度，一律不可区分
+- **Dilution invariance**: `floorOf (D₁ ∪ D₂) = min (floorOf D₁) (floorOf D₂)`.
+  99 noise items plus 1 signal item certify **exactly** what that 1 signal item
+  certifies on its own (`selection_filter_survives_dilution`)
+- **Zero gain from swapping corpora**: switching corpora without lowering the
+  floor yields exactly 0 gain (`uninformative_corpus_gains_nothing`)
+- **The floor fixes the bound**: `floor_determines_bound` says two corpora
+  certifying the same floor are indistinguishable whatever their size,
+  composition or recency
 
-**刻意没有形式化的两件事**（和 \(\Phi>0\) 那条焊点同性质，写进了 §8）：
-articulability（默会知识过滤器在类型层根本表达不出来）、语料是 stream 而非 set
-（recency 与重加权都建模不了）。这两个缺口和 \(\Phi>0\) 一样，是留下来的焊点，
-不是遗漏。
+**Two things deliberately left unformalized** (the same kind of seam as
+\(\Phi>0\), recorded in §8): articulability (the tacit-knowledge filter cannot be
+expressed at the type level at all), and the corpus as a stream rather than a set
+(recency and re-weighting are both unmodellable). Like \(\Phi>0\), these two gaps
+are seams left open, not oversights.
 
-### 关键数字
+### Key numbers
 
-- 标定自 2,500 条 WildChat prompt；1,500 对中 95.9% 可分
-- \(T = 0.09\)（\(\lambda=1\), TV=0.09, q=0.5）时：\(N_c = 3.793\)、\(N_0 = 3.474\)，
-  **83.97% 的参数组由地板起约束**
-- \(\bar s = 0.50\)；Llama-3 \(\bar\tau = 0.5496 \to -0.099\)；Mixtral \(\bar\tau = 0.4155 \to +0.169\)
-- 公理审计：153 条声明全部解析，只依赖 `Classical.choice` / `Quot.sound` / `propext`，零 `sorryAx`
+- Calibration fitted on 2,500 WildChat prompts; 95.9% of 1,500 pairs separable
+- At \(T = 0.09\) (\(\lambda=1\), TV=0.09, q=0.5): \(N_c = 3.793\), \(N_0 = 3.474\),
+  and **the floor is the active constraint in 83.97% of the scanned parameter
+  combinations**
+- \(\bar s = 0.50\); Llama-3 \(\bar\tau = 0.5496 \to -0.099\); Mixtral \(\bar\tau = 0.4155 \to +0.169\)
+- Axiom audit: all 153 declarations resolve, depending only on `Classical.choice` / `Quot.sound` / `propext`, zero `sorryAx`
 
 ---
 
-## 目录结构
+## Repository layout
 
 ```
-Provenance.lean          总入口（模块导览 + 复现说明）
-.github/workflows/ci.yml GitHub Actions：构建 + 公理审计 + 一致性检查
-tools/audit_axioms.py    153 条定理的公理依赖审计（CI 关卡）
-tools/check_metadata.py  CITATION.cff / .zenodo.json / README 引用块校验（CI 关卡）
-tools/sync_refs.py       从 manuscript.md 生成 docx 的参考文献块（防漂移）
-tools/strip_bom.py       清掉 Python 源码的 UTF-8 BOM（ast.parse 需要）
-CITATION.cff             机器可读引用元数据（GitHub "Cite this repository"）
-.zenodo.json             Zenodo 存档元数据（发版即得 versioned DOI）
+Provenance.lean          Main entry point (module guide + reproduction notes)
+.github/workflows/ci.yml GitHub Actions: build + axiom audit + consistency check
+tools/audit_axioms.py    Axiom-dependency audit over the 153 theorems (CI gate)
+tools/check_metadata.py  CITATION.cff / .zenodo.json / README citation-block check (CI gate)
+tools/sync_refs.py       Generates the docx bibliography block from manuscript.md (drift guard)
+tools/strip_bom.py       Strips UTF-8 BOMs from Python sources (ast.parse needs it)
+CITATION.cff             Machine-readable citation metadata (GitHub "Cite this repository")
+.zenodo.json             Zenodo archive metadata (a release gets a versioned DOI)
 LICENSE                  MIT
-Provenance/              11 个 Lean 模块（+ Examples 对拍）
-  Basic.lean             全变差距离、检验最优性、不可识别性
-  Contamination.lean     TV 混合定理、递归污染的指数律、坍缩上界
-  Coverage.lean          覆盖函数、次模性、单样本边际增益
-  HypothesisTest.lean    集合形式 TV 定理 + Neyman–Pearson 功效上界
-  Refinement.lean        观测层等价类 [s*]_α，两种货币的形式化
-  Value.lean             影响力与价值的可分离性
-  VerifyBudget.lean      TV 地板下的最优验证预算 N*
-  Incommensurable.lean   不可线性换算（分区间）
-  Calibration.lean       标定不可识别性：符号不由数据决定
-  Fragmentation.lean     侧题：碎片化 —— 加人不加收益，等待收益单调不增
-  Corpus.lean            侧题：语料即筛选 —— 稀释不变性与选择过滤上限
-  Examples.lean          精确有理数实例对拍
+Provenance/              11 Lean modules (+ Examples for cross-checking)
+  Basic.lean             Total variation, optimal testing, non-identifiability
+  Contamination.lean     TV mixing theorem, exponential law of recursive contamination, collapse bound
+  Coverage.lean          Coverage function, submodularity, single-sample marginal gain
+  HypothesisTest.lean    Set-form TV theorem + Neyman–Pearson power bound
+  Refinement.lean        Observation-layer equivalence class [s*]_α, the two currencies formalized
+  Value.lean             Separability of influence and value
+  VerifyBudget.lean      TV floor: optimal verification budget N*
+  Incommensurable.lean   Not linearly convertible (regime-wise)
+  Calibration.lean       Calibration non-identifiability: the sign is not fixed by the data
+  Fragmentation.lean     Side topic: fragmentation — adding members adds no gain, waiting gains are non-increasing
+  Corpus.lean            Side topic: the corpus is the filter — dilution invariance and the selection ceiling
+  Examples.lean          Exact rational worked examples
 
 paper/
-  manuscript.md          正式论文原始稿（事实基准，全程未被改写）
-  human_value.md         图解长文（面向普通读者）
-  final_check.py         对 manuscript.md 的一致性检查
-  verify_dois.py         23 条参考文献的 DOI 在线校验（16/16 通过）
-  figures/               Figure 1–7（PNG + PDF），anime/ 为 AI 生成科普插画
-  docx_build/            Word/PDF 生成工程
-    content.py             论文正文与参考文献（唯一编辑入口）
-    render_eqs.py          LaTeX → 600 dpi PNG，渲染 12 条公式
-    make_figs_en.py        重生成英文版 Figure 4/5（色盲安全配色）
-    make_figs_saturation.py 新增 Figure 6/7：人数饱和、语料饱和
-    polish.py              ASCII → 正式排版符号
+  manuscript.md          Canonical manuscript source (the factual baseline, never rewritten)
+  human_value.md         Illustrated long-form explainer (for a general reader)
+  final_check.py         Consistency check against manuscript.md
+  verify_dois.py         23 reference DOIs checked online (16/16 pass)
+  figures/               Figure 1–7 (PNG + PDF); anime/ holds AI-generated explanatory illustrations
+  docx_build/            Word/PDF generation project
+    content.py             Manuscript body and references (the only editing entry point)
+    render_eqs.py          LaTeX → 600 dpi PNG, renders 12 equations
+    make_figs_en.py        Regenerates English Figure 4/5 (colour-blind-safe palette)
+    make_figs_saturation.py Adds Figure 6/7: headcount saturation, corpus saturation
+    polish.py              ASCII → formal typographic symbols
     emit_json.py           content.py → content.json
-    assets_eq/             12 条公式的最终 PNG（已跟踪）
-    eq/                    LaTeX 中间产物（已忽略，可重新生成）
-    Gen/                   C# + OpenXML SDK 生成器
-    preview/               DOCX 逐页预览
+    assets_eq/             12 final equation PNGs (tracked)
+    eq/                    LaTeX intermediates (ignored, regenerable)
+    Gen/                   C# + OpenXML SDK generator
+    preview/               DOCX page-by-page previews
     Non-detection_is_not_absence.docx / .pdf
-  slides/                22 页科普 PPT 工程（python-pptx）
-    assets/                图表
-    output/                PPTX + PDF + 22 张逐页预览
-  refcheck/              第三方论文 PDF —— **故意不推送**，见下
+  slides/                22-page explainer deck project (python-pptx)
+    assets/                Figures
+    output/                identifiability-boundary-popular.pptx / .pdf + 22 previews
+  refcheck/              **deliberately not pushed**, see below
 ```
 
 ---
 
-## 复现
+## Reproduction
 
-### Lean 证明
+### Lean proofs
 
-需要 [Elan](https://github.com/leanprover/elan)：
+Requires [Elan](https://github.com/leanprover/elan):
 
 ```powershell
 lake build
 ```
 
-工具链见 `lean-toolchain`（`leanprover/lean4:v4.15.0`），依赖见 `lake-manifest.json`。
-`.lake/` 不在本仓库中，首次构建会拉取 Mathlib，耗时较长。
+The toolchain is pinned in `lean-toolchain` (`leanprover/lean4:v4.15.0`) and the
+dependencies in `lake-manifest.json`.
+`.lake/` is not in this repository; the first build pulls Mathlib and takes a
+while.
 
-### Word / PDF 论文
+### Word / PDF manuscript
 
 ```powershell
 cd paper\docx_build
-python render_eqs.py        # LaTeX 渲染 12 条公式 → assets_eq/*.png
-python make_figs_en.py      # 重生成英文 Figure 4/5
-python make_figs_saturation.py  # 新增 Figure 6/7
-python ..\..\tools\sync_refs.py  # 从 manuscript.md 同步参考文献（先跑）
-python polish.py            # ASCII → 正式排版符号
+python render_eqs.py        # LaTeX render of 12 equations → assets_eq/*.png
+python make_figs_en.py      # regenerate English Figure 4/5
+python make_figs_saturation.py  # add Figure 6/7
+python ..\..\tools\sync_refs.py  # sync references from manuscript.md (run first)
+python polish.py            # ASCII → formal typographic symbols
 python emit_json.py         # content.py → content.json
 dotnet run --project Gen -- content.json out.docx
 soffice --headless --convert-to pdf --outdir . out.docx
 ```
 
-依赖：Python + matplotlib、`MiKTeX`（`pdflatex`）、.NET SDK 9 + `DocumentFormat.OpenXml 3.1.0`、LibreOffice。
+Dependencies: Python + matplotlib, `MiKTeX` (`pdflatex`), .NET SDK 9 +
+`DocumentFormat.OpenXml 3.1.0`, LibreOffice.
 
-### 一致性检查
+### Consistency checks
 
 ```powershell
 cd paper
-python final_check.py      # 16 项：数字、定理数、引用编号、模块数
-python verify_dois.py      # 23 条参考文献的 16 个 DOI 在线校验
+python final_check.py      # 16 checks: numbers, theorem counts, citation numbering, module counts
+python verify_dois.py      # online check of the 16 DOIs among 23 references
 ```
 
 ```powershell
-python tools\audit_axioms.py   # 153 条定理的公理依赖审计
+python tools\audit_axioms.py   # axiom-dependency audit over the 153 theorems
 ```
 
 ### CI
 
-每次推送到 `main` 以及每个 PR，GitHub Actions 会自动跑三件事：
+Every push to `main` and every PR triggers three GitHub Actions jobs:
 
-1. `lake build` —— 用 [leanprover/lean-action](https://github.com/leanprover/lean-action) 装工具链、拉 Mathlib 缓存、编译全部证明
-2. `tools/audit_axioms.py` —— 对全部 153 条声明生成 `#print axioms`，确认只依赖 `Classical.choice` / `Quot.sound` / `propext`，且零 `sorryAx`
-3. `paper/final_check.py` + `paper/verify_dois.py` —— 正文一致性与 DOI 在线解析
+1. `lake build` — installs the toolchain with [leanprover/lean-action](https://github.com/leanprover/lean-action), fetches the Mathlib cache, compiles every proof
+2. `tools/audit_axioms.py` — emits `#print axioms` for all 153 declarations and confirms they depend only on `Classical.choice` / `Quot.sound` / `propext`, with zero `sorryAx`
+3. `paper/final_check.py` + `paper/verify_dois.py` — manuscript consistency and online DOI resolution
 
-第 2 条是关键：`lake build` 通过只说明内核接受了证明，公理审计才能挡住一个悄悄被 `sorry` 削弱的主张。
+Job 2 is the one that matters: a passing `lake build` only says the kernel
+accepted the proofs. The axiom audit is what stops a claim quietly weakened by a
+`sorry`.
 
 ---
 
-## 为什么 `paper/refcheck/` 没有推送
+## Why `paper/refcheck/` is not pushed
 
-该目录存放的是**其他作者已发表论文的原文**（Xie et al., ACL 2026；
-Dorner et al., arXiv 2507.12399；Li et al., arXiv 2603.29121；以及两个 Zenodo 镜像）。
-它们只是本地下载来核对 `paper/manuscript.md` 里每一条引用是否与原文一致的。
+This directory holds the **full texts of papers published by other authors**
+(Xie et al., ACL 2026; Dorner et al., arXiv 2507.12399; Li et al., arXiv
+2603.29121; and two Zenodo mirrors).
+They were downloaded locally only to check that every citation in
+`paper/manuscript.md` matches its source.
 
-把它们放进 public 仓库等于再分发受版权保护的材料，因此**按版权原因排除，
-不是按体积排除**。需要自己按 DOI 取用；`verify_dois.py` 走网络校验，不依赖本地副本。
+Putting them in a public repository would redistribute copyright-protected
+material, so they are **excluded for copyright reasons, not for size**. Fetch
+them by DOI; `verify_dois.py` resolves them over the network and does not depend
+on the local copies.
 
 ## License
 
-尚未选择。论文正文的著作权保留；代码部分的授权待定。
+Not yet chosen. Copyright in the manuscript text is retained; the licence for the
+code is still open.
