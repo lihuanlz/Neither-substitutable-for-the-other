@@ -159,9 +159,9 @@ Section 2 saturates the human operator in one direction, the floor across layers
 
 Model a collaboration as the set of layers its members reach independently, with the joint result taken as the best of them. This is a `max`-type coalition, and it is a stronger claim than a discounted merge: it asserts that the merge is *exactly* the best individual and that every other member contributes exactly zero.
 
-Under that model, `add_member_same_reach` and `gain_eq_best_member` give the reach and the gain of the coalition as those of its best member. The consequence is the theorem the topic turns on:
+Under that model, `add_member_same_reach` and `gain_eq_best_member` give the reach and the gain of the coalition as those of its best member. The consequence is `marginal_agent_pure_waste`, the theorem the topic turns on:
 
-**marginal_agent_pure_waste: gain(Φ, D ∪ {a}) = gain(Φ, D), and totalIndividual(Φ, D ∪ {a}) = totalIndividual(Φ, D) + log(Φ/a).**  [Eq. 21]
+**gain(Φ, D ∪ {a}) = gain(Φ, D), and totalIndividual(Φ, D ∪ {a}) = totalIndividual(Φ, D) + log(Φ/a).**  [Eq. 21]
 
 The N+1th person earns exactly zero and costs exactly `log(Φ/a)`. Define the waste as the difference, `waste = totalIndividual − gain`. Then `waste_nonneg` and `headcount_adds_waste_only` say the merge never produces more than the best individual, and headcount only adds waste.
 
@@ -181,9 +181,9 @@ The quantity in doubt is not the size of the corpus, which grows without bound, 
 
 Then the floor is determined entirely by the best item. `floorOf_union_le_left` and `floorOf_union_le_right` say that adding a corpus changes the joint floor only through that corpus's own best item, and `floorOf_union_self_mono` covers arbitrary growth: add `n` items, none of which beats the existing floor, and the floor stays put. `floor_determines_bound` says two corpora certifying the same floor are indistinguishable whatever their size, composition or recency. This is **dilution invariance**, and it says that a corpus which is ninety-nine parts filler and one part signal certifies precisely what the one part certifies. `uninformative_corpus_gains_nothing` is `no_gain_without_floor_drop` at the corpus level: switching corpora without lowering the floor pays exactly zero.
 
-The selection version is the sharper half. If every published item is bounded below by `c`, then
+The selection version is the sharper half, and `selection_filter_caps_gain` is how it reads in one line. If every published item is bounded below by `c`, then
 
-**selection_filter_caps_gain: log(e₀/e_N) ≤ log(e₀/c) for every achievable residual e_N,**  [Eq. 23]
+**log(e₀/e_N) ≤ log(e₀/c) for every achievable residual e_N,**  [Eq. 23]
 
 uniformly in the residual. `corpus_size_cannot_beat_selection_floor` reads this contrapositively: no corpus, however large, certifies a floor below `c` if none of its items does. Corpus growth is unbounded; the floor it can certify is not.
 

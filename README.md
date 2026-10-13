@@ -245,17 +245,19 @@ Provenance/              11 Lean modules (+ Examples for cross-checking)
 paper/
   manuscript.md          Canonical manuscript source (the factual baseline, never rewritten)
   human_value.md         Illustrated long-form explainer (for a general reader)
+  notes/
+    fragmentation.md    Working note on §5: the two routes and the `max` assumption
   final_check.py         Consistency check against manuscript.md
   verify_dois.py         23 reference DOIs checked online (16/16 pass)
   figures/               Figure 1–7 (PNG + PDF); anime/ holds AI-generated explanatory illustrations
   docx_build/            Word/PDF generation project
     content.py             Manuscript body and references (the only editing entry point)
-    render_eqs.py          LaTeX → 600 dpi PNG, renders 12 equations
+    render_eqs.py          LaTeX → 600 dpi PNG, renders 16 equations
     make_figs_en.py        Regenerates English Figure 4/5 (colour-blind-safe palette)
     make_figs_saturation.py Adds Figure 6/7: headcount saturation, corpus saturation
     polish.py              ASCII → formal typographic symbols
     emit_json.py           content.py → content.json
-    assets_eq/             12 final equation PNGs (tracked)
+    assets_eq/             16 final equation PNGs (tracked)
     eq/                    LaTeX intermediates (ignored, regenerable)
     Gen/                   C# + OpenXML SDK generator
     preview/               DOCX page-by-page previews
