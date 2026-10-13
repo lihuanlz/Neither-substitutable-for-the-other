@@ -30,6 +30,21 @@
 \usepackage[htt]{hyphenat}
 \usepackage[hidelinks]{hyperref}
 
+%% References. Two settings, both about how a DOI looks on the page.
+%%
+%% \urlstyle{same} puts the link in the body font instead of \ttfamily. A
+%% typewriter DOI is legible in isolation and heavier than the reference it
+%% sits in, which is not how a published reference list reads.
+%%
+%% The dot in "doi.org" is a break point by default, which is how the earlier
+%% build came to wrap a DOI as "https://doi." then "org/10.1002/...". Removing
+%% the period from both break lists leaves slashes and hyphens to break on.
+\urlstyle{same}
+\makeatletter
+\g@addto@macro\UrlBreaks{\UrlNoBreaks\do\.}
+\g@addto@macro\UrlBigBreaks{\UrlNoBreaks\do\.}
+\makeatother
+
 %% Paragraph rhythm. A first-line indent with no inter-paragraph skip is the
 %% convention in this field: it signals a new paragraph without inserting
 %% white space the reader has to cross. The Word path set both as literal twip

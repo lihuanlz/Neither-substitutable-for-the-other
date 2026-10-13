@@ -37,6 +37,6 @@ def build(prs):
     para(tf, "TV = 0.40 → at best 0.20 above chance, error rate 0.30.",
          size=12, color="primary", bold=True, line=1.35)
 
-    source(s, "Source: Fig. 1 — the Neyman-Pearson / Le Cam two-point "
+    source(s, "Source: Fig. 1: the Neyman-Pearson / Le Cam two-point "
               "lemma, not our result", y=4.98)
     return s

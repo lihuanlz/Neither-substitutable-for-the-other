@@ -272,17 +272,27 @@ def emit_blocks(blocks) -> str:
 
 
 def reference_body(item: str) -> str:
-    """Render one reference, turning its DOI into a working link.
+    """Render one reference, giving its DOI a short hyperlinked label.
 
-    The entries are pre-formatted strings from content.py, and a DOI like
-    10.1890/0012-9658(2002)083[2248:ESORWD]2.0.CO;2 contains parentheses and
-    brackets that \\url handles but inline text would not.
+    The entry is the bare URL manuscript.md carries, which every markdown
+    renderer already turns into a link. Printing that URL in the PDF does not
+    work: it is long enough that \\url broke it as "https://doi." then
+    "org/10.3390/...", which reads as two pieces rather than one identifier.
+    Published reference lists print doi:10.xxxx/yyyy instead, short enough to
+    break on its own slashes. \\nolinkurl supplies \\url's break behaviour
+    without nesting a second link inside the first, and \\urlstyle{same} in
+    the preamble keeps the label in the body font rather than typewriter.
+
+    Markdown autolinks were tried here first and abandoned: DOI 9 contains a
+    literal '>' (10.1002/1097-0142(1950)3:1<32::AID-...>3.0.CO;2-3), which
+    terminates an <...> autolink early and silently truncates the identifier.
     """
-    url = re.search(r"(https?://\S+)", item)
-    if not url:
+    m = re.search(r"https://doi\.org/(\S+)", item)
+    if not m:
         return inline(item)
-    link = r"\url{%s}" % url.group(1)
-    return inline(item).replace(inline(url.group(1)), link)
+    doi = m.group(1)
+    link = r"doi:\href{https://doi.org/%s}{\nolinkurl{%s}}" % (doi, doi)
+    return inline(item).replace(m.group(0), link)
 
 
 # ── checks ───────────────────────────────────────────────────────────────────

@@ -12,7 +12,7 @@ Formalization: Lean 4 + Mathlib, **153 theorems + 20 worked examples**, zero
 fragmentation side topic, 17 the corpus-selection side topic.
 
 > Two operations, two objects. A machine compresses; a human refines. There is
-> no exchange rate between them — not because nobody has found one yet, but
+> no exchange rate between them, and not because nobody has found one yet but
 > because the two move quantities that no single currency can hold.
 
 ## Citation
@@ -31,7 +31,7 @@ fragmentation side topic, 17 the corpus-selection side topic.
 > says.
 >
 > Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). The paper is
-> CC-BY-4.0; the code and documentation are MIT — see [`LICENSE`](LICENSE).
+> CC-BY-4.0. The code and documentation are MIT; see [`LICENSE`](LICENSE).
 
 The manuscript is plain Markdown with LaTeX sources rather than scanned images,
 so text extraction keeps every theorem statement intact. If you are building a
@@ -94,7 +94,7 @@ directions, different dimensions, so no exchange rate exists.
 
 ## Three layers of results
 
-### Layer 1 · Content — what post hoc provenance can identify
+### Layer 1 · Content: what post hoc provenance can identify
 
 Maximal detection advantage \(=\mathrm{TV}/2\), error rate \(=(1-\mathrm{TV})/2\),
 and both bounds are **attained**. So the bottleneck is TV itself, not the quality
@@ -109,7 +109,7 @@ miss rate(N) = max( (1−q)^N , λ·TV )
 The optimal verification budget \(N^\star\) therefore has a hard upper bound
 **independent** of reviewer accuracy \(p\).
 
-### Layer 2 · System — why ex ante pricing fails
+### Layer 2 · System: why ex ante pricing fails
 
 Influence does not proxy for value: `influence_value_separable` constructs two
 outputs with identical absolute influence, opposite signed values, and
@@ -126,7 +126,7 @@ Incommensurability has to be stated over two regimes:
 The exact term is "**not linearly convertible**", not "fully incommensurable".
 The latter is too strong and Lean would refute it.
 
-### Layer 3 · Calibration — even the sign is not measured
+### Layer 3 · Calibration: even the sign is not measured
 
 Take the most widely used estimator of "minimum necessary human contribution",
 \(\hat\varphi = 1 - \bar\tau/\bar s\).
@@ -145,7 +145,7 @@ question: **under human-AI collaboration, does human innovation scale up, or
 fragment?**
 This is a separate problem and the answer is **fragmentation**, through two
 mechanisms.
-**Collaboration side (endogenous)** — on a given layer, the layer movement the
+**Collaboration side (endogenous)**: on a given layer, the layer movement the
 coalition achieves **equals that of its best member**. The N+1th person earns
 exactly 0 and costs exactly \(\log(\Phi/a)\):
 
@@ -155,7 +155,7 @@ theorem marginal_agent_pure_waste ...
     ∧ totalIndividual Φ (insert a D) = ... + log (Φ / a)   -- cost strictly increases
 ```
 
-**Time side (exogenous)** — hold the increment back rather than publishing it,
+**Time side (exogenous)**: hold the increment back rather than publishing it,
 waiting for a window that will be superseded. Coverage is absorbing, so the
 value of holding is **non-increasing** (`holdValue_antitone`); once superseded,
 the gain is exactly zero (`publish_dominates_when_covered`).
@@ -237,8 +237,8 @@ Provenance/              11 Lean modules (+ Examples for cross-checking)
   VerifyBudget.lean      TV floor: optimal verification budget N*
   Incommensurable.lean   Not linearly convertible (regime-wise)
   Calibration.lean       Calibration non-identifiability: the sign is not fixed by the data
-  Fragmentation.lean     Side topic: fragmentation — adding members adds no gain, waiting gains are non-increasing
-  Corpus.lean            Side topic: the corpus is the filter — dilution invariance and the selection ceiling
+  Fragmentation.lean     Side topic: fragmentation, where adding members adds no gain, waiting gains are non-increasing
+  Corpus.lean            Side topic: the corpus is the filter, via dilution invariance and the selection ceiling
   Examples.lean          Exact rational worked examples
 
 paper/
@@ -259,7 +259,7 @@ paper/
     Gen/                   C# + OpenXML SDK generator
     preview/               DOCX page-by-page previews
     two_saturating_operators.docx / .pdf
-  tex/                   LaTeX build — **produces the shipped PDF**
+  tex/                   LaTeX build, **producing the shipped PDF**
     preamble.tex         hand-written document setup
     emit_tex.py          content.py → main.tex → two_saturating_operators.pdf
     main.tex             generated, committed; arXiv wants the source
@@ -320,9 +320,9 @@ python tools\audit_axioms.py   # axiom-dependency audit over the 153 theorems
 
 Every push to `main` and every PR triggers three GitHub Actions jobs:
 
-1. `lake build` — installs the toolchain with [leanprover/lean-action](https://github.com/leanprover/lean-action), fetches the Mathlib cache, compiles every proof
-2. `tools/audit_axioms.py` — emits `#print axioms` for all 153 declarations and confirms they depend only on `Classical.choice` / `Quot.sound` / `propext`, with zero `sorryAx`
-3. `paper/final_check.py` + `paper/verify_dois.py` — manuscript consistency and online DOI resolution
+1. `lake build`: installs the toolchain with [leanprover/lean-action](https://github.com/leanprover/lean-action), fetches the Mathlib cache, compiles every proof
+2. `tools/audit_axioms.py`: emits `#print axioms` for all 153 declarations and confirms they depend only on `Classical.choice` / `Quot.sound` / `propext`, with zero `sorryAx`
+3. `paper/final_check.py` + `paper/verify_dois.py`: manuscript consistency and online DOI resolution
 
 Job 2 is the one that matters: a passing `lake build` only says the kernel
 accepted the proofs. The axiom audit is what stops a claim quietly weakened by a

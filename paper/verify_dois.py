@@ -56,10 +56,11 @@ def main():
 
     dois, seen = [], set()
     for m in DOI_RE.finditer(text):
-        # A DOI may legitimately contain brackets and semicolons, so only
-        # unambiguous sentence punctuation is trimmed, and only when the DOI
-        # does not already contain a balanced one of its own.
-        d = m.group(1).rstrip(".,")
+        # The manuscript writes DOIs as markdown autolinks, so a harvest ends
+        # with the closing angle bracket. Parentheses are trimmed only when
+        # unbalanced, because a real DOI such as
+        # 10.1890/0012-9658(2002)083[2248:ESORWD]2.0.CO;2 ends in one.
+        d = m.group(1).rstrip(">.,;")
         while d.endswith(")") and d.count(")") > d.count("("):
             d = d[:-1]
         if d not in seen:

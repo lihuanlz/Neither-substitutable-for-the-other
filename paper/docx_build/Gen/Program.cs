@@ -1,4 +1,6 @@
-// Backend S — direct OpenXML SDK generator for the rewritten formal paper.
+// Backend S: direct OpenXML SDK generator for the rewritten formal paper.
+// Note that the shipped PDF no longer comes from here. LaTeX builds it; this
+// produces the editable Word version, from the same content.py.
 //
 // Recipe family: AcademicThesis (APA-style), values taken from
 // scripts/dotnet/MiniMaxAIDocx.Core/Samples/AestheticRecipeSamples.cs

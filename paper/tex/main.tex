@@ -30,6 +30,21 @@
 \usepackage[htt]{hyphenat}
 \usepackage[hidelinks]{hyperref}
 
+%% References. Two settings, both about how a DOI looks on the page.
+%%
+%% \urlstyle{same} puts the link in the body font instead of \ttfamily. A
+%% typewriter DOI is legible in isolation and heavier than the reference it
+%% sits in, which is not how a published reference list reads.
+%%
+%% The dot in "doi.org" is a break point by default, which is how the earlier
+%% build came to wrap a DOI as "https://doi." then "org/10.1002/...". Removing
+%% the period from both break lists leaves slashes and hyphens to break on.
+\urlstyle{same}
+\makeatletter
+\g@addto@macro\UrlBreaks{\UrlNoBreaks\do\.}
+\g@addto@macro\UrlBigBreaks{\UrlNoBreaks\do\.}
+\makeatother
+
 %% Paragraph rhythm. A first-line indent with no inter-paragraph skip is the
 %% convention in this field: it signals a new paragraph without inserting
 %% white space the reader has to cross. The Word path set both as literal twip
@@ -248,29 +263,29 @@ Two further commitments attach to section 6: articulability is not represented, 
 All results are stated and proved in Lean 4 (toolchain leanprover/lean4:v4.15.0) against Mathlib, on finite probability spaces, across twelve modules: total variation and its properties; Bayesian-optimal detection and error rate; contamination as repeated TV mixing; coverage monotonicity, submodularity and diminishing marginal returns; a hypothesis-testing module consolidating mass-sum identities and the TV bounds; a refinement module separating layer-crossing from within-layer gains; a value module establishing the separability lemma; a verification-budget module; an incommensurability module fixing the utility class; a calibration module proving the sign of the minimum-contribution estimator is not identified; a fragmentation module formalizing coalition and holding-window saturation; and a corpus module formalizing dilution invariance and selection filters.
 The formalization is not decoration. It falsified the confusion-matrix inequality, forced the residual term to carry a TV floor, reversed two monotonicity directions we had asserted, and turned the separability claim into a theorem. It also caught one of our own claims as false on first attempt: the composition of a selection filter with corpus dilution requires a hypothesis on the first corpus as well, because otherwise the first corpus may already sit below the threshold.
 \begin{thebibliography}{99}
-\bibitem{ref1} MacKenzie, D. I., Nichols, J. D., Lachman, G. B., Droege, S., Royle, J. A. \& Langtimm, C. A. Estimating site occupancy rates when detection probabilities are less than one. Ecology 83, 2248–2255 (2002). \url{https://doi.org/10.1890/0012-9658(2002)083[2248:ESORWD]2.0.CO;2}
+\bibitem{ref1} MacKenzie, D. I., Nichols, J. D., Lachman, G. B., Droege, S., Royle, J. A. \& Langtimm, C. A. Estimating site occupancy rates when detection probabilities are less than one. Ecology 83, 2248–2255 (2002). doi:\href{https://doi.org/10.1890/0012-9658(2002)083[2248:ESORWD]2.0.CO;2}{\nolinkurl{10.1890/0012-9658(2002)083[2248:ESORWD]2.0.CO;2}}
 \bibitem{ref2} Royle, J. A. \& Dorazio, R. J. Inference and Change of Detection in a Changing World (Princeton University Press, 2008).
 \bibitem{ref3} Tyre, J. C., Tenhumberg, B., Field, S. A., Niejalke, D., Parris, K. \& Possingham, H. P. Improving precision and reducing bias in biological surveys: estimating false-negative error rates. Ecological Applications 13, 1790–1801 (2003).
-\bibitem{ref4} MacKenzie, D. I., Nichols, J. D., Hines, J. E., Knutson, M. G. \& Franklin, A. B. Estimating site occupancy, colonization, and local extinction when a species is detected imperfectly. Ecology 84, 2200–2207 (2003). \url{https://doi.org/10.1890/02-3090}
+\bibitem{ref4} MacKenzie, D. I., Nichols, J. D., Hines, J. E., Knutson, M. G. \& Franklin, A. B. Estimating site occupancy, colonization, and local extinction when a species is detected imperfectly. Ecology 84, 2200–2207 (2003). doi:\href{https://doi.org/10.1890/02-3090}{\nolinkurl{10.1890/02-3090}}
 \bibitem{ref5} Neyman, J. \& Pearson, E. S. On the two problem of the most powerful tests of statistical hypotheses and the principles of scientific inference. Philosophical Transactions of the Royal Society A 231, 289–337 (1933).
 \bibitem{ref6} Le Cam, L. Statistical Methods for Researchers (University of California Press, 1990).
 \bibitem{ref7} Cover, T. M. \& Thomas, J. A. Elements of Information Theory, 2nd ed. (Wiley, 2006).
 \bibitem{ref8} Peirce, C. S. The logic of scientific judgment. Journal of Analytical Chemistry 18, 389–395 (1884).
-\bibitem{ref9} Youden, W. J. Index for rating diagnostic tests. Cancer 3, 32–35 (1950). \url{https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3}
-\bibitem{ref10} Silva, D. W. Indistinguishable by Design: On the Impossibility of AI Text Detection Without Generator Cooperation. Preprint, Zenodo (2026). \url{https://doi.org/10.5281/zenodo.18714018}
-\bibitem{ref11} Sadasivan, V., Dubey, S., Cantor, E. \& Wiecek, B. Can AI-generated text be reliably detected? Preprint, arXiv:2303.11156 (2023). \url{https://doi.org/10.48550/arXiv.2303.11156}
-\bibitem{ref12} Kirchenbauer, J. et al. A watermark for large language models. Proceedings of the 58th International Conference on Machine Learning (2021). \url{https://doi.org/10.48550/arXiv.2301.10226}
-\bibitem{ref13} Dorner, F. E., Chen, Y., Cruz, A. F. \& Yang, F. ROC-n-reroll: how verifier imperfection affects test-time scaling. Preprint, arXiv:2507.12399 (2025; rev. 2026). \url{https://doi.org/10.48550/arXiv.2507.12399}
-\bibitem{ref14} Ishii, K., Gautam, B. P., Wu, J. \& Saher, J. Platonic projection structures: operator-induced observability in representation learning. Entropy 28, 768 (2026). \url{https://doi.org/10.3390/e28070768}
-\bibitem{ref15} Rada, M. Resolution Geometry of Observation Systems. Preprint, Zenodo (2026). \url{https://doi.org/10.5281/zenodo.21928119}
-\bibitem{ref16} Jiao, Y., Ho, P.-H., Peng, L. \& Miao, Y. Task-aware identifiability: observation quotients, statistical geometry, and representation accessibility. Preprint, arXiv:2601.21584 (2026). \url{https://doi.org/10.48550/arXiv.2601.21584}
-\bibitem{ref17} Li, W., Aboutorabi, A., Lyu, H., Qian, K., Fleming, M., Goehring, B. C. \& Thompson, N. Economics of human and AI collaboration: when is partial automation more attractive than full automation? Preprint, arXiv:2603.29121 (2026). \url{https://doi.org/10.48550/arXiv.2603.29121}
-\bibitem{ref18} Xie, Y., Qi, T., Yi, J., Yang, X., Whalen, R., Huang, J., Ding, Q., Xie, Y., Xie, X. \& Wu, F. Measuring human contribution in AI-assisted content generation. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (ACL, 2026), pp. 6168–6190. \url{https://doi.org/10.18653/v1/2026.acl-long.279}
-\bibitem{ref19} Hao, Q., Xu, F., Li, Y. \& Evans, J. Artificial intelligence tools expand scientists' impact but contract science's focus. Nature 649, 1237–1243 (2026). \url{https://doi.org/10.1038/s41586-025-09922-y}
-\bibitem{ref20} Bao, H., Wu, S., Liu, X., Li, S., Cao, S. \& Evans, J. Contemporary AI lacks the imagination to diverge or negate in science. Preprint, arXiv:2606.08251 (2026). \url{https://doi.org/10.48550/arXiv.2606.08251}
-\bibitem{ref21} Sinhahajari, S., Majumder, N. \& Poria, S. On the limits of LLM-as-judge for scientific novelty assessment. Preprint, arXiv:2606.12071 (2026). \url{https://doi.org/10.48550/arXiv.2606.12071}
-\bibitem{ref22} Tsoukalas, T. et al. Advancing mathematics research with AI-driven formal proof search. Preprint, arXiv:2605.22763 (2026). \url{https://doi.org/10.48550/arXiv.2605.22763}
-\bibitem{ref23} Asher, J. Formalize everything, now! (2026). \url{https://justinasher.me/formalize-everything-now}
+\bibitem{ref9} Youden, W. J. Index for rating diagnostic tests. Cancer 3, 32–35 (1950). doi:\href{https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3>}{\nolinkurl{10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3>}}
+\bibitem{ref10} Silva, D. W. Indistinguishable by Design: On the Impossibility of AI Text Detection Without Generator Cooperation. Preprint, Zenodo (2026). doi:\href{https://doi.org/10.5281/zenodo.18714018}{\nolinkurl{10.5281/zenodo.18714018}}
+\bibitem{ref11} Sadasivan, V., Dubey, S., Cantor, E. \& Wiecek, B. Can AI-generated text be reliably detected? Preprint, arXiv:2303.11156 (2023). doi:\href{https://doi.org/10.48550/arXiv.2303.11156}{\nolinkurl{10.48550/arXiv.2303.11156}}
+\bibitem{ref12} Kirchenbauer, J. et al. A watermark for large language models. Proceedings of the 58th International Conference on Machine Learning (2021). doi:\href{https://doi.org/10.48550/arXiv.2301.10226}{\nolinkurl{10.48550/arXiv.2301.10226}}
+\bibitem{ref13} Dorner, F. E., Chen, Y., Cruz, A. F. \& Yang, F. ROC-n-reroll: how verifier imperfection affects test-time scaling. Preprint, arXiv:2507.12399 (2025; rev. 2026). doi:\href{https://doi.org/10.48550/arXiv.2507.12399}{\nolinkurl{10.48550/arXiv.2507.12399}}
+\bibitem{ref14} Ishii, K., Gautam, B. P., Wu, J. \& Saher, J. Platonic projection structures: operator-induced observability in representation learning. Entropy 28, 768 (2026). doi:\href{https://doi.org/10.3390/e28070768}{\nolinkurl{10.3390/e28070768}}
+\bibitem{ref15} Rada, M. Resolution Geometry of Observation Systems. Preprint, Zenodo (2026). doi:\href{https://doi.org/10.5281/zenodo.21928119}{\nolinkurl{10.5281/zenodo.21928119}}
+\bibitem{ref16} Jiao, Y., Ho, P.-H., Peng, L. \& Miao, Y. Task-aware identifiability: observation quotients, statistical geometry, and representation accessibility. Preprint, arXiv:2601.21584 (2026). doi:\href{https://doi.org/10.48550/arXiv.2601.21584}{\nolinkurl{10.48550/arXiv.2601.21584}}
+\bibitem{ref17} Li, W., Aboutorabi, A., Lyu, H., Qian, K., Fleming, M., Goehring, B. C. \& Thompson, N. Economics of human and AI collaboration: when is partial automation more attractive than full automation? Preprint, arXiv:2603.29121 (2026). doi:\href{https://doi.org/10.48550/arXiv.2603.29121}{\nolinkurl{10.48550/arXiv.2603.29121}}
+\bibitem{ref18} Xie, Y., Qi, T., Yi, J., Yang, X., Whalen, R., Huang, J., Ding, Q., Xie, Y., Xie, X. \& Wu, F. Measuring human contribution in AI-assisted content generation. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (ACL, 2026), pp. 6168–6190. doi:\href{https://doi.org/10.18653/v1/2026.acl-long.279}{\nolinkurl{10.18653/v1/2026.acl-long.279}}
+\bibitem{ref19} Hao, Q., Xu, F., Li, Y. \& Evans, J. Artificial intelligence tools expand scientists' impact but contract science's focus. Nature 649, 1237–1243 (2026). doi:\href{https://doi.org/10.1038/s41586-025-09922-y}{\nolinkurl{10.1038/s41586-025-09922-y}}
+\bibitem{ref20} Bao, H., Wu, S., Liu, X., Li, S., Cao, S. \& Evans, J. Contemporary AI lacks the imagination to diverge or negate in science. Preprint, arXiv:2606.08251 (2026). doi:\href{https://doi.org/10.48550/arXiv.2606.08251}{\nolinkurl{10.48550/arXiv.2606.08251}}
+\bibitem{ref21} Sinhahajari, S., Majumder, N. \& Poria, S. On the limits of LLM-as-judge for scientific novelty assessment. Preprint, arXiv:2606.12071 (2026). doi:\href{https://doi.org/10.48550/arXiv.2606.12071}{\nolinkurl{10.48550/arXiv.2606.12071}}
+\bibitem{ref22} Tsoukalas, T. et al. Advancing mathematics research with AI-driven formal proof search. Preprint, arXiv:2605.22763 (2026). doi:\href{https://doi.org/10.48550/arXiv.2605.22763}{\nolinkurl{10.48550/arXiv.2605.22763}}
+\bibitem{ref23} Asher, J. Formalize everything, now! (2026). https://justinasher.me/formalize-everything-now
 \end{thebibliography}
 
 \end{document}

@@ -11,7 +11,7 @@
 
 Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content, and it produces the wrong policy advice. The two parties act on different variables, and each saturates on a different axis.
 
-We formalize the alternative. A machine, holding the hypothesis space fixed, compresses the residual toward a floor it cannot pass: the total gain is bounded by `log(e₀/Φ)` and does not improve with more inference steps. A human, holding the hypothesis space fixed, moves the floor itself, and the gain from doing so is unbounded. Two further saturations fall out of the same currency. Headcount saturates immediately — under a max-type coalition the N+1th member's gain is exactly zero while its cost is exactly `log(Φ/a)` [Eq. 13]. And corpus size saturates too: dilution invariance says only the single item certifying the lowest floor determines the attainable bound, and a corpus whose published items are all bounded below by `c` can never certify a floor below `c` [Eq. 15], whatever its length.
+We formalize the alternative. A machine, holding the hypothesis space fixed, compresses the residual toward a floor it cannot pass: the total gain is bounded by `log(e₀/Φ)` and does not improve with more inference steps. A human, holding the hypothesis space fixed, moves the floor itself, and the gain from doing so is unbounded. Two further saturations fall out of the same currency. Headcount saturates immediately: under a max-type coalition the N+1th member's gain is exactly zero while its cost is exactly `log(Φ/a)` [Eq. 13]. And corpus size saturates too: dilution invariance says only the single item certifying the lowest floor determines the attainable bound, and a corpus whose published items are all bounded below by `c` can never certify a floor below `c` [Eq. 15], whatever its length.
 
 Three layers of content-level and system-level mathematics sit underneath, and they are what make the claim checkable rather than rhetorical. Total variation is the exact maximal discriminability available to any detector, so verification effort has a floor that no amount of reviewer diligence lowers. The truth is an equivalence class induced by the observation protocol, which splits human and machine contribution into two currencies with no monotone exchange rate between them. And the sign of the leading information-theoretic measure of human contribution is not identified: the same output is reported as −0.099 under one calibration and +0.169 under another.
 
@@ -27,7 +27,7 @@ A machine that has been shown a mechanism hypothesis compresses the distance bet
 
 A human who notices that the mechanism should be measured at a different resolution changes which estimates are attainable at all. That operation moves the floor, and there is no ceiling on how far it can be moved.
 
-The two operations are not two points on a shared scale. They act on different variables, and this is why the standard question — how much of the work can be handed over — has no answer that stays stable under refinement. More of the machine's operation cannot move the quantity the human's operation acts on. The bottleneck relocates from speed to layer selection and verification, and it does not stay there.
+The two operations are not two points on a shared scale. They act on different variables, and this is why the standard question, how much of the work can be handed over, has no answer that stays stable under refinement. More of the machine's operation cannot move the quantity the human's operation acts on. The bottleneck relocates from speed to layer selection and verification, and it does not stay there.
 
 Three consequences follow, and each is a theorem rather than a position.
 
@@ -117,11 +117,11 @@ Rewriting their estimator exposes a sharper problem than the negatives. Their Eq
 
 **φ̂ = 1 − τ̄/s̄,**  [Eq. 16]
 
-where `τ̄ = −log τ` is the plausibility bar and `s̄ = I(y)/N` the mean per-token unconditional surprisal. Two consequences follow. `φ̂` is a function of the output alone — the human input does not appear — and it is unbounded below as `y` grows more predictable, so the `[0,1]` reading does not survive in the estimation variant. And its sign is `φ̂ < 0 ⟺ s̄ < τ̄`, where `τ̄` is fitted rather than measured: the authors set `−log τ` to the empirical mean plus one standard deviation of conditional surprisal over 2,500 WildChat prompts, giving 0.5496 for Llama-3 and 0.4155 for Mixtral [18, §A.5].
+where `τ̄ = −log τ` is the plausibility bar and `s̄ = I(y)/N` the mean per-token unconditional surprisal. Two consequences follow. `φ̂` is a function of the output alone, since the human input does not appear, and it is unbounded below as `y` grows more predictable, so the `[0,1]` reading does not survive in the estimation variant. And its sign is `φ̂ < 0 ⟺ s̄ < τ̄`, where `τ̄` is fitted rather than measured: the authors set `−log τ` to the empirical mean plus one standard deviation of conditional surprisal over 2,500 WildChat prompts, giving 0.5496 for Llama-3 and 0.4155 for Mixtral [18, §A.5].
 
 The only sign this framework can report is therefore set by a nuisance parameter estimated out of distribution. The same output is evidence of contribution under one calibration and evidence against it under another. `sign_not_identified` exhibits two calibrations that flip the reported sign for any output; `sign_not_identified_exact` pins the witnesses to bars at half and one-and-a-half times the output's mean surprisal. The apparent sign is a property of the calibration, not of the collaboration.
 
-More generally, every reflection-invariant measure — KL, mutual information, total variation, Jensen–Shannon — has this blind spot as a property of the class rather than of an implementation. An author who moves a claim toward the truth and one who moves it toward an equally plausible falsehood produce identical mutual information with the text. `influence_value_separable` makes this exact: for any `M > 0` there are processes with identical `|influence|` between two states whose signed value is `+M`, and processes with the same `|influence|` whose value is `−M`.
+More generally, every reflection-invariant measure (KL, mutual information, total variation, Jensen–Shannon) has this blind spot as a property of the class rather than of an implementation. An author who moves a claim toward the truth and one who moves it toward an equally plausible falsehood produce identical mutual information with the text. `influence_value_separable` makes this exact: for any `M > 0` there are processes with identical `|influence|` between two states whose signed value is `+M`, and processes with the same `|influence|` whose value is `−M`.
 
 This also refutes the natural first attempt at a within-layer sensitivity function, `H(x) = |δΦ/δx|`. Taking an absolute value identifies refinement with coarsening, so the instrument cannot distinguish an author who sharpened a mechanism model from one who blurred it, and reports zero for both.
 
@@ -129,7 +129,7 @@ The fix is a signed definition fixed in advance, on order-preserving, additive, 
 
 ## 5. Saturation on the human axis: headcount
 
-Section 2 saturates the human operator in one direction — the floor, across layers. It says nothing about the other direction, people. The obvious hope is that more researchers compress that axis, the way more inference steps compress the machine's. They do not.
+Section 2 saturates the human operator in one direction, the floor across layers. It says nothing about the other direction, people. The obvious hope is that more researchers compress that axis, the way more inference steps compress the machine's. They do not.
 
 Model a collaboration as the set of layers its members reach independently, with the joint result taken as the best of them. This is a `max`-type coalition, and it is a stronger claim than a discounted merge: it asserts that the merge is *exactly* the best individual and that every other member contributes exactly zero.
 
@@ -139,11 +139,11 @@ Under that model, `add_member_same_reach` and `gain_eq_best_member` give the rea
 
 The N+1th person earns exactly zero and costs exactly `log(Φ/a)`. Define the waste as the difference, `waste = totalIndividual − gain`. Then `waste_nonneg` and `headcount_adds_waste_only` say the merge never produces more than the best individual, and headcount only adds waste.
 
-The time axis behaves the same way. Holding an increment back is not an option in the usual sense: let `holdValue vBig d covered` be `0` if the window is superseded by the time `d` arrives and `vBig` otherwise. Coverage is absorbing — once superseded, always superseded — so `holdValue_antitone` says the value of waiting is non-increasing in the delay, and `publish_dominates_when_covered` says that once superseded, publishing the small result immediately strictly dominates. There are two outcomes, "not yet superseded" and "already superseded", and no third.
+The time axis behaves the same way. Holding an increment back is not an option in the usual sense: let `holdValue vBig d covered` be `0` if the window is superseded by the time `d` arrives and `vBig` otherwise. Coverage is absorbing: once superseded, always superseded. So `holdValue_antitone` says the value of waiting is non-increasing in the delay, and `publish_dominates_when_covered` says that once superseded, publishing the small result immediately strictly dominates. There are two outcomes, "not yet superseded" and "already superseded", and no third.
 
 `fragmentation_squeeze` closes both routes at once, and `scale_by_new_layers_not_by_headcount` names the remaining exit: scale by changing the layer, which is the unbounded direction of §2.
 
-The `max` assumption is the load-bearing part, and it is falsifiable in one move. If real collaboration is superadditive — if two people together reach a layer neither reaches alone, as complementary expertise plausibly suggests — then `add_member_same_reach` fails immediately. We state the assumption because leaving it to intuition invites exactly the recombination story the model denies.
+The `max` assumption is the load-bearing part, and it is falsifiable in one move. If real collaboration is superadditive (if two people together reach a layer neither reaches alone, as complementary expertise plausibly suggests) then `add_member_same_reach` fails immediately. We state the assumption because leaving it to intuition invites exactly the recombination story the model denies.
 
 ## 6. Saturation on the data axis: the corpus
 
@@ -169,7 +169,7 @@ Two things are deliberately left out, and the omissions are the point. Whether a
 
 The formal claims above make predictions, and the empirical literature of 2026 bears on them unevenly. We separate what is supported from what is merely consistent.
 
-**Support for the two-axis claim.** A study of 41.3 million papers, of which roughly 311,000 were AI-augmented under an LM classifier scoring F1 = 0.875, found that AI-augmented work produces 3.02× the papers, 4.84× the citations, and reaches project-leader status 1.37 years earlier — while collective topic volume contracts 4.63% and researcher-to-researcher interaction falls 22%, with more than 70% of 200-odd subfields contracting [19]. Output rising while interaction falls is the signature of one axis saturating while the other does not.
+**Support for the two-axis claim.** A study of 41.3 million papers, of which roughly 311,000 were AI-augmented under an LM classifier scoring F1 = 0.875, found that AI-augmented work produces 3.02× the papers, 4.84× the citations, and reaches project-leader status 1.37 years earlier, while collective topic volume contracts 4.63% and researcher-to-researcher interaction falls 22%, with more than 70% of 200-odd subfields contracting [19]. Output rising while interaction falls is the signature of one axis saturating while the other does not.
 
 **Support for the missing human operation.** The operation this project performs is the construction of null hypotheses, counter-examples and non-identifiability witnesses. An evaluation of 121,640 preprints by 6,749 responding scientists found that non-reasoning models collapse into a narrow "hivemind" of similar ideas, that reasoning models roam wider, and that **no model class spontaneously proposes a null hypothesis**, a move human researchers make freely; an analysis of 39 million papers from 2010 to 2025 further finds that null claims are sharply suppressed and ideas contract after the release of ChatGPT [20]. A companion benchmark shows LLM judges rating model-generated research questions as highly novel while domain experts prefer author-anchored questions [21], which is what a missing human filter looks like from the inside.
 
@@ -207,7 +207,7 @@ The formalization is not decoration. It falsified the confusion-matrix inequalit
 
 **Figure 4 | The sign of a credit measure is not identified.** The estimated contribution `φ̂ = 1 − τ̄/s̄` plotted as the plausibility bar `τ̄` moves through its plausible range. The estimator is a function of the output alone and the bar is fitted out of distribution, so the same output crosses zero: Llama-3 reports `−0.099` at `τ̄ = 0.5496` and Mixtral reports `+0.169` at `τ̄ = 0.4155`. The sign-flipping witnesses are pinned at `τ = s/2` and `τ = 3s/2`.
 
-**Figure 5 | Influence and value are separable.** For any `M > 0` there exist processes with identical `|influence|` between two states α and β whose signed value is `+M`, and processes with the same `|influence|` whose value is `−M`. The horizontal coordinate (magnitude of change) is identical across all four cases; the vertical coordinate (signed contribution) is not determined by it. Any reflection-invariant measure — KL, mutual information, total variation, Jensen–Shannon — is blind to this split.
+**Figure 5 | Influence and value are separable.** For any `M > 0` there exist processes with identical `|influence|` between two states α and β whose signed value is `+M`, and processes with the same `|influence|` whose value is `−M`. The horizontal coordinate (magnitude of change) is identical across all four cases; the vertical coordinate (signed contribution) is not determined by it. Any reflection-invariant measure (KL, mutual information, total variation, Jensen–Shannon) is blind to this split.
 
 **Figure 6 | Headcount saturates immediately.** (a) Coalition gain is flat in the number of members while the summed individual gain grows linearly; the band between them is pure waste. (b) The marginal gain of every member after the best one is exactly zero. (c) Under a max-type coalition the best member alone sets the outcome, for every candidate floor.
 
@@ -223,7 +223,7 @@ A four-panel illustrated series accompanies this article. All four panels use th
 
 **VS2 | Survey harder, resolve no further.** Four superimposed copies of the ecologist scan the same valley in sequence. Every scan beam travels a long way and is then clipped by a luminous horizontal barrier. Two bird silhouettes sit above the barrier, at a fixed separation, no matter how many scans are added. This is the verification floor: residual miss rate decays as `(1 − q)^N` and is then cut off at `λ·TV`, so the optimal number of rounds is capped at a value that contains no term for reviewer reliability.
 
-**VS3 | Same push, opposite direction.** The character appears twice in identical pose, moving an identical glowing sphere with identical effort. On the left the sphere climbs toward a warm dawn and sharpens into precision. On the right the sphere falls into a dark vortex and dissolves into noise. Magnitude is held constant; only direction changes. Every unsigned measure — mutual information, KL, total variation — assigns both cases the same number.
+**VS3 | Same push, opposite direction.** The character appears twice in identical pose, moving an identical glowing sphere with identical effort. On the left the sphere climbs toward a warm dawn and sharpens into precision. On the right the sphere falls into a dark vortex and dissolves into noise. Magnitude is held constant; only direction changes. Every unsigned measure (mutual information, KL, total variation) assigns both cases the same number.
 
 **VS4 | Two currencies, no exchange rate.** The ecologist climbs a staircase of stacked glass layers, each layer a further resolution, her hand trailing light across each one. Beside her, a small robot compresses a cluster of glowing orbs along a single flat layer toward a fixed amber target. Between the staircase and the flat layer, an exchange arrow has broken into drifting fragments. Refinement moves the target and is unbounded; compression moves the residual and is capped at `log(e₀/Φ)`. No monotone rate converts one into the other.
 
@@ -249,7 +249,7 @@ Provenance search was conducted against the published literature on AI-text dete
 6. Le Cam, L. *Statistical Methods for Researchers* (University of California Press, 1990).
 7. Cover, T. M. & Thomas, J. A. *Elements of Information Theory*, 2nd ed. (Wiley, 2006).
 8. Peirce, C. S. The logic of scientific judgment. *Journal of Analytical Chemistry* **18**, 389–395 (1884).
-9. Youden, W. J. Index for rating diagnostic tests. *Cancer* **3**, 32–35 (1950). https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3
+9. Youden, W. J. Index for rating diagnostic tests. *Cancer* **3**, 32–35 (1950). https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3>
 10. Silva, D. W. *Indistinguishable by Design: On the Impossibility of AI Text Detection Without Generator Cooperation*. Preprint, Zenodo (2026). https://doi.org/10.5281/zenodo.18714018
 11. Sadasivan, V., Dubey, S., Cantor, E. & Wiecek, B. Can AI-generated text be reliably detected? Preprint, arXiv:2303.11156 (2023). https://doi.org/10.48550/arXiv.2303.11156
 12. Kirchenbauer, J. et al. A watermark for large language models. *Proceedings of the 58th International Conference on Machine Learning* (2021). https://doi.org/10.48550/arXiv.2301.10226

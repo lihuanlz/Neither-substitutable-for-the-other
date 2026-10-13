@@ -16,21 +16,21 @@ distance `TV(p, q)`. This is not a defect of some particular test. It is the
 
 ## Main results
 
-* `totalVariation_eq_max_sum` — `TV = Σᵢ max(pᵢ − qᵢ, 0)`, the sum over the
+* `totalVariation_eq_max_sum`: `TV = Σᵢ max(pᵢ − qᵢ, 0)`, the sum over the
   positive part.
-* `mass_diff_eq_sum` — `mass p S − mass q S = Σ_{i∈S}(pᵢ − qᵢ)`.
-* `mass_sub_le_tv` — **upper bound**: the probability difference on any set is
+* `mass_diff_eq_sum`: `mass p S − mass q S = Σ_{i∈S}(pᵢ − qᵢ)`.
+* `mass_sub_le_tv`: **upper bound**: the probability difference on any set is
   at most `TV`.
-* `mass_posSet_eq_tv` — **the bound is attained**: equality holds at
+* `mass_posSet_eq_tv`: **the bound is attained**: equality holds at
   `S = posSet p q = {i | pᵢ ≥ qᵢ}`.
-* `power_le_tv` — **Neyman-Pearson power bound**: for any test `S`,
+* `power_le_tv`: **Neyman-Pearson power bound**: for any test `S`,
   `power ≤ FPR + TV`.
-* `abs_mass_diff_le_tv` — **two-sided version**: `|power − FPR| ≤ TV`.
-* `abs_mass_diff_attains` — that two-sided bound is attained too, so `TV` is
+* `abs_mass_diff_le_tv`: **two-sided version**: `|power − FPR| ≤ TV`.
+* `abs_mass_diff_attains`: that two-sided bound is attained too, so `TV` is
   exactly the advantage of the optimal test.
-* `tv_eq_zero_iff_mass_diff` — `TV = 0` ⟺ the probability difference is
+* `tv_eq_zero_iff_mass_diff`: `TV = 0` ⟺ the probability difference is
   exactly 0 on every set.
-* `no_threshold_escapes_tv` — no threshold test escapes this bound.
+* `no_threshold_escapes_tv`: no threshold test escapes this bound.
 
 ## One correction: the manuscript's `confusable_le_tv` is false
 

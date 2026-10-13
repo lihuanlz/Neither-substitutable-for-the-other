@@ -146,7 +146,7 @@ REFERENCES = [
     "Le Cam, L. Statistical Methods for Researchers (University of California Press, 1990).",
     "Cover, T. M. & Thomas, J. A. Elements of Information Theory, 2nd ed. (Wiley, 2006).",
     "Peirce, C. S. The logic of scientific judgment. Journal of Analytical Chemistry 18, 389–395 (1884).",
-    "Youden, W. J. Index for rating diagnostic tests. Cancer 3, 32–35 (1950). https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3",
+    "Youden, W. J. Index for rating diagnostic tests. Cancer 3, 32–35 (1950). https://doi.org/10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3>",
     "Silva, D. W. Indistinguishable by Design: On the Impossibility of AI Text Detection Without Generator Cooperation. Preprint, Zenodo (2026). https://doi.org/10.5281/zenodo.18714018",
     "Sadasivan, V., Dubey, S., Cantor, E. & Wiecek, B. Can AI-generated text be reliably detected? Preprint, arXiv:2303.11156 (2023). https://doi.org/10.48550/arXiv.2303.11156",
     "Kirchenbauer, J. et al. A watermark for large language models. Proceedings of the 58th International Conference on Machine Learning (2021). https://doi.org/10.48550/arXiv.2301.10226",

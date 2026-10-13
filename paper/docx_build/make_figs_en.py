@@ -112,7 +112,7 @@ def fig6_sign():
     ax.set_xlim(-0.6, len(vals) - 0.4)
     ax.set_ylim(-0.30, 0.34)
     ax.set_ylabel(r"reported $\hat{\varphi}$")
-    ax.text(0.5, 0.265, r"one output,  $\bar{s}=0.50$  — the data never change",
+    ax.text(0.5, 0.265, r"one output,  $\bar{s}=0.50$, and the data never change",
             ha="center", fontsize=8.5, color=K)
     ax.annotate("sign set by the calibration,\nnot by the collaboration",
                 xy=(0.5, -0.24), ha="center", fontsize=7, color=GRY)

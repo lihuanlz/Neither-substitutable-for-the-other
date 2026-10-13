@@ -41,18 +41,18 @@ verification rounds, never more.**
 
 ## Main results
 
-* `starN_le_floorRounds` — **a hard upper bound, independent of \(p\)**:
+* `starN_le_floorRounds`: **a hard upper bound, independent of \(p\)**:
   \(N^\star \le N_0 = \dfrac{\ln\frac{1}{\lambda\,TV}}{\ln\frac1{1-q}}\).
   This is the mathematical form of "an unreliable human does not license unbounded
   verification".
-* `starN_mono_in_p` — **\(N^\star\) is non-increasing in \(p\)**: the more reliable the
+* `starN_mono_in_p`: **\(N^\star\) is non-increasing in \(p\)**: the more reliable the
   human, the smaller the verification budget.
-* `starN_strictly_mono_in_p` — strictly decreasing when the TV floor is **not binding**.
-* `starN_mono_in_tv` — **\(N^\star\) is non-increasing in \(TV\)** (counterintuitive but
+* `starN_strictly_mono_in_p`: strictly decreasing when the TV floor is **not binding**.
+* `starN_mono_in_tv`: **\(N^\star\) is non-increasing in \(TV\)** (counterintuitive but
   correct): the further apart the two distributions, the earlier verification saturates
   and the smaller the budget.
-* `regret_ge_floor` — the floor of the regret: `R(N) ≥ pΦ + A·T + cN`.
-* `missRate_eq_pow_of_tv_zero` — when `TV = 0` the floor vanishes and the **original
+* `regret_ge_floor`: the floor of the regret: `R(N) ≥ pΦ + A·T + cN`.
+* `missRate_eq_pow_of_tv_zero`: when `TV = 0` the floor vanishes and the **original
   formula is recovered**. That is: TV is both the ceiling of the verification budget and
   its only binding constraint.
 
@@ -259,7 +259,7 @@ theorem regret_ge_floor {V : VerifyParams} (hV : VOk V) {N : ℝ} :
     N*  ≤  N_0 = ln(1/(λ·TV)) / ln(1/(1−q))
 
 The right-hand side contains **no `p`**. So: **an unreliable human (\(p \to 0\)) does
-not license unbounded verification** — TV puts a floor under the residual miss rate, and
+not license unbounded verification**: TV puts a floor under the residual miss rate, and
 no amount of extra verification pushes it below that floor.
 
 This revises the conclusion of section 6 that "smaller \(p\) means larger \(N^\star\)":
@@ -375,7 +375,7 @@ theorem starN_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
 
 For the verification budget to genuinely respond to the human's reliability, TV has to
 be non-binding. Once TV is the bottleneck, `N*` is pinned to the constant `N_0` and
-trusting anyone more changes nothing — **the bottleneck is the distinguishability of
+trusting anyone more changes nothing: **the bottleneck is the distinguishability of
 the content layer, not the intensity of verification**. -/
 theorem starN_strictly_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam) (htv : V'.tv = V.tv)

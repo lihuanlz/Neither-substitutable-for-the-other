@@ -32,16 +32,16 @@ Logarithmic decomposition of the error:
 
 ## The duality proved by this file
 
-* `ai_total_gain_bounded` — **the total number of bits AI can obtain within a layer has
+* `ai_total_gain_bounded`: **the total number of bits AI can obtain within a layer has
   a hard upper bound**, and that bound is fixed by the layer alone (`log(e₀/Φ)`),
   **independent of how many steps AI takes**. This is stronger than "the marginal gain
   per step tends to zero": not merely does each step tend to zero, **the total is itself
   bounded**.
-* `human_gain_unbounded` — **the gain from a human layer change is unbounded**.
-* `ai_budget_grows_when_floor_drops` — only once a human has pushed \(\Phi\) down does the
+* `human_gain_unbounded`: **the gain from a human layer change is unbounded**.
+* `ai_budget_grows_when_floor_drops`: only once a human has pushed \(\Phi\) down does the
   AI's usable budget **grow**. If the human makes no layer change, the AI has no budget
   left to gain.
-* `no_gain_without_floor_drop` — **an unchanged layer means zero human gain**: if the
+* `no_gain_without_floor_drop`: **an unchanged layer means zero human gain**: if the
   layer changes but \(\Phi\) does not drop, the question was asked for nothing.
 
 From these follows the **precise version** of "the marginal contribution of AI tends to

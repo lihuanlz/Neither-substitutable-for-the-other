@@ -8,7 +8,7 @@ This file formalises a **directional rebuttal** of the original framework:
 
 The rebuttal takes the form of a provable theorem: there exist two human outputs whose
 **influence magnitudes on the irreducible floor \(\Phi\) are exactly equal**, yet whose
-values have **opposite signs** — one beneficial at \(+M\) bits, the other harmful at
+values have **opposite signs**: one beneficial at \(+M\) bits, the other harmful at
 \(-M\) bits, and \(M\) can be arbitrarily large.
 
 Corollary: any measure or ranking of value that **depends on influence magnitude alone**
@@ -17,18 +17,18 @@ carry a sign, or must carry additional utility/direction information.
 
 ## Main results
 
-* `influence_value_separable` — equal influence magnitude, opposite value signs, of
+* `influence_value_separable`: equal influence magnitude, opposite value signs, of
   arbitrarily large size.
-* `separation_grows_without_bound` — "the influence is small" is no excuse.
-* `positive_layer_gain_iff_strict_drop` — **a human output has positive inter-layer
+* `separation_grows_without_bound`: "the influence is small" is no excuse.
+* `positive_layer_gain_iff_strict_drop`: **a human output has positive inter-layer
   value ⟺ it strictly lowers the irreducible lower bound**. This is a falsifiable
   criterion for a "good question".
-* `zero_gain_iff_equal` — **zero value ⟺ the layer is unchanged**.
-* `layered_bits_decomposition` — total log gain = inter-layer + within-layer, unified in
+* `zero_gain_iff_equal`: **zero value ⟺ the layer is unchanged**.
+* `layered_bits_decomposition`: total log gain = inter-layer + within-layer, unified in
   bits.
-* `cover_value_is_a_layer_gain` — the value of covering a new modality **is** a special
+* `cover_value_is_a_layer_gain`: the value of covering a new modality **is** a special
   case of the inter-layer gain, not a third term alongside it.
-* `influence_and_value_are_distinct` — a packaged restatement.
+* `influence_and_value_are_distinct`: a packaged restatement.
 
 -/
 
@@ -78,7 +78,7 @@ theorem influence_value_separable {M : ℝ} (hM : 0 < M) :
 /-- **The separability cannot be evaded by "the influence is small"**: the magnitude of
 the separation \(M\) can be arbitrarily large.
 
-So screening out low-influence items does not help — **large influence is exactly the
+So screening out low-influence items does not help: **large influence is exactly the
 dangerous case**. -/
 theorem separation_grows_without_bound {M : ℝ} (hM : 0 < M) :
     ∃ p q r s : ℝ,

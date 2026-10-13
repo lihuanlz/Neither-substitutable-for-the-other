@@ -34,6 +34,6 @@ def build(prs):
              "their own framework:",
          size=10.5, color="primary", first=True, line=1.35)
     para(tf, "“could plausibly have been generated with minimal or negligible "
-             "human contribution” — Xie et al., §5.5",
+             "human contribution” Xie et al., §5.5",
          size=10.5, color="primary", line=1.35)
     return s
