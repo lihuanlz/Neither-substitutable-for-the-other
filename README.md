@@ -21,7 +21,7 @@ fragmentation side topic, 17 the corpus-selection side topic.
 > contribution in AI-assisted discovery.** *Huan Li.* Independent Researcher,
 > 2026. [ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825).
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
-> PDF: [`paper/tex/main.pdf`](paper/tex/main.pdf) ·
+> PDF: [`paper/tex/two_saturating_operators.pdf`](paper/tex/two_saturating_operators.pdf) ·
 > Editable Word: [`paper/docx_build/two_saturating_operators.docx`](paper/docx_build/two_saturating_operators.docx) ·
 > DOI: [10.5281/zenodo.23276356](https://doi.org/10.5281/zenodo.23276356)
 >
@@ -261,8 +261,9 @@ paper/
     two_saturating_operators.docx / .pdf
   tex/                   LaTeX build — **produces the shipped PDF**
     preamble.tex         hand-written document setup
-    emit_tex.py          content.py → main.tex   (--check in CI)
-    main.tex / .pdf      generated, committed; arXiv wants the source
+    emit_tex.py          content.py → main.tex → two_saturating_operators.pdf
+    main.tex             generated, committed; arXiv wants the source
+    two_saturating_operators.pdf
   slides/                22-page explainer deck project (python-pptx)
     assets/                Figures
     output/                identifiability-boundary-popular.pptx / .pdf + 22 previews

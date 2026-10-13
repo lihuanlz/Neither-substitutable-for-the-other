@@ -27,6 +27,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{fancyhdr}
+\usepackage[htt]{hyphenat}
 \usepackage[hidelinks]{hyperref}
 
 %% Paragraph rhythm. A first-line indent with no inter-paragraph skip is the
@@ -36,6 +37,13 @@
 \setlength{\parindent}{1.2em}
 \setlength{\parskip}{0pt}
 \linespread{1.08}
+
+%% Lean declaration names run long -- scale_by_new_layers_not_by_headcount is
+%% wider than the text block -- and a typewriter word has no break points by
+%% default, so one would overhang the margin by 160pt. [htt] in hyphenat
+%% above lets \texttt hyphenate, and the extra stretch lets TeX loosen
+%% interword space rather than push a word into the margin.
+\emergencystretch=3em
 
 %% The paper's claims are stated as definitions and theorems, so they get
 %% numbering and can be referred to by name rather than by "the paragraph
@@ -169,7 +177,7 @@ The only sign this framework can report is therefore set by a nuisance parameter
 \begin{figure}[tb]
 \centering
 \includegraphics[width=6.10in]{../figures/fig6_sign_not_identified.png}
-\caption{The sign of a credit measure is not identified. The estimated contribution $φ-hat$ = 1 - $τ-bar/s̄$ is plotted as the plausibility bar $τ-bar$ moves through the plausible range. Because the estimator depends on the output alone and the bar is fitted out of distribution, the same output crosses zero: Llama-3 reports $−0.099$ at $τ-bar$ = 0.5496 and Mixtral reports +0.169 at $τ-bar$ = 0.4155. The witnesses that flip the sign are pinned at $τ$ = s/2 and $τ$ = 3s/2.}
+\caption{The sign of a credit measure is not identified. The estimated contribution $φ-hat$ = 1 - $τ-bar/\bar{s}$ is plotted as the plausibility bar $τ-bar$ moves through the plausible range. Because the estimator depends on the output alone and the bar is fitted out of distribution, the same output crosses zero: Llama-3 reports $−0.099$ at $τ-bar$ = 0.5496 and Mixtral reports +0.169 at $τ-bar$ = 0.4155. The witnesses that flip the sign are pinned at $τ$ = s/2 and $τ$ = 3s/2.}
 \label{fig:sign}
 \end{figure}
 More generally, every reflection-invariant measure, KL, mutual information, total variation, Jensen-Shannon, has this blind spot as a property of the class rather than of an implementation. An author who moves a claim toward the truth and one who moves it toward an equally plausible falsehood produce identical mutual information with the text.

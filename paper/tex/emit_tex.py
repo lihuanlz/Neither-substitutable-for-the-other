@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -102,6 +103,14 @@ SUBSCRIPT_MAP["\u209C"] = "_t"
 SMALLCAP_MAP = {"\u1D04": "_c", "\u1D07": "_a"}
 SUPERSCRIPT_MAP = {"\u00B2": "^{2}"}
 
+# A combining macron over a letter, as in tau-bar and s-bar. Left as Unicode
+# it is silently dropped: cmmi10 has no U+0304, and the log says "Missing
+# character" while the PDF still gets produced. A letter with no bar and a
+# letter with a bar are different quantities, so this has to be a real accent
+# rather than a dropped glyph. The class covers Latin as well as Greek
+# because s-bar is spelled with a plain s.
+MACRON_RE = re.compile("([A-Za-z" + GREEK + "])\u0304")
+
 # Escaped outside math mode only. Inside math mode these are already handled
 # by to_math, and escaping them there would produce a literal backslash.
 # `*` and `^` are absent on purpose: both are used as operators in the prose
@@ -119,6 +128,9 @@ def to_math(token: str) -> str:
         token = token.replace(src, dst)
     for src, dst in SUPERSCRIPT_MAP.items():
         token = token.replace(src, dst)
+    # After the digit rewrites, so a macron over a converted subscript is
+    # still caught.
+    token = MACRON_RE.sub(r"\\bar{\1}", token)
     return token
 
 
@@ -364,7 +376,14 @@ def main() -> int:
             subprocess.run(["xelatex", "--enable-installer",
                             "-interaction=nonstopmode", "main.tex"],
                            cwd=HERE, check=False)
-        print("built main.pdf")
+        # xelatex always names its output after the job, so the build would
+        # otherwise ship a file called main.pdf. A release asset downloaded
+        # from that arrives with the title on the filesystem, and a corpus
+        # builder sees a contentless filename.
+        built = os.path.join(HERE, "main.pdf")
+        shipped = os.path.join(HERE, "two_saturating_operators.pdf")
+        shutil.copyfile(built, shipped)
+        print("built %s" % shipped)
     return 0
 
 

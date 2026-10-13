@@ -32,6 +32,10 @@ local_build.txt
 *.fdb_latexmk
 *.synctex.gz
 
+# xelatex names its output after the job. The shipped artifact is
+# two_saturating_operators.pdf, which emit_tex.py --build copies out of it.
+/paper/tex/main.pdf
+
 # ---------------------------------------------------------------------
 # .NET build output for the OpenXML document generator (`Gen/`).
 # `Gen.csproj` + `Program.cs` are tracked so the DOCX can be rebuilt.
