@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 """Check that the repository's scholarly metadata is well-formed.
 
-`paper/final_check.py` guards the manuscript; this guards the files a crawler
-or reference manager reads. Both matter for discoverability, and a malformed
-CITATION.cff fails silently everywhere except in the one place you notice it.
+This guards the files a crawler or reference manager reads: CITATION.cff,
+.zenodo.json, the README citation block, the JSON-LD block, and LICENSE. A
+malformed one fails silently everywhere except in the one place you notice it.
+
+It used to sit alongside `paper/final_check.py`, which guarded the manuscript.
+That script went away with the manuscript sources, so this now covers the whole
+of what the repository publishes.
 
 Fails on: unparseable YAML/JSON, a missing licence, a missing citation block,
-and any TODO left in an author field. Run from the repository root:
+a README link into the untracked `paper/` tree, ORCID disagreement between
+files, and any TODO left in an author field. Run from the repository root:
 
     python tools/check_metadata.py
 """
@@ -168,8 +173,34 @@ def main() -> int:
         problems.append("README.md: no Citation section")
     if "application/ld+json" not in readme:
         problems.append("README.md: no JSON-LD ScholarlyArticle block")
-    if "paper/manuscript.md" not in readme:
-        problems.append("README.md: does not point at the plain-text manuscript")
+    # `paper/` is untracked, so any link into it from the README resolves to
+    # nothing for a reader who cloned the repository. This replaced the old
+    # requirement that the README point at paper/manuscript.md, which cannot
+    # hold now that the manuscript is not published from here.
+    for _m in re.findall(r"\]\((paper/[^)]+)\)", readme):
+        problems.append("README.md: links to %s, which is not tracked" % _m)
+    for _m in re.findall(r"\"contentUrl\"\s*:\s*\"([^\"]+)\"", readme):
+        if "/paper/" in _m:
+            problems.append("README.md: JSON-LD contentUrl points into paper/: %s"
+                            % _m)
+
+    # --- README module table ------------------------------------------------
+    # With the manuscript unpublished, the README is the only place a reader
+    # learns which modules exist. Add or rename a module without touching the
+    # table and the first thing a reader meets is a wrong list, so this is
+    # checked in both directions.
+    prov = ROOT / "Provenance"
+    if prov.is_dir():
+        on_disk = {p.name for p in prov.glob("*.lean")}
+        in_readme = set(re.findall(r"`([A-Za-z0-9_]+\.lean)`", readme))
+        # Provenance.lean is the root module and lives outside the directory.
+        expected = on_disk | {"Provenance.lean"}
+        for _name in sorted(in_readme - expected):
+            problems.append("README.md: names %s, which is not in the repository"
+                            % _name)
+        for _name in sorted(on_disk - in_readme):
+            problems.append("README.md: Provenance/%s exists but is not listed"
+                            % _name)
 
     # --- ORCID consistency across every file that repeats the identity ----
     # The same identifier appearing in four places is four chances to drift.
@@ -188,11 +219,9 @@ def main() -> int:
     if isinstance(zen, dict) and zen.get("creators"):
         zen_orcid = str(zen["creators"][0].get("orcid", ""))
     readme_orcids = orcids_in(readme)
-    manuscript_orcids = orcids_in(read(ROOT / "paper" / "manuscript.md"))
 
     seen = {x for x in [cff_orcid, zen_orcid] if x}
     seen.update(readme_orcids)
-    seen.update(manuscript_orcids)
     # Everything above is compared in digits, so a URL and a bare number are
     # the same identifier and only genuine disagreement survives.
     digits = {norm_orcid(x) for x in seen if norm_orcid(x)}
@@ -215,18 +244,16 @@ def main() -> int:
         # that disagrees about it.
         if readme and not readme_orcids:
             problems.append("README.md: citation block carries no ORCID")
-        if (ROOT / "paper" / "manuscript.md").exists() and not manuscript_orcids:
-            problems.append("manuscript.md: header carries no ORCID")
 
     # The registered name is given-name + family-name. A rejoin is a silent
     # mismatch against every authority that reads the identifier.
+    # Only tracked files are scanned. The manuscript used to appear here too, and
+    # its absence from this list is the point: `paper/` is not published, so a
+    # name that only appears there cannot drift against anything a reader sees.
     for rel, text in [("README.md", readme),
                       ("CITATION.cff", read(cff_path)),
                       (".zenodo.json", read(zen_path)),
-                      ("LICENSE", read(ROOT / "LICENSE")),
-                      ("paper/manuscript.md", read(ROOT / "paper" / "manuscript.md")),
-                      ("paper/docx_build/content.py",
-                       read(ROOT / "paper" / "docx_build" / "content.py"))]:
+                      ("LICENSE", read(ROOT / "LICENSE"))]:
         if re.search(r"\bHuanli\b", text):
             problems.append("%s: author name written 'Huanli', expected 'Huan Li'"
                             % rel)

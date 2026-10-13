@@ -14,15 +14,26 @@ v_build.txt
 local_build.txt
 
 # ---------------------------------------------------------------------
-# LaTeX intermediates for the 11 rendered equations.  `render_eqs.py`
-# regenerates them; only the final PNGs in `assets_eq/` are tracked.
+# The manuscript is not published from this repository.
+#
+# `paper/` holds the article sources: manuscript.md, the LaTeX and Word
+# builds, the figures, the slide deck, and the scripts that guarded
+# them.  The article is archived on Zenodo under the concept DOI in
+# CITATION.cff and is attached to a GitHub release as an asset.  The
+# sources stay local and are ignored here; this repository publishes
+# the Lean development only.
+#
+# Worth stating plainly: anything that is meaningful only alongside the
+# manuscript (final_check.py, verify_dois.py, sync_refs.py) cannot run
+# in CI once the sources are untracked, so those checks were removed
+# rather than left in place to fail.  The Lean build and the axiom audit
+# never read `paper/`, which is why they still run.
 # ---------------------------------------------------------------------
-/paper/docx_build/eq/
+/paper/
 
 # ---------------------------------------------------------------------
-# XeLaTeX intermediates.  main.tex and main.pdf are both tracked -- arXiv
-# wants the source, and the PDF is the deliverable -- but the auxiliary
-# files are pure build output.
+# LaTeX and XeLaTeX intermediates.  Pure build output, wherever they
+# happen to be produced.
 # ---------------------------------------------------------------------
 *.aux
 *.log
@@ -32,36 +43,11 @@ local_build.txt
 *.fdb_latexmk
 *.synctex.gz
 
-# xelatex names its output after the job. The shipped artifact is
-# two_saturating_operators.pdf, which emit_tex.py --build copies out of it.
-/paper/tex/main.pdf
-
-# ---------------------------------------------------------------------
-# .NET build output for the OpenXML document generator (`Gen/`).
-# `Gen.csproj` + `Program.cs` are tracked so the DOCX can be rebuilt.
-# ---------------------------------------------------------------------
-/paper/docx_build/Gen/bin/
-/paper/docx_build/Gen/obj/
-
 # ---------------------------------------------------------------------
 # Python bytecode.
 # ---------------------------------------------------------------------
 __pycache__/
 *.pyc
-
-# ---------------------------------------------------------------------
-# Reference PDFs are NOT redistributed here.
-#
-# This directory holds full texts of other authors' published papers
-# (Xie et al., ACL 2026; Dorner et al., arXiv 2507.12399; Li et al.,
-# arXiv 2603.29121; plus two Zenodo mirrors).  They were downloaded
-# locally only to check that every citation in `paper/manuscript.md`
-# matches its source.  Publishing them in a public repository would be
-# redistributing copyrighted material, so they are excluded by policy
-# rather than by size.  `paper/verify_dois.py` checks DOIs over the
-# network and needs no local copies.
-# ---------------------------------------------------------------------
-/paper/refcheck/
 
 # ---------------------------------------------------------------------
 # Microsoft Office owner/lock files (`~$name.docx` appears while a
