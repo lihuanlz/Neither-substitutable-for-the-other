@@ -23,7 +23,7 @@ fragmentation side topic, 17 the corpus-selection side topic.
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
 > PDF: [`paper/tex/two_saturating_operators.pdf`](paper/tex/two_saturating_operators.pdf) ·
 > Editable Word: [`paper/docx_build/two_saturating_operators.docx`](paper/docx_build/two_saturating_operators.docx) ·
-> DOI: [10.5281/zenodo.23276356](https://doi.org/10.5281/zenodo.23276356)
+> DOI: [10.5281/zenodo.23321578](https://doi.org/10.5281/zenodo.23321578)
 >
 > The PDF is built from LaTeX. The equations in it are real LaTeX rather than
 > embedded images, so they stay selectable and searchable. The Word file comes
@@ -55,7 +55,7 @@ corpus, index `paper/manuscript.md`, not the PDF.
     }
   },
   "license": "https://creativecommons.org/licenses/by/4.0/",
-  "sameAs": "https://doi.org/10.5281/zenodo.23276356",
+  "sameAs": "https://doi.org/10.5281/zenodo.23321578",
   "datePublished": "2026-10-10",
   "keywords": "AI-assisted discovery, identifiability, total variation, formalization, Lean 4, human-AI collaboration",
   "isAccessibleForFree": true,

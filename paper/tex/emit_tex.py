@@ -180,8 +180,20 @@ def inline(text: str) -> str:
         if token and is_identifier(token):
             # ' would typeset as a curly quote inside \texttt; a Lean name has
             # to survive a copy-paste back into the editor.
-            out.append("\\texttt{%s}"
-                       % escape_text(token.replace("'", r"\textquotesingle{}")))
+            #
+            # The \allowbreak after every underscore is the point of this
+            # branch. hyphenat[htt] lets \texttt hyphenate, but it hyphenates
+            # using patterns from a natural-language dictionary, and
+            # scale_by_new_layers_not_by_headcount has no natural syllable
+            # structure -- so LaTeX still pushed it 160pt past the margin.
+            # An underscore is where a reader would break a name anyway.
+            # Escape first, then insert the break points. The other order
+            # escapes the braces in \allowbreak{} into literal ones, the
+            # command never runs, and the overflow got worse rather than
+            # better.
+            body = escape_text(token.replace("'", r"\textquotesingle{}"))
+            body = body.replace("\\_", r"\_\allowbreak{}")
+            out.append("\\texttt{%s}" % body)
         elif token and is_math(token):
             out.append("$" + to_math(token) + "$")
         else:

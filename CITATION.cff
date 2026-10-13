@@ -32,7 +32,7 @@ authors:
 repository-code: "https://github.com/lihuanlz/Neither-substitutable-for-the-other"
 # The concept DOI, not a version DOI. It resolves to the newest version, so a
 # citation stays correct after later versions are published.
-doi: "10.5281/zenodo.23276356"
+doi: "10.5281/zenodo.23321578"
 # SPDX identifier for CC-BY-4.0. The paper is openly licensed so that others may
 # reuse and translate it; LICENSE covers the code separately and stays MIT.
 license: CC-BY-4.0

@@ -73,7 +73,7 @@
 \fancyhead[R]{\small\thepage}
 
 \title{\textbf{Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery}}
-\author{Huan Li\\ \small Independent Researcher\\[6pt]        \small ORCID 0009-0004-2695-6825\\ \small doi:10.5281/zenodo.23276356}
+\author{Huan Li\\ \small Independent Researcher\\[6pt]        \small ORCID 0009-0004-2695-6825\\ \small doi:10.5281/zenodo.23321578}
 \date{}
 
 \maketitle
@@ -98,7 +98,7 @@ Error then decomposes into a ceiling term and a within-layer term, and the two s
 \underbrace{\log\!\frac{\Phi(\alpha)}{\Phi(\beta)}}_{\text{\rm refinement: moves }\Phi\ \text{--- unbounded above}}\qquad\qquad\underbrace{\sum_{t}\log\!\frac{e_{t-1}}{e_t}}_{\text{\rm compression: moves } e_t\ \text{to }\Phi}\ \leq\ \log\frac{e_0}{\Phi}
 \tag{1}
 \end{equation}
-Refinement contribution is human work that moves the certified coverage itself, changing the target. Its gain is unbounded above: for any target M $≥$ 0 there are two layers with $Φ(β)$ $≤$ $Φ(α)$ and $log(Φ(α)/Φ(β))$ = M \texttt{(human\_gain\_unbounded)}.
+Refinement contribution is human work that moves the certified coverage itself, changing the target. Its gain is unbounded above: for any target M $≥$ 0 there are two layers with $Φ(β)$ $≤$ $Φ(α)$ and $log(Φ(α)/Φ(β))$ = M \texttt{(human\_\allowbreak{}gain\_\allowbreak{}unbounded)}.
 Within-layer compression is machine work that moves the residual to that target, changing the distance to it. Its total is bounded, and the bound contains no variable appearing on the other side.
 \begin{equation}
 \log\!\frac{e_0}{e_N}\ \leq\ \log\!\frac{e_0}{\Phi}\qquad\text{fixed by the layer, independent of the number of steps}
@@ -109,7 +109,7 @@ This is stronger than the observation that per-step marginal gain vanishes. The 
 \text{within-layer gain}\;\leq\;\log\!\frac{e_0}{\Phi}\qquad\text{while}\qquad\text{refinement gain}\;>\;K\quad\text{for every }K\geq 0
 \tag{3}
 \end{equation}
-\texttt{saturation\_duality} places the two side by side and is the formal content of non-substitutability. Both sides saturate; the axes are different. No reweighting converts one into the other, because the bound on one side contains no variable appearing in the other. Separately, the convexity of scaling-law cost makes partial automation a long-run cost-minimizing equilibrium rather than a transitional state [17], which is an economic reason to expect the split to persist rather than close.
+\texttt{saturation\_\allowbreak{}duality} places the two side by side and is the formal content of non-substitutability. Both sides saturate; the axes are different. No reweighting converts one into the other, because the bound on one side contains no variable appearing in the other. Separately, the convexity of scaling-law cost makes partial automation a long-run cost-minimizing equilibrium rather than a transitional state [17], which is an economic reason to expect the split to persist rather than close.
 \begin{figure}[tb]
 \centering
 \includegraphics[width=6.10in]{../figures/fig3_layers.png}
@@ -173,7 +173,7 @@ Rewriting their estimator exposes a sharper problem than the negatives. Their Eq
 \tag{8}
 \end{equation}
 Two consequences follow. The estimator is a function of the output alone, since the human input does not appear, and it is unbounded below as the output grows more predictable, so the [0,1] reading does not survive in the estimation variant. And its sign is determined by whether the mean per-token surprisal falls below the plausibility bar, where that bar is fitted rather than measured: the authors set it to the empirical mean plus one standard deviation of conditional surprisal over 2,500 WildChat prompts, giving 0.5496 for Llama-3 and 0.4155 for Mixtral [18, section A.5].
-The only sign this framework can report is therefore set by a nuisance parameter estimated out of distribution. The same output is evidence of contribution under one calibration and evidence against it under another. \texttt{sign\_not\_identified} exhibits two calibrations that flip the reported sign for any output; \texttt{sign\_not\_identified\_exact} pins the witnesses to bars at half and one-and-a-half times the output's mean surprisal. The apparent sign is a property of the calibration, not of the collaboration.
+The only sign this framework can report is therefore set by a nuisance parameter estimated out of distribution. The same output is evidence of contribution under one calibration and evidence against it under another. \texttt{sign\_\allowbreak{}not\_\allowbreak{}identified} exhibits two calibrations that flip the reported sign for any output; \texttt{sign\_\allowbreak{}not\_\allowbreak{}identified\_\allowbreak{}exact} pins the witnesses to bars at half and one-and-a-half times the output's mean surprisal. The apparent sign is a property of the calibration, not of the collaboration.
 \begin{figure}[tb]
 \centering
 \includegraphics[width=6.10in]{../figures/fig6_sign_not_identified.png}
@@ -185,7 +185,7 @@ More generally, every reflection-invariant measure, KL, mutual information, tota
 \left|\mathrm{influence}\right|\;=\;m\quad\Longrightarrow\quad\mathrm{value}\;=\;+M\ \ \text{or}\ \ -M,\qquad \forall M>0
 \tag{9}
 \end{equation}
-\texttt{influence\_value\_separable} makes this exact: for any M > 0 there are processes with identical absolute influence between two states whose signed value is +M, and processes with the same absolute influence whose value is -M. The measure returns the same number; the biology has moved in opposite directions.
+\texttt{influence\_\allowbreak{}value\_\allowbreak{}separable} makes this exact: for any M > 0 there are processes with identical absolute influence between two states whose signed value is +M, and processes with the same absolute influence whose value is -M. The measure returns the same number; the biology has moved in opposite directions.
 This also refutes the natural first attempt at a within-layer sensitivity function, the absolute change in $Φ$ with respect to x. Taking an absolute value identifies refinement with coarsening, so the instrument cannot distinguish an author who sharpened a mechanism model from one who blurred it, and reports zero for both.
 The fix is a signed definition fixed in advance, on order-preserving, additive, unit-fixing maps over a signed domain rather than arbitrary monotone transforms. Under that restriction the impossibility sharpens: when the floor binds, reviewers of different reliability produce identical optimal verification effort, and no monotone exchange rate between human bits and machine rounds survives. When it does not bind, the two are exponentially but not linearly related, exp(d*N*) = A*d/c. 'Fully incommensurable' overstates that second regime; 'not linearly convertible' is exact.
 \begin{figure}[tb]
@@ -201,10 +201,10 @@ Model a collaboration as the set of layers its members reach independently, with
 \mathrm{gain}(\Phi,D\cup\{a\})\;=\;\mathrm{gain}(\Phi,D),\qquad \mathrm{totalIndividual}(\Phi,D\cup\{a\})\;=\;\mathrm{totalIndividual}(\Phi,D)+\log\frac{\Phi}{a}
 \tag{10}
 \end{equation}
-The N+1th person earns exactly zero and costs exactly $log(Φ/a)$. Define the waste as the difference between the summed member gain and the coalition gain. Then \texttt{waste\_nonneg} and \texttt{headcount\_adds\_waste\_only} say the merge never produces more than the best individual, and headcount only adds waste.
-The time axis behaves the same way. Holding an increment back is not an option in the usual sense: the value of waiting is zero if the window is superseded by the time the delay arrives, and the full value otherwise. Coverage is absorbing, so once superseded, always superseded, and \texttt{holdValue\_antitone} says the value of waiting is non-increasing in the delay. There are two outcomes, not yet superseded and already superseded, and no third.
-\texttt{fragmentation\_squeeze} closes both routes at once, and \texttt{scale\_by\_new\_layers\_not\_by\_headcount} names the remaining exit: scale by changing the layer, which is the unbounded direction of section 2.
-The max assumption is the load-bearing part, and it is falsifiable in one move. If real collaboration is superadditive, if two people together reach a layer neither reaches alone as complementary expertise plausibly suggests, then \texttt{add\_member\_same\_reach} fails immediately. We state the assumption because leaving it to intuition invites exactly the recombination story the model denies.
+The N+1th person earns exactly zero and costs exactly $log(Φ/a)$. Define the waste as the difference between the summed member gain and the coalition gain. Then \texttt{waste\_\allowbreak{}nonneg} and \texttt{headcount\_\allowbreak{}adds\_\allowbreak{}waste\_\allowbreak{}only} say the merge never produces more than the best individual, and headcount only adds waste.
+The time axis behaves the same way. Holding an increment back is not an option in the usual sense: the value of waiting is zero if the window is superseded by the time the delay arrives, and the full value otherwise. Coverage is absorbing, so once superseded, always superseded, and \texttt{holdValue\_\allowbreak{}antitone} says the value of waiting is non-increasing in the delay. There are two outcomes, not yet superseded and already superseded, and no third.
+\texttt{fragmentation\_\allowbreak{}squeeze} closes both routes at once, and \texttt{scale\_\allowbreak{}by\_\allowbreak{}new\_\allowbreak{}layers\_\allowbreak{}not\_\allowbreak{}by\_\allowbreak{}headcount} names the remaining exit: scale by changing the layer, which is the unbounded direction of section 2.
+The max assumption is the load-bearing part, and it is falsifiable in one move. If real collaboration is superadditive, if two people together reach a layer neither reaches alone as complementary expertise plausibly suggests, then \texttt{add\_\allowbreak{}member\_\allowbreak{}same\_\allowbreak{}reach} fails immediately. We state the assumption because leaving it to intuition invites exactly the recombination story the model denies.
 \begin{figure}[tb]
 \centering
 \includegraphics[width=6.10in]{../figures/fig5_headcount_saturates.png}
@@ -218,13 +218,13 @@ Model a corpus as the set of floors its individual items certify, with the certi
 \mathrm{floorOf}(D)\;=\;\min D,\qquad\mathrm{floorOf}(D_1\cup D_2)\;=\;\min\big(\mathrm{floorOf}(D_1),\mathrm{floorOf}(D_2)\big)
 \tag{11}
 \end{equation}
-Then the floor is determined entirely by the best item. \texttt{floorOf\_union\_le\_left} and \texttt{floorOf\_union\_le\_right} say that adding a corpus changes the joint floor only through that corpus's own best item, and \texttt{floorOf\_union\_self\_mono} covers arbitrary growth: add n items, none of which beats the existing floor, and the floor stays put. This is dilution invariance, and it says that a corpus which is ninety-nine parts filler and one part signal certifies precisely what the one part certifies. \texttt{uninformative\_corpus\_gains\_nothing} is \texttt{no\_gain\_without\_floor\_drop} at the corpus level: switching corpora without lowering the floor pays exactly zero.
+Then the floor is determined entirely by the best item. \texttt{floorOf\_\allowbreak{}union\_\allowbreak{}le\_\allowbreak{}left} and \texttt{floorOf\_\allowbreak{}union\_\allowbreak{}le\_\allowbreak{}right} say that adding a corpus changes the joint floor only through that corpus's own best item, and \texttt{floorOf\_\allowbreak{}union\_\allowbreak{}self\_\allowbreak{}mono} covers arbitrary growth: add n items, none of which beats the existing floor, and the floor stays put. This is dilution invariance, and it says that a corpus which is ninety-nine parts filler and one part signal certifies precisely what the one part certifies. \texttt{uninformative\_\allowbreak{}corpus\_\allowbreak{}gains\_\allowbreak{}nothing} is \texttt{no\_\allowbreak{}gain\_\allowbreak{}without\_\allowbreak{}floor\_\allowbreak{}drop} at the corpus level: switching corpora without lowering the floor pays exactly zero.
 The selection version is the sharper half. If every published item is bounded below by c, then the attainable gain is capped uniformly in the residual.
 \begin{equation}
 \big[\ \forall a\in D,\ c\leq a\ \big]\ \Longrightarrow\ \log\frac{e_0}{e_N}\;\leq\;\log\frac{e_0}{c}\qquad\text{uniformly in }e_N
 \tag{12}
 \end{equation}
-\texttt{corpus\_size\_cannot\_beat\_selection\_floor} reads this contrapositively: no corpus, however large, certifies a floor below c if none of its items does. Corpus growth is unbounded; the floor it can certify is not. So the two halves of the usual claim come apart. Everything articulable does eventually enter the corpus. Whether it enters the usable part is settled by whether it lowers the floor, and that is a property of the item, not of its volume.
+\texttt{corpus\_\allowbreak{}size\_\allowbreak{}cannot\_\allowbreak{}beat\_\allowbreak{}selection\_\allowbreak{}floor} reads this contrapositively: no corpus, however large, certifies a floor below c if none of its items does. Corpus growth is unbounded; the floor it can certify is not. So the two halves of the usual claim come apart. Everything articulable does eventually enter the corpus. Whether it enters the usable part is settled by whether it lowers the floor, and that is a property of the item, not of its volume.
 Two things are deliberately left out, and the omissions are the point. Whether a given artefact is articulable at all is not representable at this level, so the tacit-knowledge filter cannot be stated as a theorem. And the corpus is modelled as a set; nothing here says the best item is reachable, or that it is weighted up once found. Those are commitments, recorded in section 8.
 \begin{figure}[tb]
 \centering
@@ -241,7 +241,7 @@ Where the evidence stops. None of the above is causal. The 2026 corpus study use
 \section*{8  Modelling commitments}
 Three seams separate the formal layer from the empirical layer. They are of different kinds and should not be conflated.
 The floor's positivity is assumed, not proved. $Φ$ > 0 requires the reachable set to be a proper restriction, and no theorem here establishes that. At the type level there is no representation of unbounded reachability, so this stays a modelling commitment. The entire logarithmic decomposition depends on it.
-The coalition is max-type. If real collaboration is superadditive, \texttt{add\_member\_same\_reach} fails outright.
+The coalition is max-type. If real collaboration is superadditive, \texttt{add\_\allowbreak{}member\_\allowbreak{}same\_\allowbreak{}reach} fails outright.
 The empirical record is observational. The three seams are respectively an unprovable premise, a falsifiable assumption, and a limitation of identification strategy. Reporting only the first two would overstate what has been shown.
 Two further commitments attach to section 6: articulability is not represented, and the corpus is a set rather than a stream with recency and re-weighting.
 \section*{9  Formalization}
