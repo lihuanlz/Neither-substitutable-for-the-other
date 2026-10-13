@@ -20,6 +20,19 @@ local_build.txt
 /paper/docx_build/eq/
 
 # ---------------------------------------------------------------------
+# XeLaTeX intermediates.  main.tex and main.pdf are both tracked -- arXiv
+# wants the source, and the PDF is the deliverable -- but the auxiliary
+# files are pure build output.
+# ---------------------------------------------------------------------
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# ---------------------------------------------------------------------
 # .NET build output for the OpenXML document generator (`Gen/`).
 # `Gen.csproj` + `Program.cs` are tracked so the DOCX can be rebuilt.
 # ---------------------------------------------------------------------

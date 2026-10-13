@@ -1,0 +1,64 @@
+%% Document setup for the manuscript.
+%%
+%% HAND-WRITTEN. emit_tex.py injects the title block between the markers
+%% below and appends the body, but everything in this file is maintained by
+%% hand -- typography is exactly the kind of thing that should be edited
+%% where you can read it, not buried in a Python string literal.
+%%
+%% Compile with:  xelatex main.tex   (twice, so figure references settle)
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.8cm]{geometry}
+
+%% XeLaTeX with unicode-math, not pdflatex. The prose already carries Greek
+%% letters and relations as Unicode, and unicode-math typesets them properly
+%% instead of forcing a transliteration table at the emitter.
+%%
+%% amssymb is deliberately absent. unicode-math defines \eth, \digamma,
+%% \backepsilon and \smallsetminus itself, and loading both makes LaTeX abort
+%% with "Command already defined".
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+
+\usepackage{amsmath,amsthm}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+%% Paragraph rhythm. A first-line indent with no inter-paragraph skip is the
+%% convention in this field: it signals a new paragraph without inserting
+%% white space the reader has to cross. The Word path set both as literal twip
+%% counts in C#, which is what made the spacing read as loose and uneven.
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0pt}
+\linespread{1.08}
+
+%% The paper's claims are stated as definitions and theorems, so they get
+%% numbering and can be referred to by name rather than by "the paragraph
+%% after equation 2".
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+\captionsetup[figure]{labelsep=period}
+
+%% Running head.
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+%% The markers sit after \begin{document} on purpose. \title and \maketitle
+%% are only legal once the document body has started; putting them in the
+%% preamble makes LaTeX stop with "Missing \begin{document}".
+
+%% BEGIN TITLE BLOCK -- replaced by emit_tex.py
+%% END TITLE BLOCK

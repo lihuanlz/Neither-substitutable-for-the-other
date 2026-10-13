@@ -21,8 +21,14 @@ fragmentation side topic, 17 the corpus-selection side topic.
 > contribution in AI-assisted discovery.** *Huan Li.* Independent Researcher,
 > 2026. [ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825).
 > Manuscript: [`paper/manuscript.md`](paper/manuscript.md) ·
-> PDF: [`paper/docx_build/two_saturating_operators.pdf`](paper/docx_build/two_saturating_operators.pdf) ·
+> PDF: [`paper/tex/main.pdf`](paper/tex/main.pdf) ·
+> Editable Word: [`paper/docx_build/two_saturating_operators.docx`](paper/docx_build/two_saturating_operators.docx) ·
 > DOI: [10.5281/zenodo.23276356](https://doi.org/10.5281/zenodo.23276356)
+>
+> The PDF is built from LaTeX. The equations in it are real LaTeX rather than
+> embedded images, so they stay selectable and searchable. The Word file comes
+> from the same `content.py`, so the two cannot disagree about what the paper
+> says.
 >
 > Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff). The paper is
 > CC-BY-4.0; the code and documentation are MIT — see [`LICENSE`](LICENSE).
@@ -253,6 +259,10 @@ paper/
     Gen/                   C# + OpenXML SDK generator
     preview/               DOCX page-by-page previews
     two_saturating_operators.docx / .pdf
+  tex/                   LaTeX build — **produces the shipped PDF**
+    preamble.tex         hand-written document setup
+    emit_tex.py          content.py → main.tex   (--check in CI)
+    main.tex / .pdf      generated, committed; arXiv wants the source
   slides/                22-page explainer deck project (python-pptx)
     assets/                Figures
     output/                identifiability-boundary-popular.pptx / .pdf + 22 previews

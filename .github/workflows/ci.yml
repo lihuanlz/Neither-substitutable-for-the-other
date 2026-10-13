@@ -35,6 +35,12 @@ jobs:
       - name: Manuscript consistency
         run: python paper/final_check.py
 
+      # main.tex is committed because arXiv takes the source, which makes it
+      # a generated file that can silently go stale. content.py is the model,
+      # so this only asks whether the committed output still matches it.
+      - name: LaTeX source matches the content model
+        run: python paper/tex/emit_tex.py --check
+
       # CITATION.cff, .zenodo.json and the README citation block are what a
       # reference manager and a crawler actually read. A malformed one fails
       # silently everywhere except in the one place you notice it.
