@@ -54,6 +54,36 @@ def orcid_is_valid(orcid: str) -> bool:
     return orcid_check_digit(digits[:15]) == int(digits[15])
 
 
+def creator_name_is_surnamed_first(name: str) -> bool:
+    """True when a creator is written 'Family, Given' as Zenodo expects.
+
+    Zenodo reads the GitHub integration's .zenodo.json against the legacy
+    deposit schema, where a creator carries one free-text name. That field is
+    parsed as a surname-first name: without the comma, the whole string becomes
+    the family name. 'Huan Li' therefore yields family name 'Huan Li', and that
+    value propagates into DataCite, Crossref and every authority file derived
+    from the record, where the author sorts and displays wrongly. The error is
+    invisible on the Zenodo landing page, which renders the raw string.
+    """
+    if "," not in name:
+        return False
+    family, _, given = name.partition(",")
+    return bool(family.strip()) and bool(given.strip())
+
+
+def description_paragraphs_are_separated(description: str) -> bool:
+    """True when every adjacent pair of tags in the description has whitespace.
+
+    Zenodo keeps the raw HTML for the landing page but derives the plain text
+    from it for social cards and for corpus ingestion, and that derivation drops
+    the tags without inserting a separator. Two paragraphs written as
+    '</p><p>' therefore reach every plain-text reader as one sentence, with the
+    last word of the first paragraph welded to the first word of the second. A
+    single space between the tags is plain text, so it survives any strip.
+    """
+    return re.search(r"><", description) is None
+
+
 def main() -> int:
     problems = []
     notes = []
@@ -107,6 +137,23 @@ def main() -> int:
             if any("TODO" in str(c.get("name", ""))
                    for c in zen.get("creators", [])):
                 notes.append(".zenodo.json: creator name still TODO")
+
+            for creator in zen.get("creators", []):
+                name = str(creator.get("name", ""))
+                if name and not creator_name_is_surnamed_first(name):
+                    problems.append(
+                        ".zenodo.json: creator %r is not written 'Family, Given', "
+                        "so Zenodo reads the whole string as the family name"
+                        % name)
+
+            description = str(zen.get("description", ""))
+            if description and not description_paragraphs_are_separated(description):
+                problems.append(
+                    ".zenodo.json: two tags meet with no space in the description, "
+                    "so its plain-text form runs the paragraphs together")
+
+            if zen.get("upload_type") == "publication" and not zen.get("publication_type"):
+                problems.append(".zenodo.json: a publication needs publication_type")
 
     # --- LICENSE ----------------------------------------------------------
     lic = read(ROOT / "LICENSE")
