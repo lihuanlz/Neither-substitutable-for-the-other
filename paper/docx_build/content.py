@@ -49,6 +49,15 @@ EQS = {
     "floor":     r"\text{miss rate}(N)\;=\;\max\!\left[\,(1-q)^{N},\;\lambda\cdot\mathrm{TV}\,\right]",
     "n0":        r"N^{*}\;\leq\;N_0\;=\;\frac{\ln\!\big(1/(\lambda\cdot\mathrm{TV})\big)}"
                 r"{\ln\!\big(1/(1-q)\big)}",
+    "pbind":     r"p_{\mathrm{bind}}\;=\;1-\frac{c}{L\,d\,\lambda\,\mathrm{TV}},"
+                r"\qquad d=\ln\frac{1}{1-q},"
+                r"\qquad\text{floor binds for every}\ p\leq p_{\mathrm{bind}}",
+    "tvmix":     r"\mathrm{TV}\big((1-\pi)p_H+\pi u,\ (1-\pi)p_H+\pi v\big)"
+                r"\;=\;\pi\cdot\mathrm{TV}(u,v)",
+    "tvdecay":   r"\text{signal after}\ k\ \text{rounds}\;=\;\pi^{k}\cdot\mathrm{TV}_0"
+                r"\;\leq\;\pi^{k}",
+    "tolerance": r"\pi\;\leq\;\frac{2\delta}{\mathrm{TV}_0},"
+                r"\qquad\text{to retain a target advantage}\ \delta",
     "phihat":    r"\hat{\varphi}\;=\;\frac{I(y)+N\log\tau}{I(y)}\;=\;1-\frac{\bar{\tau}}{\bar{s}},"
                 r"\qquad \bar{\tau}=-\log\tau,\quad \bar{s}=\frac{I(y)}{N},"
                 r"\qquad \hat{\varphi}<0\iff\bar{s}<\bar{\tau}",
@@ -90,9 +99,10 @@ FIGS = {
               "geometrically as (1 - q)^N and is then clipped at the floor T = λ*TV, "
               "giving the maximum of the two. The cost-minimizing budget N* is the smaller "
               "of the unconstrained optimum Nᴄ = 3.793 and the p-independent cap "
-              "N₀ = 3.474, which binds here. Over the scanned parameter grid the floor is "
-              "the active constraint in 83.97% of combinations, where the bottleneck is the "
-              "detector rather than the reviewer. Parameters: TV = 0.09, q = 0.5, λ = 1."),
+              "N₀ = 3.474, which binds here. The floor is the active constraint for every "
+              "reviewer below p_bind = 1 - c/(L*d*λ*TV), which here is 0.8397, so 83.97% of "
+              "the possible reviewer reliabilities leave the bottleneck with the detector "
+              "rather than the reviewer. Parameters: TV = 0.09, q = 0.5, λ = 1."),
     "separable": ("fig4_separable.png", 6.10,
                   "Figure 5 | Influence and value are separable. For any M > 0 there exist "
                   "processes with identical |influence| between two states whose signed "
@@ -191,7 +201,7 @@ BLOCKS = [
      "information-theoretic measure of human contribution is not identified: the same output "
      "is reported as −0.099 under one calibration and +0.169 under another."},
     {"t": "p", "text":
-     "All 153 theorems and 20 worked examples are machine-checked in Lean 4 (v4.15.0) "
+     "All 164 theorems and 20 worked examples are machine-checked in Lean 4 (v4.15.0) "
      "against Mathlib, with zero sorry and zero admitted axioms beyond Classical.choice, "
      "Quot.sound and propext."},
 
@@ -323,6 +333,19 @@ BLOCKS = [
      "review cheaper, because distributions further apart saturate the verifier sooner and "
      "therefore need fewer rounds."},
     {"t": "p", "text":
+     "The floor binds exactly when it exceeds the unconstrained residual, which is what "
+     "happens when the reviewer is unreliable. Solving for the reviewer reliability at "
+     "which the handover occurs gives a threshold in p alone,"},
+    {"t": "eq", "key": "pbind", "num": 8},
+    {"t": "p", "text":
+     "so at the parameters of the figure below, where T = 0.09 and d = ln 2, the "
+     "threshold sits at p_bind = 0.8397. Below it the detector sets the budget and the "
+     "reviewer's quality is irrelevant to how many rounds are run; above it the reviewer "
+     "does set the budget. As a share of the possible reviewer reliabilities, 83.97% of "
+     "them fall on the detector side. That share is a closed form in the four parameters, "
+     "and a uniform scan of p over [0,1] reproduces it to within two parts in 100000 at "
+     "1e5 points, so it does not depend on any grid choice."},
+    {"t": "p", "text":
      "Dorner and colleagues prove related results in a different register, and the convergence "
      "is not ours. They show that the per-instance accuracy of verifier-driven test-time "
      "scaling is characterized by the geometry of the verifier's ROC curve, that rejection "
@@ -338,7 +361,39 @@ BLOCKS = [
      "who performs the verification."},
     {"t": "fig", "key": "floor"},
 
-    {"t": "h2", "text": "3.3  An instantiation"},
+    {"t": "h2", "text": "3.3  The cost of contamination"},
+    {"t": "p", "text":
+     "The third way the ceiling gets set deserves its own statement, because it is the "
+     "one that accumulates. Suppose the observed material is a mixture of a human source "
+     "and a machine source at rate pi, namely (1 - pi)p_H + pi q. Two hypotheses that "
+     "differ only in q then differ after mixing by exactly"},
+    {"t": "eq", "key": "tvmix", "num": 9},
+    {"t": "p", "text":
+     "The two sides share the human source, so subtracting them cancels it and leaves pi "
+     "times the original difference. The best attainable advantage is consequently "
+     "pi * TV0 / 2. Contamination attenuates the signal by a factor exactly linear in the "
+     "rate, and no quantity of calibration data enters the expression."},
+    {"t": "p", "text":
+     "Under a self-consuming recursion, in which each generation is re-mixed with the "
+     "human source at the same weight pi every round, the attenuation is exact after k "
+     "rounds,"},
+    {"t": "eq", "key": "tvdecay", "num": 10},
+    {"t": "p", "text":
+     "so with pi below 1 the signal is washed out as k grows. The converse fixes a "
+     "tolerance: retaining a target advantage delta requires pi * TV0 to reach 2 delta, "
+     "that is"},
+    {"t": "eq", "key": "tolerance", "num": 11},
+    {"t": "p", "text":
+     "A weaker original signal admits less contamination. What drives the decay is the "
+     "weight at which human material is reinserted each round. At pi = 1, which is the "
+     "accumulation scheme, the factor is constantly 1 and the signal does not decay."},
+    {"t": "p", "text":
+     "This is contamination of an evidence channel, with an external detector still "
+     "doing the estimation. Whether the human in the loop updates on the same estimator "
+     "is not a formal question and is not answered here. Section 6 gives the corpus-side "
+     "statement, where the floor itself is the estimate."},
+
+    {"t": "h2", "text": "3.4  An instantiation"},
     {"t": "p", "text":
      "Cryptic sister species give the cleanest field demonstration. Two species may be "
      "separable by one fixed nucleotide, by one courtship call, or by nothing a given survey "
@@ -393,7 +448,7 @@ BLOCKS = [
     {"t": "p", "text":
      "Rewriting their estimator exposes a sharper problem than the negatives. Their Equation "
      "(10) reduces to"},
-    {"t": "eq", "key": "phihat", "num": 8},
+    {"t": "eq", "key": "phihat", "num": 12},
     {"t": "p", "text":
      "Two consequences follow. The estimator is a function of the output alone, since the "
      "human input does not appear, and it is unbounded below as the output grows more "
@@ -416,7 +471,7 @@ BLOCKS = [
      "an implementation. An author who moves a claim toward the truth and one who moves it "
      "toward an equally plausible falsehood produce identical mutual information with the "
      "text."},
-    {"t": "eq", "key": "sep", "num": 9},
+    {"t": "eq", "key": "sep", "num": 13},
     {"t": "p", "text":
      "influence_value_separable makes this exact: for any M > 0 there are processes with "
      "identical absolute influence between two states whose signed value is +M, and processes "
@@ -448,7 +503,7 @@ BLOCKS = [
      "joint result taken as the best of them. This is a max-type coalition, and it is a "
      "stronger claim than a discounted merge: it asserts that the merge is exactly the best "
      "individual and that every other member contributes exactly zero."},
-    {"t": "eq", "key": "marg", "num": 10},
+    {"t": "eq", "key": "marg", "num": 14},
     {"t": "p", "text":
      "The N+1th person earns exactly zero and costs exactly log(Φ/a). Define the waste as "
      "the difference between the summed member gain and the coalition gain. Then waste_nonneg "
@@ -482,7 +537,7 @@ BLOCKS = [
     {"t": "p", "text":
      "Model a corpus as the set of floors its individual items certify, with the certified "
      "floor the best one on offer."},
-    {"t": "eq", "key": "floorof", "num": 11},
+    {"t": "eq", "key": "floorof", "num": 15},
     {"t": "p", "text":
      "Then the floor is determined entirely by the best item. floorOf_union_le_left and "
      "floorOf_union_le_right say that adding a corpus changes the joint floor only through "
@@ -495,7 +550,7 @@ BLOCKS = [
     {"t": "p", "text":
      "The selection version is the sharper half. If every published item is bounded below by "
      "c, then the attainable gain is capped uniformly in the residual."},
-    {"t": "eq", "key": "selcap", "num": 12},
+    {"t": "eq", "key": "selcap", "num": 16},
     {"t": "p", "text":
      "corpus_size_cannot_beat_selection_floor reads this contrapositively: no corpus, however "
      "large, certifies a floor below c if none of its items does. Corpus growth is unbounded; "
@@ -503,6 +558,29 @@ BLOCKS = [
      "Everything articulable does eventually enter the corpus. Whether it enters the usable "
      "part is settled by whether it lowers the floor, and that is a property of the item, not "
      "of its volume."},
+    {"t": "p", "text":
+     "The natural next question is whether knowing where an item came from would help. It "
+     "would not, and the answer is a theorem. Carry the provenance on the item: an item is a "
+     "floor together with a source, human or machine."},
+    {"t": "p", "text":
+     "The floor of such a corpus is unchanged, because the floor function never inspects the "
+     "source coordinate. machine_item_takes_over says that a machine item undercutting the "
+     "human floor takes the bound over completely, and source_irrelevant says that a human "
+     "item reaching the same floor would have done exactly the same. The label therefore "
+     "carries no information about the certified bound, and floor_cannot_reveal_provenance "
+     "makes the point from the other side: a corpus of human items and a corpus of machine "
+     "items certify the same number."},
+    {"t": "p", "text":
+     "Two corollaries do the damage. contamination_irreversible shows that absorbing a "
+     "contaminated corpus puts the joint floor strictly below the original, and that "
+     "dilution cannot restore it. machine_item_beats_human_filter combines this with the "
+     "selection threshold: if every human item is bounded below by c, a single machine item "
+     "below c still certifies below c, whatever the size of the human part."},
+    {"t": "p", "text":
+     "This is the corpus reading of the contamination tolerance of section 3.3, and it does "
+     "not depend on how much contaminated material there is. Provenance is the one piece of "
+     "information a reader would most expect to be able to filter on, and it is precisely "
+     "the one the bound cannot see."},
     {"t": "p", "text":
      "Two things are deliberately left out, and the omissions are the point. Whether a given "
      "artefact is articulable at all is not representable at this level, so the tacit-knowledge "
@@ -552,7 +630,7 @@ BLOCKS = [
      "self-selection. It is observational. It is consistent with the two-operator claim and it "
      "does not establish it."},
 
-    {"t": "h1", "text": "8  Modelling commitments"},
+    {"t": "h1", "text": "8  Modelling commitments and falsification conditions"},
     {"t": "p", "text":
      "Three seams separate the formal layer from the empirical layer. They are of different "
      "kinds and should not be conflated."},
@@ -571,11 +649,34 @@ BLOCKS = [
     {"t": "p", "text":
      "Two further commitments attach to section 6: articulability is not represented, and the "
      "corpus is a set rather than a stream with recency and re-weighting."},
+    {"t": "p", "text":
+     "Recording the seams is not the same as recording what would undo them. Each claim below "
+     "has an observation that would refute it, and none of these refutations needs the formal "
+     "layer to be wrong."},
+    {"t": "p", "text":
+     "For the two-operator claim the failure mode is a task on which a machine raises the "
+     "human floor on its own, repeatedly, with the human out of the loop. Floor movement is "
+     "what section 2 defines as refinement, so a system that does it falsifies the "
+     "separation."},
+    {"t": "p", "text":
+     "For the verification bound the failure mode is a regime in which the optimal round count "
+     "keeps rising with reviewer reliability after the floor has been met. That is the "
+     "unconstrained optimum with the floor slack, which starN_le_floorRounds rules out; "
+     "observing it would refute the theorem, not merely the model around it."},
+    {"t": "p", "text":
+     "For the corpus reading the failure mode is a contaminated corpus that still certifies the "
+     "pre-contamination floor. machine_item_takes_over excludes it by construction, so an "
+     "observed exception would mean the certified floor is not a minimum over items."},
+    {"t": "p", "text":
+     "For the empirical reading of section 7 the failure mode is a randomized assignment showing "
+     "AI-augmented work raising collective topic volume and researcher interaction rather than "
+     "leaving them. The present evidence cannot exclude that, which is why the paragraph is "
+     "stated as observational."},
 
     {"t": "h1", "text": "9  Formalization"},
     {"t": "p", "text":
      "All results are stated and proved in Lean 4 (toolchain leanprover/lean4:v4.15.0) against "
-     "Mathlib, on finite probability spaces, across twelve modules: total variation and its "
+     "Mathlib, on finite probability spaces, across thirteen modules: total variation and its "
      "properties; Bayesian-optimal detection and error rate; contamination as repeated TV "
      "mixing; coverage monotonicity, submodularity and diminishing marginal returns; a "
      "hypothesis-testing module consolidating mass-sum identities and the TV bounds; a "
@@ -583,8 +684,15 @@ BLOCKS = [
      "establishing the separability lemma; a verification-budget module; an "
      "incommensurability module fixing the utility class; a calibration module proving the "
      "sign of the minimum-contribution estimator is not identified; a fragmentation module "
-     "formalizing coalition and holding-window saturation; and a corpus module formalizing "
-     "dilution invariance and selection filters."},
+     "formalizing coalition and holding-window saturation; a corpus module formalizing "
+     "dilution invariance and selection filters; and a tagged-corpus module in which every "
+     "item carries a provenance and the floor is proved not to read it."},
+    {"t": "p", "text":
+     "The last two modules do not connect. One works over a set of floor values and the other "
+     "over a distribution on a finite space, and no map between them exists yet, so the "
+     "contamination rate of section 3.3 and the provenance of section 6 are stated in separate "
+     "vocabularies. A bridge would need a map from a tagged corpus to a distribution, and "
+     "which quantity such a map should preserve is not settled."},
     {"t": "p", "text":
      "The formalization is not decoration. It falsified the confusion-matrix inequality, forced "
      "the residual term to carry a TV floor, reversed two monotonicity directions we had "

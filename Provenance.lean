@@ -172,3 +172,4 @@ import Provenance.Calibration
 import Provenance.Examples
 import Provenance.Fragmentation
 import Provenance.Corpus
+import Provenance.Tagged

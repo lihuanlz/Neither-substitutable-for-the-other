@@ -98,9 +98,9 @@ DARK = {
          '         size=15, color="primary", first=True, line=1.5)',
          'para(tf, "How much of this work is human?",\n'
          '         size=15, color="light", first=True, line=1.5)'),
-        ('para(tf, "Now 153 machine-checked theorems.",\n'
+        ('para(tf, "Now 164 machine-checked theorems.",\n'
          '         size=15, color="primary", line=1.5)',
-         'para(tf, "Now 153 machine-checked theorems.",\n'
+         'para(tf, "Now 164 machine-checked theorems.",\n'
          '         size=15, color="light", line=1.5)'),
         ('para(tf, num, size=30, color="accent", bold=True, font=FONT_NUM, first=True)',
          'para(tf, num, size=30, color="light", bold=True, font=FONT_NUM, first=True)'),

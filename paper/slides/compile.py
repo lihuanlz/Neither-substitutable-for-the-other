@@ -27,7 +27,7 @@ def main():
     prs.core_properties.subject = ("Identifiability of human and machine "
                                    "contribution")
     prs.core_properties.comments = (
-        "153 Lean 4 theorems, zero sorry, no axioms beyond Classical.choice, "
+        "164 Lean 4 theorems, zero sorry, no axioms beyond Classical.choice, "
         "Quot.sound and propext")
 
     for i in range(1, N_SLIDES + 1):

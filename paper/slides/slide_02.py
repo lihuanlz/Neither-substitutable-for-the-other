@@ -8,7 +8,7 @@ ITEMS = [
     ("02", "The Detection Ceiling", "Effort never passes that ceiling"),
     ("03", "Truth Is Not a Point", "The protocol decides what you can see"),
     ("04", "The Sign Is Unidentified", "One estimator cannot fix its own sign"),
-    ("05", "Claims Become Theorems", "153 Lean 4 proofs, zero sorry, zero added axioms"),
+    ("05", "Claims Become Theorems", "164 Lean 4 proofs, zero sorry, zero added axioms"),
 ]
 
 

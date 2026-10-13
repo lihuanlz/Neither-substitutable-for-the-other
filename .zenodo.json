@@ -36,7 +36,7 @@
   "upload_type": "publication",
   "publication_type": "article",
   "language": "eng",
-  "description": "<p>Humans and AI systems are usually placed on one capability curve and asked who is ahead. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound.</p> <p>153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.</p>",
+  "description": "<p>Humans and AI systems are usually placed on one capability curve and asked who is ahead. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound.</p> <p>164 machine-checked theorems and 20 worked examples across thirteen Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.</p>",
   "creators": [
     {
       "name": "Li, Huan",

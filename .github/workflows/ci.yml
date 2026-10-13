@@ -26,7 +26,7 @@ jobs:
         uses: leanprover/lean-action@v1
 
       # `lake build` alone only says the kernel accepted the proofs. This asks
-      # Lean for the axiom dependencies of all 153 declarations, so a stray
+      # Lean for the axiom dependencies of all 164 declarations, so a stray
       # `sorry` or an unexplained assumption fails the build instead of
       # quietly weakening a claim.
       - name: Audit axiom dependencies

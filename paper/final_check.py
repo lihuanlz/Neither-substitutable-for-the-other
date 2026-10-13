@@ -40,11 +40,19 @@ checks = [
     ("Silva classical note",       "classical results in statistical decision theory" in t),
     ("no toolchain typo",          "v4.150" not in t),
     ("no stale overclaim",         "not a measure of contribution in any sense" not in t),
-    ("153 theorems consistent",    "153 theorems" in t and "136 theorems" not in t
-                                   and "117 theorems" not in t),
-    ("twelve modules consistent",  t.count("twelve modules") >= 2
+    ("164 theorems consistent",    "164 theorems" in t and "136 theorems" not in t
+                                   and "153 theorems" not in t),
+    ("thirteen modules consistent", t.count("thirteen modules") >= 2
+                                   and "twelve modules" not in t
                                    and "nine modules" not in t and "nine Lean modules" not in t),
     ("corpus module described",    "dilution invariance and selection filters" in t),
+    ("tagged module described",    "tagged-corpus module" in t
+                                   and "machine_item_takes_over" in t
+                                   and "source_irrelevant" in t),
+    ("contamination in section 3","π · TV₀ / 2" in t and "π^k · TV₀" in t),
+    ("p_bind closed form",         "p_bind = 1 − c / (L · d · λ · TV)" in t),
+    ("falsification conditions",   "what would undo them" in t
+                                   and "starN_le_floorRounds" in t),
     ("calibration theorem cited",  "sign_not_identified_exact" in t),
 ]
 

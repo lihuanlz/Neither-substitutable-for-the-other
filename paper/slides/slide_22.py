@@ -9,7 +9,7 @@ TAKEAWAYS = [
     "The verification budget has a cap with no human in it.",
     "Influence does not measure value. Value needs a sign.",
     "The sign is not identified either; an out-of-distribution bar decides it.",
-    "153 theorems, zero sorry, zero added axioms, reproducible build.",
+    "164 theorems, zero sorry, zero added axioms, reproducible build.",
 ]
 
 

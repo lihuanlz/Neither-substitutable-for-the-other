@@ -2,7 +2,7 @@
 
 **Authors.** Huan Li ([ORCID 0009-0004-2695-6825](https://orcid.org/0009-0004-2695-6825))
 **Affiliations.** Independent Researcher
-**Correspondence.** Huan Li, lihuanlz@163.com
+**Correspondence.** Huan Li, lihuanlz@164.com
 **DOI.** [10.5281/zenodo.23321578](https://doi.org/10.5281/zenodo.23321578)
 
 ---
@@ -15,7 +15,7 @@ We formalize the alternative. A machine, holding the hypothesis space fixed, com
 
 Three layers of content-level and system-level mathematics sit underneath, and they are what make the claim checkable rather than rhetorical. Total variation is the exact maximal discriminability available to any detector, so verification effort has a floor that no amount of reviewer diligence lowers. The truth is an equivalence class induced by the observation protocol, which splits human and machine contribution into two currencies with no monotone exchange rate between them. And the sign of the leading information-theoretic measure of human contribution is not identified: the same output is reported as −0.099 under one calibration and +0.169 under another.
 
-All 153 theorems and 20 worked examples are machine-checked in Lean 4 (v4.15.0) against Mathlib, with zero `sorry` and zero admitted axioms beyond `Classical.choice`, `Quot.sound` and `propext`.
+All 164 theorems and 20 worked examples are machine-checked in Lean 4 (v4.15.0) against Mathlib, with zero `sorry` and zero admitted axioms beyond `Classical.choice`, `Quot.sound` and `propext`.
 
 ---
 
@@ -93,9 +93,35 @@ Minimizing `R(N) = p·c + A·max[(1 − q)^N, T] + c·N` with `A = (1 − p)L`, 
 
 a bound containing no `p`. Raising `TV` does not make review safer; it makes review cheaper, because distributions further apart saturate the verifier sooner and therefore need fewer rounds.
 
+The floor binds exactly when it exceeds the unconstrained residual, which is what happens when the reviewer is unreliable. Solving for the reviewer reliability at which the handover occurs gives a threshold in `p` alone,
+
+**p_bind = 1 − c / (L · d · λ · TV),  d = ln(1/(1 − q)),  floor binds for every p ≤ p_bind,**  [Eq. 16]
+
+so at the parameters of Figure 3, where `T = 0.09` and `d = ln 2`, the threshold sits at `p_bind = 0.8397`. Below it the detector sets the budget and the reviewer's quality is irrelevant to how many rounds are run; above it the reviewer does set the budget. As a share of the possible reviewer reliabilities, **83.97% of them fall on the detector side**. That share is a closed form in the four parameters, and a uniform scan of `p` over [0,1] reproduces it to within two parts in 100,000 at 10^5 points, so it does not depend on any grid choice.
+
 Dorner and colleagues prove related results in a different register, and the convergence is not ours. They show that the per-instance accuracy of verifier-driven test-time scaling is characterized by the geometry of the verifier's ROC curve, that rejection sampling and best-of-N share one large-compute limit set by the ROC slope at the origin, and that high-compute performance cannot be predicted from low-compute observations [13, Propositions 2, 3 and 7, Theorem 1]. Three differences remain. They characterize accuracy *at a given compute* `C` and never optimize over the budget, so no finite optimal round count appears in their analysis; in the regime that matters their compute cost `C(F)` diverges as `F` approaches zero. Their free parameters are the generator's initial accuracy `π` and the ROC curve, with no parameter anywhere for the reliability of a human reviewer. And their plateau depends jointly on `π` and `T′(0)`, whereas `T = λ·TV` is the separability of the two hypotheses and is independent of who performs the verification.
 
-### 3.3 An instantiation
+### 3.3 The cost of contamination
+
+The third way the ceiling gets set deserves its own statement, because it is the one that accumulates. Suppose the observed material is a mixture of a human source and a machine source at rate `π`, namely `(1 − π)p_H + π q`. Two hypotheses that differ only in `q` then differ after mixing by exactly
+
+**TV((1 − π)p_H + π u, (1 − π)p_H + π v) = π · TV(u, v),**  [Eq. 17]
+
+The two sides share the human source, so subtracting them cancels it and leaves `π` times the original difference. The best attainable advantage is consequently `π · TV₀ / 2`. Contamination attenuates the signal by a factor exactly linear in the rate, and no quantity of calibration data enters the expression.
+
+Under a self-consuming recursion, in which each generation is re-mixed with the human source at the same weight `π` every round, the attenuation is exact after `k` rounds,
+
+**signal(k) = π^k · TV₀ ≤ π^k,**  [Eq. 18]
+
+so with `π` below 1 the signal is washed out as `k` grows. The converse fixes a tolerance: retaining a target advantage `δ` requires `π · TV₀` to reach `2δ`, that is
+
+**π ≤ 2δ / TV₀,**  [Eq. 19]
+
+so a weaker original signal admits less contamination. What drives the decay is the weight at which human material is reinserted each round. At `π = 1`, which is the accumulation scheme, the factor is constantly 1 and the signal does not decay at all. This is the quantitative form of "model autophagy": the collapse is driven by the reinsertion weight, not by the abstract presence of contamination.
+
+This is contamination of an evidence channel, with an external detector still doing the estimation. Whether the human in the loop updates on the same estimator is not a formal question and is not answered here. §6 gives the corpus-side statement, where the floor itself is the estimate.
+
+## 3.4 An instantiation
 
 Cryptic sister species give the cleanest field demonstration. Two species may be separable by one fixed nucleotide, by one courtship call, or by nothing a given survey protocol can register. The first case is a fact about the organisms, the last a fact about the protocol, and the literature is careful to say which. Where two species differ only in features the protocol cannot register, they are not "the same species"; they are operationally equivalent for that survey. The same structure recurs across modern biology. Environmental DNA surveys trade sequence-discriminating power against a contamination-driven false-positive rate and a detection-driven false-negative rate. Homology modelling can leave a backbone well constrained while a functionally critical loop is not, and a confidence metric does not make the unconstrained region less so.
 
@@ -115,7 +141,7 @@ We should be exact about what follows, because it is less dramatic than it first
 
 Rewriting their estimator exposes a sharper problem than the negatives. Their Equation (10), `φ̂ = (I(y) + N log τ)/I(y)`, reduces to
 
-**φ̂ = 1 − τ̄/s̄,**  [Eq. 16]
+**φ̂ = 1 − τ̄/s̄,**  [Eq. 20]
 
 where `τ̄ = −log τ` is the plausibility bar and `s̄ = I(y)/N` the mean per-token unconditional surprisal. Two consequences follow. `φ̂` is a function of the output alone, since the human input does not appear, and it is unbounded below as `y` grows more predictable, so the `[0,1]` reading does not survive in the estimation variant. And its sign is `φ̂ < 0 ⟺ s̄ < τ̄`, where `τ̄` is fitted rather than measured: the authors set `−log τ` to the empirical mean plus one standard deviation of conditional surprisal over 2,500 WildChat prompts, giving 0.5496 for Llama-3 and 0.4155 for Mixtral [18, §A.5].
 
@@ -135,7 +161,7 @@ Model a collaboration as the set of layers its members reach independently, with
 
 Under that model, `add_member_same_reach` and `gain_eq_best_member` give the reach and the gain of the coalition as those of its best member. The consequence is the theorem the topic turns on:
 
-**marginal_agent_pure_waste: gain(Φ, D ∪ {a}) = gain(Φ, D), and totalIndividual(Φ, D ∪ {a}) = totalIndividual(Φ, D) + log(Φ/a).**  [Eq. 17]
+**marginal_agent_pure_waste: gain(Φ, D ∪ {a}) = gain(Φ, D), and totalIndividual(Φ, D ∪ {a}) = totalIndividual(Φ, D) + log(Φ/a).**  [Eq. 21]
 
 The N+1th person earns exactly zero and costs exactly `log(Φ/a)`. Define the waste as the difference, `waste = totalIndividual − gain`. Then `waste_nonneg` and `headcount_adds_waste_only` say the merge never produces more than the best individual, and headcount only adds waste.
 
@@ -151,17 +177,25 @@ The same structure reappears on the data side, and it bears directly on a common
 
 The quantity in doubt is not the size of the corpus, which grows without bound, but how much of it is usable. Model a corpus as the set of floors its individual items certify, with the certified floor the best one on offer.
 
-**floorOf(D) = min D.**  [Eq. 18]
+**floorOf(D) = min D.**  [Eq. 22]
 
 Then the floor is determined entirely by the best item. `floorOf_union_le_left` and `floorOf_union_le_right` say that adding a corpus changes the joint floor only through that corpus's own best item, and `floorOf_union_self_mono` covers arbitrary growth: add `n` items, none of which beats the existing floor, and the floor stays put. `floor_determines_bound` says two corpora certifying the same floor are indistinguishable whatever their size, composition or recency. This is **dilution invariance**, and it says that a corpus which is ninety-nine parts filler and one part signal certifies precisely what the one part certifies. `uninformative_corpus_gains_nothing` is `no_gain_without_floor_drop` at the corpus level: switching corpora without lowering the floor pays exactly zero.
 
 The selection version is the sharper half. If every published item is bounded below by `c`, then
 
-**selection_filter_caps_gain: log(e₀/e_N) ≤ log(e₀/c) for every achievable residual e_N,**  [Eq. 19]
+**selection_filter_caps_gain: log(e₀/e_N) ≤ log(e₀/c) for every achievable residual e_N,**  [Eq. 23]
 
 uniformly in the residual. `corpus_size_cannot_beat_selection_floor` reads this contrapositively: no corpus, however large, certifies a floor below `c` if none of its items does. Corpus growth is unbounded; the floor it can certify is not.
 
 So the two halves of the usual claim come apart. Everything articulable does eventually enter the corpus. Whether it enters the usable part is settled by whether it lowers the floor, and that is a property of the item, not of its volume.
+
+The natural next question is whether knowing where an item came from would help. It would not, and the answer is a theorem. Carry the provenance on the item: an item is a floor together with a source, human or machine.
+
+The floor of such a corpus is unchanged, because the floor function never inspects the source coordinate. `machine_item_takes_over` says that a machine item undercutting the human floor takes the bound over completely, and `source_irrelevant` says that a human item reaching the same floor would have done exactly the same. The label therefore carries no information about the certified bound, and `floor_cannot_reveal_provenance` makes the point from the other side: a corpus of human items and a corpus of machine items certify the same number.
+
+Two corollaries do the damage. `contamination_irreversible` shows that absorbing a contaminated corpus puts the joint floor strictly below the original, and that dilution cannot restore it. `machine_item_beats_human_filter` combines this with the selection threshold: if every human item is bounded below by `c`, a single machine item below `c` still certifies below `c`, whatever the size of the human part.
+
+This is the corpus reading of the contamination tolerance of §3.3, and it does not depend on how much contaminated material there is. Provenance is the one piece of information a reader would most expect to be able to filter on, and it is precisely the one the bound cannot see.
 
 Two things are deliberately left out, and the omissions are the point. Whether a given artefact is articulable at all is not representable at this level, so the tacit-knowledge filter cannot be stated as a theorem. And the corpus is modelled as a set; nothing here says the best item is reachable, or that it is weighted up once found. Those are commitments, recorded in §8.
 
@@ -177,7 +211,7 @@ The formal claims above make predictions, and the empirical literature of 2026 b
 
 **Where the evidence stops.** None of the above is causal. The 2026 corpus study uses an LM classifier whose 12.5% error rate enters every proportion reported, and paper-level tool use is correlated with output without random assignment and without excluding self-selection. It is observational. It is consistent with the two-operator claim and it does not establish it.
 
-## 8. Modelling commitments
+## 8. Modelling commitments and falsification conditions
 
 Three seams separate the formal layer from the empirical layer. They are of different kinds and should not be conflated.
 
@@ -189,9 +223,21 @@ Three seams separate the formal layer from the empirical layer. They are of diff
 
 Two further commitments attach to §6: articulability is not represented, and the corpus is a set rather than a stream with recency and re-weighting.
 
+Recording the seams is not the same as recording what would undo them. Each claim below has an observation that would refute it, and none of these refutations needs the formal layer to be wrong.
+
+For the two-operator claim the failure mode is a task on which a machine raises the human floor on its own, repeatedly, with the human out of the loop. Floor movement is what §2 defines as refinement, so a system that does it falsifies the separation.
+
+For the verification bound the failure mode is a regime in which the optimal round count keeps rising with reviewer reliability after the floor has been met. That is the unconstrained optimum with the floor slack, which `starN_le_floorRounds` rules out; observing it would refute the theorem, not merely the model around it.
+
+For the corpus reading the failure mode is a contaminated corpus that still certifies the pre-contamination floor. `machine_item_takes_over` excludes it by construction, so an observed exception would mean the certified floor is not a minimum over items.
+
+For the empirical reading of §7 the failure mode is a randomized assignment showing AI-augmented work raising collective topic volume and researcher interaction rather than leaving them. The present evidence cannot exclude that, which is why that paragraph is stated as observational.
+
 ## 9. Formalization
 
-All results are stated and proved in Lean 4 (toolchain `leanprover/lean4:v4.15.0`) against Mathlib, on finite probability spaces, across twelve modules: total variation and its properties; Bayesian-optimal detection and error rate; contamination as repeated TV mixing; coverage monotonicity, submodularity and diminishing marginal returns; a hypothesis-testing module consolidating mass-sum identities and the TV bounds; a refinement module separating layer-crossing from within-layer gains; a value module establishing the separability lemma; a verification-budget module; an incommensurability module fixing the utility class; a calibration module proving the sign of the minimum-contribution estimator is not identified; a fragmentation module formalizing coalition and holding-window saturation; and a corpus module formalizing dilution invariance and selection filters. Finite probability spaces are modelled as `structure PMF (n : ℕ)`; total variation is the maximum over events of the absolute mass difference, with the two-sided bounds proved by summation over a partition rather than by appeal to the general theory.
+All results are stated and proved in Lean 4 (toolchain `leanprover/lean4:v4.15.0`) against Mathlib, on finite probability spaces, across thirteen modules: total variation and its properties; Bayesian-optimal detection and error rate; contamination as repeated TV mixing; coverage monotonicity, submodularity and diminishing marginal returns; a hypothesis-testing module consolidating mass-sum identities and the TV bounds; a refinement module separating layer-crossing from within-layer gains; a value module establishing the separability lemma; a verification-budget module; an incommensurability module fixing the utility class; a calibration module proving the sign of the minimum-contribution estimator is not identified; a fragmentation module formalizing coalition and holding-window saturation; a corpus module formalizing dilution invariance and selection filters; and a tagged-corpus module in which every item carries a provenance and the floor is proved not to read it. Finite probability spaces are modelled as `structure PMF (n : ℕ)`; total variation is the maximum over events of the absolute mass difference, with the two-sided bounds proved by summation over a partition rather than by appeal to the general theory.
+
+The last two modules do not connect. One works over a set of floor values and the other over a distribution on a finite space, and no map between them exists yet, so the contamination rate of §3.3 and the provenance of §6 are stated in separate vocabularies. A bridge would need a map from a tagged corpus to a distribution, and which quantity such a map should preserve is not settled.
 
 The formalization is not decoration. It falsified the confusion-matrix inequality in §3.1, forced the residual term in §3.2 to carry a TV floor, reversed two monotonicity directions we had asserted, and turned the separability claim into a theorem. It also caught one of our own claims as false on first attempt: the composition of a selection filter with corpus dilution requires a hypothesis on the first corpus as well, because otherwise the first corpus may already sit below the threshold.
 
@@ -203,7 +249,7 @@ The formalization is not decoration. It falsified the confusion-matrix inequalit
 
 **Figure 2 | The identifiability ceiling.** (a) Every test of two hypotheses `p` and `q` is bounded by Le Cam's two-point lemma: the excess accuracy over chance is exactly `TV(p,q)/2`, and the error rate is exactly `(1 − TV)/2`. Both bounds are attained, so no detector can exceed the curve. (b) The two-sided form `|TP − FP| ≤ TV` is the identity `J ≤ TV` for Youden's index `J = Se + Sp − 1`; the geometry is fixed by `p` and `q` alone, leaving threshold choice no freedom. (c) As a generator's distribution converges to the reference distribution, `TV → 0` and attainable advantage → 0, independently of detector architecture.
 
-**Figure 3 | Verification effort has a floor.** Residual miss rate as a function of the number of verification rounds. Geometric decay `(1 − q)^N` (dotted) is clipped at the floor `T = λ·TV` (dashed), giving the maximum of the two (solid). The cost-minimizing budget `N*` is the smaller of the unconstrained optimum `N_c` and the `p`-independent cap `N_0 = ln(1/(λ·TV))/ln(1/(1−q))` (vertical markers). Increasing reviewer reliability `p` lowers `N*` only while the floor is slack; once `T ≥ x_c`, `N*` is pinned at `N_0` and further reviewer quality buys nothing. Parameters: TV = 0.09, q = 0.5, λ = 1, where `N_c = 3.793` and `N_0 = 3.474`, and the floor is the active constraint in 83.97% of the scanned parameter combinations.
+**Figure 3 | Verification effort has a floor.** Residual miss rate as a function of the number of verification rounds. Geometric decay `(1 − q)^N` (dotted) is clipped at the floor `T = λ·TV` (dashed), giving the maximum of the two (solid). The cost-minimizing budget `N*` is the smaller of the unconstrained optimum `N_c` and the `p`-independent cap `N_0 = ln(1/(λ·TV))/ln(1/(1−q))` (vertical markers). Increasing reviewer reliability `p` lowers `N*` only while the floor is slack; once `T ≥ x_c`, `N*` is pinned at `N_0` and further reviewer quality buys nothing. Parameters: TV = 0.09, q = 0.5, λ = 1, where `N_c = 3.793` and `N_0 = 3.474`. The floor is the active constraint for every reviewer below `p_bind = 1 − c/(L·d·λ·TV)`, which here is `p_bind = 0.8397`, so 83.97% of the possible reviewer reliabilities leave the bottleneck with the detector rather than the reviewer.
 
 **Figure 4 | The sign of a credit measure is not identified.** The estimated contribution `φ̂ = 1 − τ̄/s̄` plotted as the plausibility bar `τ̄` moves through its plausible range. The estimator is a function of the output alone and the bar is fitted out of distribution, so the same output crosses zero: Llama-3 reports `−0.099` at `τ̄ = 0.5496` and Mixtral reports `+0.169` at `τ̄ = 0.4155`. The sign-flipping witnesses are pinned at `τ = s/2` and `τ = 3s/2`.
 
@@ -231,7 +277,7 @@ A four-panel illustrated series accompanies this article. All four panels use th
 
 ## Methods
 
-The mathematical development was carried out in Lean 4 against Mathlib and organized as twelve modules, listed in §9. Prose specifications live alongside the proofs as docstrings in the sources themselves, so the statement of every theorem, its hypotheses, and the modelling commitments behind it are read from the same artifact that is typechecked. The public repository builds in a clean container: `lake update`, `lake exe cache get`, `lake build`. A CI workflow runs the build, an axiom audit over every declaration in the package, and a consistency check against the manuscript.
+The mathematical development was carried out in Lean 4 against Mathlib and organized as thirteen modules, listed in §9. Prose specifications live alongside the proofs as docstrings in the sources themselves, so the statement of every theorem, its hypotheses, and the modelling commitments behind it are read from the same artifact that is typechecked. The public repository builds in a clean container: `lake update`, `lake exe cache get`, `lake build`. A CI workflow runs the build, an axiom audit over every declaration in the package, and a consistency check against the manuscript.
 
 The axiom audit is the substantive gate. It enumerates the axioms reachable from each of the package's declarations and fails on anything beyond `Classical.choice`, `Quot.sound` and `propext`. In particular it fails on `sorryAx`, which is how an incomplete proof would otherwise pass unnoticed.
 

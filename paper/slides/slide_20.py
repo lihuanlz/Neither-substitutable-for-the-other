@@ -21,7 +21,7 @@ MODULES = [
 
 def build(prs):
     s = new_slide(prs)
-    header(s, "FORMALIZATION", "153 Theorems, 12 Modules", 20)
+    header(s, "FORMALIZATION", "164 Theorems, 13 Modules", 20)
 
     # Twelve modules in three columns need four rows, so the pitch is tighter
     # than the nine-module layout this slide used to carry.
@@ -37,7 +37,7 @@ def build(prs):
 
     card(s, 0.55, 4.34, 8.90, 0.62, style="peach")
     tf = tbox(s, 0.85, 4.48, 8.30, 0.34, anchor="middle")
-    para(tf, "Lean 4 v4.15.0 + Mathlib · 153 theorems + 20 worked examples · "
+    para(tf, "Lean 4 v4.15.0 + Mathlib · 164 theorems + 20 worked examples · "
              "zero sorry, zero added axioms",
          size=12, color="primary", bold=True, first=True)
     return s

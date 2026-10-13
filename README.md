@@ -6,7 +6,7 @@
 **Under human-AI collaboration, neither the human nor the machine role is
 substitutable for the other.**
 
-Formalization: Lean 4 + Mathlib, **153 theorems + 20 worked examples**, zero
+Formalization: Lean 4 + Mathlib, **164 theorems + 20 worked examples**, zero
 `sorry`, and no axioms beyond `Classical.choice`, `Quot.sound` and `propext`.
 117 cover the main line (non-substitutability), 19 the
 fragmentation side topic, 17 the corpus-selection side topic.
@@ -42,7 +42,7 @@ corpus, index `paper/manuscript.md`, not the PDF.
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
   "headline": "Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery",
-  "abstract": "Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound. 153 machine-checked theorems and 20 worked examples across twelve Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.",
+  "abstract": "Humans and AI systems are usually placed on one capability curve and asked who is ahead. That framing has no formal content. We formalize the alternative: the two parties act on different variables, and each saturates on a different axis. A machine compresses the residual toward a floor it cannot pass, bounded by log(e0/Phi); a human moves the floor itself, unbounded. Headcount saturates immediately, and corpus size saturates because only the single item certifying the lowest floor determines the attainable bound. 164 machine-checked theorems and 20 worked examples across thirteen Lean 4 modules, zero sorry, no axioms beyond Classical.choice, Quot.sound and propext.",
   "author": {
     "@type": "Person",
     "name": "Huan Li",
@@ -208,10 +208,11 @@ are seams left open, not oversights.
 
 - Calibration fitted on 2,500 WildChat prompts; 95.9% of 1,500 pairs separable
 - At \(T = 0.09\) (\(\lambda=1\), TV=0.09, q=0.5): \(N_c = 3.793\), \(N_0 = 3.474\),
-  and **the floor is the active constraint in 83.97% of the scanned parameter
-  combinations**
+  and **the floor is the active constraint for every reviewer below
+  \(p_{\mathrm{bind}} = 1 - c/(L\,d\,\lambda\,\mathrm{TV}) = 0.8397\)**, so 83.97% of
+  the possible reviewer reliabilities leave the bottleneck with the detector
 - \(\bar s = 0.50\); Llama-3 \(\bar\tau = 0.5496 \to -0.099\); Mixtral \(\bar\tau = 0.4155 \to +0.169\)
-- Axiom audit: all 153 declarations resolve, depending only on `Classical.choice` / `Quot.sound` / `propext`, zero `sorryAx`
+- Axiom audit: all 164 declarations resolve, depending only on `Classical.choice` / `Quot.sound` / `propext`, zero `sorryAx`
 
 ---
 
@@ -220,7 +221,7 @@ are seams left open, not oversights.
 ```
 Provenance.lean          Main entry point (module guide + reproduction notes)
 .github/workflows/ci.yml GitHub Actions: build + axiom audit + consistency check
-tools/audit_axioms.py    Axiom-dependency audit over the 153 theorems (CI gate)
+tools/audit_axioms.py    Axiom-dependency audit over the 164 theorems (CI gate)
 tools/check_metadata.py  CITATION.cff / .zenodo.json / README citation-block check (CI gate)
 tools/sync_refs.py       Generates the docx bibliography block from manuscript.md (drift guard)
 tools/strip_bom.py       Strips UTF-8 BOMs from Python sources (ast.parse needs it)
@@ -313,7 +314,7 @@ python verify_dois.py      # online check of the 16 DOIs among 23 references
 ```
 
 ```powershell
-python tools\audit_axioms.py   # axiom-dependency audit over the 153 theorems
+python tools\audit_axioms.py   # axiom-dependency audit over the 164 theorems
 ```
 
 ### CI
@@ -321,7 +322,7 @@ python tools\audit_axioms.py   # axiom-dependency audit over the 153 theorems
 Every push to `main` and every PR triggers three GitHub Actions jobs:
 
 1. `lake build`: installs the toolchain with [leanprover/lean-action](https://github.com/leanprover/lean-action), fetches the Mathlib cache, compiles every proof
-2. `tools/audit_axioms.py`: emits `#print axioms` for all 153 declarations and confirms they depend only on `Classical.choice` / `Quot.sound` / `propext`, with zero `sorryAx`
+2. `tools/audit_axioms.py`: emits `#print axioms` for all 164 declarations and confirms they depend only on `Classical.choice` / `Quot.sound` / `propext`, with zero `sorryAx`
 3. `paper/final_check.py` + `paper/verify_dois.py`: manuscript consistency and online DOI resolution
 
 Job 2 is the one that matters: a passing `lake build` only says the kernel

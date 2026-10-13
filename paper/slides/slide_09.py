@@ -34,8 +34,10 @@ def build(prs):
 
     dot(s, 0.72, 4.72)
     tf = tbox(s, 0.92, 4.58, 8.5, 0.32)
-    para(tf, "In 83.97% of parameter sets the detector binds, not the person.",
-         size=12.5, color="primary", bold=True, first=True)
+    para(tf, "Below p_bind = 0.8397 the detector binds, not the person:",
+         size=11.5, color="muted", first=True)
+    para(tf, "83.97% of possible reviewer reliabilities.",
+         size=12.5, color="primary", bold=True)
     source(s, "Parameters: TV = 0.09, q = 0.5, λ = 1, as in Fig. 2 "
               "(N_c: another reviewer p)",
            y=5.06, x=0.55, w=6.6)

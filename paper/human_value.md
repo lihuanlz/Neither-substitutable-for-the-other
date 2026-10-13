@@ -33,7 +33,7 @@ What if you check more often? The residual does fall, as `(1−q)ᴺ`, and then 
 > The optimal number of rounds is `N* ≤ N₀`, and the formula for `N₀` contains **no term for reviewer reliability**.
 
 At these parameters the ceiling sits at **3.474 rounds**. Hire someone more reliable than the last reviewer and you still cannot buy the next round.
-Across the parameter grid we scanned, in **83.97%** of cases the thing holding progress back is the detector itself, not the person.
+The floor binds for every reviewer below `p_bind = 1 − c/(L·d·λ·TV)`, which at these parameters is **0.8397**. So in **83.97%** of the possible cases the thing holding progress back is the detector itself, not the person. That share is an exact formula, not a tally over a sampled grid.
 
 ---
 
@@ -102,7 +102,7 @@ What we have given is this:
 
 And it is not just talk.
 
-> **153 Lean 4 theorems. Zero `sorry`, and no axioms beyond `Classical.choice`, `Quot.sound` and `propext`.**
+> **164 Lean 4 theorems. Zero `sorry`, and no axioms beyond `Classical.choice`, `Quot.sound` and `propext`.**
 
 The formalization is not decoration. It falsified an inequality we had written down wrong, forced a floor term into the model, and reversed two monotonicity directions we had assumed were right.
 
@@ -123,4 +123,4 @@ not "there is nothing here".
 
 ---
 
-*Technical detail, the 153 theorems and the 12 modules: see the full paper `manuscript.md` and the Lean 4 sources under `Provenance/`.*
+*Technical detail, the 164 theorems and the 13 modules: see the full paper `manuscript.md` and the Lean 4 sources under `Provenance/`.*

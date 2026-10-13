@@ -23,10 +23,10 @@ def build(prs):
     tf = tbox(s, 0.80, 2.72, 6.0, 1.25)
     para(tf, "How much of this work is human?",
          size=15, color="light", first=True, line=1.5)
-    para(tf, "Now 153 machine-checked theorems.",
+    para(tf, "Now 164 machine-checked theorems.",
          size=15, color="light", line=1.5)
 
-    stats = [("153", "proved theorems"), ("0", "sorry, added axioms"), ("12", "formalized modules")]
+    stats = [("164", "proved theorems"), ("0", "sorry, added axioms"), ("13", "formalized modules")]
     for i, (num, lab) in enumerate(stats):
         x = 0.80 + i * 2.10
         tf = tbox(s, x, 4.14, 2.0, 0.58)

@@ -15,7 +15,7 @@ def build(prs):
     para(tf, "Claims Become Theorems", size=34, color="bg", bold=True, first=True)
 
     tf = tbox(s, 0.90, 3.60, 5.6, 0.80)
-    para(tf, "153 theorems, zero sorry, zero added axioms.",
+    para(tf, "164 theorems, zero sorry, zero added axioms.",
          size=13, color="light", first=True, line=1.4)
 
     shape(s, 8.80, 0.20, 0.92, 0.92, line="secondary", lw=1.25, kind="oval")
