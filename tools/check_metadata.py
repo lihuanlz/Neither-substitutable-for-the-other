@@ -76,17 +76,26 @@ def creator_name_is_surnamed_first(name: str) -> bool:
     return bool(family.strip()) and bool(given.strip())
 
 
-def description_paragraphs_are_separated(description: str) -> bool:
-    """True when every adjacent pair of tags in the description has whitespace.
+def description_survives_markdown_rendering(description: str) -> bool:
+    """True when the description will read as prose rather than as markup.
 
-    Zenodo keeps the raw HTML for the landing page but derives the plain text
-    from it for social cards and for corpus ingestion, and that derivation drops
-    the tags without inserting a separator. Two paragraphs written as
-    '</p><p>' therefore reach every plain-text reader as one sentence, with the
-    last word of the first paragraph welded to the first word of the second. A
-    single space between the tags is plain text, so it survives any strip.
+    Zenodo's description field is Markdown, not HTML. Raw tags are escaped
+    rather than rendered, so a description written as `<p>text</p>` reaches the
+    landing page, the `og:description` meta tag and DataCite with the literal
+    characters `<p>` and `</p>` sitting in front of the reader. This is not
+    hypothetical: it shipped once, and the guard written for it checked the
+    wrong thing, because it looked for whitespace between adjacent tags rather
+    than for the tags themselves.
+
+    Two rules follow. No HTML at all, and every paragraph boundary is a blank
+    line, which is plain text and so survives every derivation the platform
+    performs on the field.
     """
-    return re.search(r"><", description) is None
+    if re.search(r"<[^>]+>", description):
+        return False
+    # A single newline between two non-newline characters is a soft wrap, not a
+    # paragraph break, and it does not survive a whitespace-collapsing strip.
+    return re.search(r"[^\n]\n[^\n]", description) is None
 
 
 def main() -> int:
@@ -152,10 +161,12 @@ def main() -> int:
                         % name)
 
             description = str(zen.get("description", ""))
-            if description and not description_paragraphs_are_separated(description):
+            if description and not description_survives_markdown_rendering(description):
                 problems.append(
-                    ".zenodo.json: two tags meet with no space in the description, "
-                    "so its plain-text form runs the paragraphs together")
+                    ".zenodo.json: the description is not plain Markdown. Zenodo "
+                    "escapes HTML in this field rather than rendering it, so tags "
+                    "reach the reader literally; separate paragraphs with a blank "
+                    "line and use no tags")
 
             if zen.get("upload_type") == "publication" and not zen.get("publication_type"):
                 problems.append(".zenodo.json: a publication needs publication_type")
