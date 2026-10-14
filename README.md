@@ -1,35 +1,68 @@
-# Neither substitutable for the other
+<p align="center">
+  <img src="assets/two-operators-adaptive.svg" width="820" alt="Two operators on two separate axes: machine compression flattens at a floor it cannot pass, human refinement steps that floor down without limit.">
+</p>
 
-[![CI](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml/badge.svg)](https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml)
-[![Lean 4](https://img.shields.io/badge/lean-4.15.0-blue.svg)](https://github.com/leanprover/lean4/releases/tag/v4.15.0)
+<h1 align="center">Neither substitutable for the other</h1>
 
-A Lean 4 development formalizing the claim that, under AI-assisted discovery,
-the human role and the machine role are not substitutes for one another.
+<p align="center">
+  <a href="https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml"><img src="https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Lean-4.15.0-blue" alt="Lean 4.15.0">
+  <img src="https://img.shields.io/badge/theorems-164-0969da" alt="164 theorems">
+  <img src="https://img.shields.io/badge/sorry-0-success" alt="zero sorry">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT">
+</p>
 
-**164 theorems and 20 worked examples**, zero `sorry`, and no axioms beyond
-`Classical.choice`, `Quot.sound` and `propext`. 117 cover the main line,
-19 the fragmentation side topic, 17 the corpus-selection side topic, and the
-remainder the modules those three rest on.
+## The finding
 
-This repository publishes the Lean development. The article that the development
-supports is archived separately on Zenodo and cited below; its manuscript
-sources are not part of this repository.
+**There is no common scale on which to put human and machine contribution, and the reason is structural rather than a matter of measurement error.**
 
-## What the modules establish
+A machine compresses a residual toward a floor it cannot pass. Its total gain is capped at `log(e₀/Φ)` and does not improve with additional inference steps. A human moves the floor itself, and that gain is unbounded. One side has a ceiling, the other does not, and two quantities like that cannot share a ruler.
 
-The main line separates two operations and shows they act on different
-quantities. A machine, holding the hypothesis space fixed, reduces a residual
-`e_t` toward a floor `Φ` it cannot pass, so its total gain is bounded by
-`log(e₀/Φ)` regardless of how many steps it takes. A human moves `Φ` itself, and
-that gain is unbounded. Two consequences follow from the same currency:
-influence magnitude does not determine signed value, and the sign of a
-calibrated contribution estimator is not identified by the data.
+Three consequences fall out of the same currency, and each is a machine-checked theorem rather than an intuition:
+
+- **Headcount saturates.** Under a max-type coalition the marginal member earns exactly zero and costs strictly more.
+- **Corpus size saturates.** Only the single item certifying the lowest floor determines the bound that is attainable at all.
+- **Provenance cannot certify anything.** The floor function provably never reads the source label, so tagging an item human or machine changes no bound.
+
+## What is machine-checked
+
+164 theorems and 20 worked examples across thirteen Lean 4 modules, against Mathlib. Zero `sorry`. The axiom audit resolves every declaration against `Classical.choice`, `Quot.sound` and `propext` and nothing else, and it runs in CI on every push.
+
+```powershell
+lake build
+python tools\audit_axioms.py     # axiom dependencies for all 164 declarations
+python tools\check_metadata.py   # CITATION.cff / .zenodo.json / README agreement
+```
+
+## What machine checking did to the argument
+
+This is the part that is not visible anywhere else, and it is why the formalization was worth doing rather than asserting.
+
+Checking the proofs falsified a confusion-matrix inequality from an earlier draft, forced a total-variation floor into the residual term, reversed two monotonicity directions we had asserted, and refuted one of our own claims on first attempt. Those reversals are reported in the paper rather than patched out quietly.
+
+It also settled the direction of causality between the two sides, which the prose had left vaguer than it should have been: **the human's layer move creates the machine's budget, and the machine cannot move the layer.** The dependence has a direction, and that direction is what non-substitutability means here.
+
+## What would falsify this
+
+Each claim carries the observation that would refute it. None of them requires the formal layer to be wrong.
+
+- The two-operator separation fails on a task where a machine raises the floor repeatedly with the human out of the loop.
+- The coalition results fail on two teams matched on their best member where the weaker member still moves the joint outcome.
+- The calibration result fails on data where the fitted bar transfers, in distribution, to the population it is scored on.
+- The max-type coalition assumption is not proven here, and it is a seam rather than a lemma.
+
+The model commits to a max-type coalition, to a corpus read as a set rather than a stream, and to a positive floor `Φ` that no theorem here establishes. Those are stated commitments, not oversights.
+
+## Modules
+
+<details>
+<summary><b>13 modules, and what each one settles</b></summary>
 
 | Module | What it settles |
 |---|---|
 | `Basic.lean` | Total variation, optimal testing, and the ceiling any detector hits |
 | `HypothesisTest.lean` | Set-form total variation theorem, Neyman–Pearson power bound |
-| `Contamination.lean` | TV mixing, its exponential law under repeated contamination, and a collapse bound |
+| `Contamination.lean` | TV mixing, its exponential law under repeated contamination, a collapse bound |
 | `VerifyBudget.lean` | The optimal verification budget is capped independently of reviewer reliability |
 | `Refinement.lean` | Observation-layer equivalence classes, and the two currencies formalized |
 | `Value.lean` | Separability of influence and value: any reflection-invariant proxy is blind to the split |
@@ -46,6 +79,8 @@ calibrated contribution estimator is not identified by the data.
 them, so the contamination rate and the provenance vocabulary are kept apart on
 purpose.
 
+</details>
+
 ## Repository layout
 
 ```
@@ -53,39 +88,14 @@ Provenance.lean            Main entry point (module guide + reproduction notes)
 Provenance/                13 Lean modules
 tools/audit_axioms.py      Axiom-dependency audit over the 164 theorems (CI gate)
 tools/check_metadata.py    CITATION.cff / .zenodo.json / README citation check (CI gate)
-tools/strip_bom.py         Strips UTF-8 BOMs from Python sources (ast.parse needs it)
+tools/strip_bom.py         Strips UTF-8 BOMs from Python sources
 .github/workflows/ci.yml   GitHub Actions: Lean build, axiom audit, metadata
+assets/                    Header figure (SVG)
 CITATION.cff               Machine-readable citation metadata
 .zenodo.json               Zenodo archive metadata (a release mints a versioned DOI)
 LICENSE                    MIT
 lakefile.lean, lean-toolchain, lake-manifest.json
 ```
-
-## Reproduction
-
-### Lean proofs
-
-Requires [Elan](https://github.com/leanprover/elan):
-
-```powershell
-lake build
-```
-
-The toolchain is pinned in `lean-toolchain` (`leanprover/lean4:v4.15.0`) and the
-dependencies in `lake-manifest.json`. `.lake/` is not in this repository; the
-first build pulls Mathlib and takes a while.
-
-### Checks
-
-```powershell
-python tools\audit_axioms.py   # axiom dependencies for all 164 declarations
-python tools\check_metadata.py # CITATION.cff / .zenodo.json / README agreement
-python tools\strip_bom.py      # strip UTF-8 BOMs
-```
-
-`audit_axioms.py` is the one that matters. A passing `lake build` only says the
-kernel accepted the proofs; the axiom audit is what stops a claim from being
-quietly weakened by a `sorry`.
 
 ## CI
 
@@ -94,6 +104,8 @@ Every push to `main` and every pull request runs one job:
 1. `lake build` via [leanprover/lean-action](https://github.com/leanprover/lean-action), which installs the pinned toolchain and fetches the Mathlib cache before compiling
 2. `tools/audit_axioms.py`, confirming all 164 declarations resolve against only `Classical.choice`, `Quot.sound` and `propext`, with zero `sorryAx`
 3. `tools/check_metadata.py`, confirming the citation files and the README agree
+
+A passing `lake build` only says the kernel accepted the proofs. The axiom audit is what stops a claim from being quietly weakened by a `sorry`.
 
 ## Citation
 
@@ -107,16 +119,11 @@ archived version, so the citation stays correct as new versions are published.
 
 The article is CC-BY-4.0. The code in this repository is MIT; see
 [`LICENSE`](LICENSE). `tools/check_metadata.py` fails if the two are collapsed
-into one.
-
-The Lean sources behind that claim are the ones in this repository, and
-`tools/audit_axioms.py` is the machine check on them.
+into one. The Lean sources behind the article are the ones in this repository.
 
 <!--
   Scholarly metadata for crawlers. This describes the Zenodo record, not a file
-  in this repository. It previously carried an `encoding.contentUrl` pointing at
-  paper/manuscript.md on raw.githubusercontent.com; that path no longer resolves,
-  so the block points only at the DOI.
+  in this repository.
 -->
 <script type="application/ld+json">
 {

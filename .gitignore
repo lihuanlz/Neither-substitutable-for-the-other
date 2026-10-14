@@ -32,6 +32,13 @@ local_build.txt
 /paper/
 
 # ---------------------------------------------------------------------
+# Local preview harnesses for the header figure. They exist to eyeball
+# the SVG on a light and a dark background before pushing; they are not
+# part of what the repository publishes.
+# ---------------------------------------------------------------------
+/assets/_*.html
+
+# ---------------------------------------------------------------------
 # LaTeX and XeLaTeX intermediates.  Pure build output, wherever they
 # happen to be produced.
 # ---------------------------------------------------------------------
