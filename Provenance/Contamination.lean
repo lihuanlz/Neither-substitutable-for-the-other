@@ -127,12 +127,22 @@ theorem maxAdvantage_mix (p u v : PMF n) {π : ℝ} (h : MixWeight π) :
   rw [totalVariation_mix p u v h]
   ring
 
-/-- **Contamination tolerance**: preserving a target advantage `δ` requires
+/-- **Contamination tolerance**: retaining a target advantage `δ` requires
 `π · TV₀ ≥ 2δ`.
 
-With equality, the largest admissible contamination rate is `π ≤ 2δ / TV₀`. So the
-smaller the original identifiability signal `TV₀`, the **lower the tolerance for
-contamination**. -/
+With equality, the discriminating weight has to reach `π ≥ 2δ / TV₀`. So the
+smaller the original identifiability signal `TV₀`, the **larger** the weight on
+the discriminating material has to be.
+
+Note the direction. `π` is the weight placed on the hypothesis-bearing source
+in `mix`, not a fraction of bad material: at `π = 1` the mixture *is* the
+hypothesis and the separation is the full `TV₀`. What `totalVariation_contamIter`
+then shows is that each round of self-consuming re-mixing multiplies that
+separation by `π`, so a corpus fed back to itself `k` times retains its signal
+only while `π ^ k ≥ 2δ / TV₀`. An earlier version of this file stated the bound
+as `π ≤ 2δ / TV₀`, which is the negation of what this theorem proves and made
+the thinner-signal case look like it admitted more contamination rather than
+less. -/
 theorem contamination_budget (p u v : PMF n) {π δ : ℝ} (h : MixWeight π)
     (htarget : δ ≤ totalVariation (mix p u π h) (mix p v π h) / 2) :
     π * totalVariation u v ≥ 2 * δ := by

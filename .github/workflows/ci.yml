@@ -44,3 +44,11 @@ jobs:
         run: |
           python -m pip install --quiet pyyaml
           python tools/check_metadata.py
+
+      # tools/contamination_budget.py transcribes three theorems from
+      # Contamination.lean by hand. This step makes it re-read the Lean file and
+      # fail if those statements have changed, so the script and the
+      # specification cannot drift apart. It is the only check that reads the
+      # Lean sources rather than the build products.
+      - name: Contamination budget matches the Lean statements
+        run: python tools/contamination_budget.py --verify
