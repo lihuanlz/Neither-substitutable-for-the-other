@@ -82,9 +82,9 @@ The four separations above are not academic. This is the procedure applied to a
 real published result, worked end to end.
 
 The subject is *IdeaScientist: Orchestrating Agents for Grounded Scientific
-Ideation* (arXiv:2610.04074v2, October 2026). Its own headline: on a 27B open
-backbone it outperforms the strongest open-source autoresearch baseline by
-14.0%.
+Ideation* (Liu et al., arXiv:2610.04074v2, October 2026). Its own headline: on
+a 27B open backbone it outperforms the strongest open-source autoresearch
+baseline by 14.0%.
 
 **Is the system real?** Yes. Its advantage on cross-domain novelty is roughly
 50 points over the baselines on that axis, far beyond any plausible judge noise.
@@ -201,3 +201,16 @@ and is not in any theorem: when two instruments disagree about sign, go get a
 third one of a different shape, and report indeterminate if it does not settle
 it. That is a procedure, not a prohibition, and it is the part that survives
 contact with a headline result.
+
+---
+
+## Reference
+
+The one work cited above, in full, so it can be checked rather than taken on
+trust:
+
+Liu, J., Tao, R., Liao, Y., Jin, C., Sun, K., Yang, X., Zhang, X., Chen, X.,
+Huang, Z., Zhang, L., Yang, Y., He, Y., Xuan, W., Wanga, R., Kumar, A.,
+Diab, M. T., Yih, W. & Dong, X. L. *IdeaScientist: Orchestrating Agents for
+Grounded Scientific Ideation*. arXiv:2610.04074v2 (2026).
+https://doi.org/10.48550/arXiv.2610.04074
