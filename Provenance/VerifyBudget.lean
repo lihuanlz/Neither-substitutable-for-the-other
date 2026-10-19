@@ -81,7 +81,8 @@ structure VerifyParams where
   Phi : ℝ
   /-- scale of the miss cost -/
   L : ℝ
-  /-- miss probability `q` of a single verification round (rounds independent) -/
+  /-- detection probability `q` of a single verification round (rounds independent); the
+  residual miss rate after `N` rounds is `(1 − q)^N` -/
   q : ℝ
   /-- cost of a single verification round -/
   c : ℝ
@@ -101,9 +102,9 @@ structure VOk (V : VerifyParams) : Prop where
   Phi_pos : 0 < V.Phi
   /-- cost scale positive -/
   L_pos : 0 < V.L
-  /-- single-round miss probability positive -/
+  /-- single-round detection probability positive -/
   q_pos : 0 < V.q
-  /-- single-round miss probability below 1 -/
+  /-- single-round detection probability below 1 -/
   q_lt_1 : V.q < 1
   /-- single-round cost positive -/
   c_pos : 0 < V.c
@@ -113,6 +114,9 @@ structure VOk (V : VerifyParams) : Prop where
   tv_le_1 : V.tv ≤ 1
   /-- conversion coefficient positive -/
   lam_pos : 0 < V.lam
+  /-- the floor `T = λ·TV` is a probability, so the miss rate `max((1−q)^N, T)` never
+  exceeds 1 and `N*` is never negative -/
+  floor_lt_one : V.lam * V.tv < 1
 
 /-- The **decay rate** of a single verification round, `d = |ln(1−q)| = ln(1/(1−q)) > 0`. -/
 noncomputable def decay (V : VerifyParams) : ℝ := |Real.log (1 - V.q)|

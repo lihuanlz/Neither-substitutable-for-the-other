@@ -162,10 +162,14 @@ theorem ai_effort_arbitrarily_large {M : ℝ} (hM : 0 < M) :
       tv := 1, lam := Real.exp (-2 * M) } with hVdef
   have hV : VOk V := by
     refine ⟨by norm_num, by norm_num, by norm_num, by norm_num, ?_, ?_,
-      by norm_num, by norm_num, by norm_num, ?_⟩
+      by norm_num, by norm_num, by norm_num, ?_, ?_⟩
     · simp only [hVdef]; linarith
     · simp only [hVdef]; linarith
     · simp only [hVdef]; exact Real.exp_pos _
+    · simp only [hVdef]
+      rw [mul_one]
+      have h : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
+      simpa using h
   refine ⟨V, hV, ?_⟩
   have hd : decay V = 1 := by
     simp only [decay, hVdef]
@@ -185,10 +189,11 @@ The person is almost always right and the AI almost never has to work.
 theorem human_value_arbitrarily_small {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ lossScale V < M := by
   set V : VerifyParams :=
-    { p := (1 : ℝ) / 2, Phi := 1, L := M, q := (1 : ℝ) / 2, c := 1, tv := 1, lam := 1 } with hVdef
+    { p := (1 : ℝ) / 2, Phi := 1, L := M, q := (1 : ℝ) / 2, c := 1, tv := 1,
+      lam := (1 : ℝ) / 2 } with hVdef
   have hV : VOk V := by
     refine ⟨by norm_num, by norm_num, by norm_num, hM, by norm_num, by norm_num,
-      by norm_num, by norm_num, by norm_num, by norm_num⟩
+      by norm_num, by norm_num, by norm_num, by norm_num, by norm_num⟩
   refine ⟨V, hV, ?_⟩
   simp only [lossScale, hVdef]
   norm_num
@@ -218,10 +223,14 @@ theorem incommensurable_witness {M : ℝ} (hM : 0 < M) :
     linarith
   have hV : VOk V := by
     refine ⟨hp0, hp1, by norm_num, by norm_num, ?_, ?_,
-      by norm_num, by norm_num, by norm_num, ?_⟩
+      by norm_num, by norm_num, by norm_num, ?_, ?_⟩
     · simp only [hVdef]; linarith
     · simp only [hVdef]; linarith
     · simp only [hVdef]; exact Real.exp_pos _
+    · simp only [hVdef]
+      rw [mul_one]
+      have h : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
+      simpa using h
   refine ⟨V, hV, ?_, ?_⟩
   · have hd : decay V = 1 := by
       simp only [decay, hVdef]
