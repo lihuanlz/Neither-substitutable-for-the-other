@@ -12,6 +12,11 @@
   <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT">
 </p>
 
+<p align="center">
+  <a href="ORIENTATION.md">Start here</a> if you want the usable part and no
+  intention of opening a Lean file. What follows is the library itself.
+</p>
+
 ## The finding
 
 **There is no common scale on which to put human and machine contribution, and the reason is structural rather than a matter of measurement error.**
