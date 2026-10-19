@@ -177,8 +177,9 @@ this repository and has not been run.
 
 ```powershell
 lake build
-python tools\audit_axioms.py     # axiom dependencies for all 164 declarations
-python tools\check_metadata.py   # citation files and README agreement
+python tools\audit_axioms.py                     # axiom dependencies for all 164 declarations
+python tools\check_metadata.py                   # citation files and README agreement
+python tools\contamination_budget.py --verify    # the arithmetic still matches Contamination.lean
 ```
 
 The axiom audit resolves every declaration against `Classical.choice`,

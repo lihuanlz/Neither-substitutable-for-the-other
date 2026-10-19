@@ -91,8 +91,10 @@ purpose.
 ```
 Provenance.lean            Main entry point (module guide + reproduction notes)
 Provenance/                13 Lean modules
+ORIENTATION.md             Reader's entry point: what the theorems do and do not settle
 tools/audit_axioms.py      Axiom-dependency audit over the 164 theorems (CI gate)
 tools/check_metadata.py    CITATION.cff / .zenodo.json / README citation check (CI gate)
+tools/contamination_budget.py  Contamination arithmetic, verified against the Lean statements (CI gate)
 tools/strip_bom.py         Strips UTF-8 BOMs from Python sources
 .github/workflows/ci.yml   GitHub Actions: Lean build, axiom audit, metadata
 assets/                    Header figure (SVG)
@@ -109,6 +111,7 @@ Every push to `main` and every pull request runs one job:
 1. `lake build` via [leanprover/lean-action](https://github.com/leanprover/lean-action), which installs the pinned toolchain and fetches the Mathlib cache before compiling
 2. `tools/audit_axioms.py`, confirming all 164 declarations resolve against only `Classical.choice`, `Quot.sound` and `propext`, with zero `sorryAx`
 3. `tools/check_metadata.py`, confirming the citation files and the README agree
+4. `tools/contamination_budget.py --verify`, re-reading three statements in `Contamination.lean` so the arithmetic and the specification cannot drift apart
 
 A passing `lake build` only says the kernel accepted the proofs. The axiom audit is what stops a claim from being quietly weakened by a `sorry`.
 
