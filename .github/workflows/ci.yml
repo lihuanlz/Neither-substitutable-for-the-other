@@ -52,3 +52,19 @@ jobs:
       # Lean sources rather than the build products.
       - name: Contamination budget matches the Lean statements
         run: python tools/contamination_budget.py --verify
+
+      # The kernel checks that a proof has the type its statement declares. It
+      # cannot check that the statement is the claim the docstring above it
+      # makes, and that is where this repository has actually gone wrong: the
+      # contamination bound's theorem proved `π * TV₀ ≥ 2δ` while its
+      # docstring said the negation, and `accumulate_no_decay` was documented
+      # as the case where the human source is reinserted at full weight, which
+      # is the case where its weight is zero.
+      #
+      # tools/statement_adequacy.py compares the two layers: it re-reads the
+      # prose formula recorded for each claim and the fragment of the Lean
+      # statement it stands for, and fails if either has moved without the
+      # other. It also checks the terminology, so one symbol cannot carry two
+      # meanings across two docstrings.
+      - name: Statement adequacy
+        run: python tools/statement_adequacy.py

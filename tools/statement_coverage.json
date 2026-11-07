@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "about": [
+    "The register of claims this repository makes in prose, and the Lean",
+    "statements that carry them. Every entry names the prose formula and the",
+    "fragment of the statement it stands for, so that editing one of them",
+    "without the other is a failure rather than a drift nobody notices.",
+    "",
+    "relation_mode says how the two are to be read against each other:",
+    "  same    the prose relation and the statement relation are the same",
+    "  mirror  the prose writes the inequality with the two sides swapped,",
+    "          so the relations have to be opposite",
+    "  any_of  the statement fragment carries the relation somewhere in it",
+    "",
+    "An entry with no prose_relation and a prose_anchor that carries no",
+    "relation is a claim about wording rather than about a direction. It is",
+    "still checked: the prose has to be there and the statement fragment has",
+    "to be there."
+  ],
+
+  "naming_convention": {
+    "actors": ["human", "ai", "agent", "model"],
+    "note": "The names of the declarations use the framework's vocabulary, in which the machine side and the human side are the two parties to a comparison. The statements quantify over floors, sets and masses, and name no agent. The attribution lives in the name and in the prose around it. ORIENTATION.md section 4 reports this as a limit of the formalisation rather than a claim of any theorem."
+  },
+
+  "claims": [
+    {
+      "theorem": "accuracy_le",
+      "prose_anchor": "`(1 + TV)/2`",
+      "prose_relation": "≤",
+      "lean_fragment": "accuracy t p q ≤ (1 + totalVariation p q) / 2",
+      "symbols": ["TV"]
+    },
+    {
+      "theorem": "accuracy_ge",
+      "prose_anchor": "`(1 − TV)/2`",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "(1 - totalVariation p q) / 2 ≤ accuracy t p q",
+      "symbols": ["TV"]
+    },
+    {
+      "theorem": "accuracy_bounds",
+      "prose_anchor": "the advantage of any test over random guessing is at most `TV/2`",
+      "prose_relation": "≤",
+      "lean_fragment": "|accuracy t p q - 1 / 2| ≤ totalVariation p q / 2",
+      "symbols": ["TV"]
+    },
+    {
+      "theorem": "errRate_ge",
+      "prose_anchor": "`(1 − TV)/2`",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "(1 - totalVariation p q) / 2 ≤ errRate t p q",
+      "symbols": ["TV"]
+    },
+    {
+      "theorem": "sign_not_identified",
+      "prose_anchor": "one below and one above the output's surprisal, that give opposite signs",
+      "prose_relation": "<",
+      "relation_mode": "any_of",
+      "lean_fragment": "0 < minContribution s tau₁ ∧ minContribution s tau₂ < 0",
+      "symbols": ["s", "tau"]
+    },
+    {
+      "theorem": "totalVariation_mix",
+      "prose_anchor": "TV((1-π)·p_H + π·u, (1-π)·p_H + π·v) = π · TV(u, v)",
+      "lean_fragment": "totalVariation (mix p u π h) (mix p v π h) = π * totalVariation u v",
+      "symbols": ["π"]
+    },
+    {
+      "theorem": "maxAdvantage_mix",
+      "prose_anchor": "`π · TV₀/2`",
+      "lean_fragment": "= π * (totalVariation u v / 2)",
+      "symbols": ["π"]
+    },
+    {
+      "theorem": "contamination_budget",
+      "prose_anchor": "`π ≥ 2δ / TV₀`",
+      "lean_fragment": "π * totalVariation u v ≥ 2 * δ",
+      "symbols": ["π", "δ"]
+    },
+    {
+      "theorem": "totalVariation_contamIter",
+      "prose_anchor": "attenuated to a factor `π^k`",
+      "prose_relation": "=",
+      "lean_fragment": "= (π ^ k) * totalVariation u v",
+      "symbols": ["π"]
+    },
+    {
+      "theorem": "contam_decay_bound",
+      "prose_anchor": "identifiability signal does not exceed `π^k`.",
+      "prose_relation": "≤",
+      "lean_fragment": "totalVariation (contamIter p π h k u) (contamIter p π h k v) ≤ π ^ k",
+      "symbols": ["π"]
+    },
+    {
+      "theorem": "decay_monotone",
+      "prose_anchor": "`π₁ ≤ π₂ ⟹ π₁^k ≤ π₂^k`",
+      "lean_fragment": "π₁ ^ k ≤ π₂ ^ k",
+      "symbols": ["π₁", "π₂"]
+    },
+    {
+      "theorem": "ai_gain_bounded_by_corpus",
+      "prose_anchor": "The corpus's residual floor caps the attainable gain",
+      "prose_relation": "≤",
+      "lean_fragment": "Real.log (e0 / eN) ≤ Real.log (e0 / floorOf D hD)",
+      "symbols": ["e0", "eN"]
+    },
+    {
+      "theorem": "floor_determines_bound",
+      "prose_anchor": "Two corpora certifying the same floor are indistinguishable to the framework",
+      "prose_relation": "=",
+      "lean_fragment": "Real.log (e0 / floorOf D₁ h₁) = Real.log (e0 / floorOf D₂ h₂)",
+      "symbols": ["e0"]
+    },
+    {
+      "theorem": "noise_cannot_beat_signal",
+      "prose_anchor": "leaves the attainable bound exactly",
+      "prose_relation": "=",
+      "lean_fragment": "= Real.log (e0 / floorOf D₂ h₂)",
+      "symbols": ["e0"]
+    },
+    {
+      "theorem": "selection_filter_caps_gain",
+      "prose_anchor": "The selection floor caps the attainable gain uniformly in the residual.",
+      "prose_relation": "≤",
+      "lean_fragment": "Real.log (e0 / eN) ≤ Real.log (e0 / c)",
+      "symbols": ["e0", "c"]
+    },
+    {
+      "theorem": "corpus_size_cannot_beat_selection_floor",
+      "prose_anchor": "still certifies a floor at or above `c`",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "c ≤ floorOf D hD",
+      "symbols": ["c"]
+    },
+    {
+      "theorem": "floorOf_insert_ge",
+      "prose_anchor": "the certified floor is",
+      "prose_relation": "=",
+      "lean_fragment": "floorOf (insert a D) (Finset.insert_nonempty a D) = floorOf D hD",
+      "symbols": ["D"]
+    },
+    {
+      "theorem": "floorOf_insert_lt",
+      "prose_anchor": "The new item dominates and the previous floor is discarded outright.",
+      "prose_relation": "=",
+      "lean_fragment": "floorOf (insert a D) (Finset.insert_nonempty a D) = a",
+      "symbols": ["D"]
+    },
+    {
+      "theorem": "coverage_mono",
+      "prose_anchor": "enlarging the sample set does not decrease the coverage",
+      "prose_relation": "≤",
+      "lean_fragment": "coverage w C S ≤ coverage w C T",
+      "symbols": ["S", "T"]
+    },
+    {
+      "theorem": "submodular_union",
+      "prose_anchor": "F(S∪T) + F(S∩T) ≤ F(S) + F(T)",
+      "lean_fragment": "≤ coverage w C S + coverage w C T",
+      "symbols": ["S", "T"]
+    },
+    {
+      "theorem": "single_sample_marginal",
+      "prose_anchor": "w_z  ≤  F(S ∪ {h}) − F(S)",
+      "lean_fragment": "w z ≤ coverage w C (insert h S) - coverage w C S",
+      "symbols": ["z", "h", "S"]
+    },
+    {
+      "theorem": "marginal_agent_pure_waste",
+      "prose_anchor": "gain exactly 0, cost exactly `log(Φ/a)`",
+      "prose_relation": "=",
+      "lean_fragment": "gain Φ (insert a D) ⟨a, Finset.mem_insert_self a D⟩ = gain Φ D hD",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "member_gain_le_gain",
+      "prose_anchor": "**An individual member's gain never exceeds the coalition's gain.**",
+      "prose_relation": "≤",
+      "lean_fragment": "Real.log (Φ / a) ≤ gain Φ D hD",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "gain_le_total",
+      "prose_anchor": "The coalition's result never exceeds the sum of the members' gains",
+      "prose_relation": "≤",
+      "lean_fragment": "gain Φ D hD ≤ totalIndividual Φ D",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "holdValue_antitone",
+      "prose_anchor": "**The value of waiting is monotone non-increasing.**",
+      "prose_relation": "≤",
+      "lean_fragment": "holdValue vBig d' covered ≤ holdValue vBig d covered",
+      "symbols": ["vBig"]
+    },
+    {
+      "theorem": "publish_dominates_when_covered",
+      "prose_anchor": "**If the window is superseded at expiry, publishing immediately is",
+      "prose_relation": ">",
+      "lean_fragment": "vSmall > holdValue vBig d covered",
+      "symbols": ["vSmall"]
+    },
+    {
+      "theorem": "power_le_tv",
+      "prose_anchor": "`power ≤ FPR + TV`",
+      "lean_fragment": "mass p S ≤ mass q S + totalVariation p q",
+      "symbols": ["p", "q"]
+    },
+    {
+      "theorem": "no_threshold_escapes_tv",
+      "prose_anchor": "power(S_τ) − FPR(S_τ) ≤ TV(p, q)",
+      "lean_fragment": "mass p S - mass q S ≤ totalVariation p q",
+      "symbols": ["p", "q"]
+    },
+    {
+      "theorem": "ai_total_gain_bounded",
+      "prose_anchor": "does not exceed \\(\\log(e_0/\\Phi)\\)",
+      "prose_relation": "≤",
+      "lean_fragment": "Real.log (e0 / eN) ≤ Real.log (e0 / Φ)",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "ai_budget_grows_when_floor_drops",
+      "prose_anchor": "**The AI's usable budget only grows once a human has pushed the floor down.**",
+      "prose_relation": ">",
+      "lean_fragment": "Real.log (e0 / Φβ) > Real.log (e0 / Φα)",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "no_gain_without_floor_drop",
+      "prose_anchor": "If switching layers leaves the irreducible error unchanged, the gain from this round",
+      "prose_relation": "=",
+      "lean_fragment": "Real.log (Φα / Φβ) = 0",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "layered_decomposition",
+      "prose_anchor": "the total gain is exactly the layer-change gain plus the within-layer gain",
+      "prose_relation": "=",
+      "lean_fragment": "Real.log (Φα / eN) = Real.log (Φα / Φβ) + Real.log (Φβ / eN)",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "layered_terms_nonneg",
+      "prose_anchor": "**Each term is non-negative**",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "(0 ≤ Real.log (Φα / Φβ)) ∧ (0 ≤ Real.log (Φβ / eN))",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "floor_cannot_reveal_provenance",
+      "prose_anchor": "certified number is the same in both",
+      "prose_relation": "=",
+      "lean_fragment": "floorOf {⟨a, .human⟩} (by simp) = floorOf {⟨a, .ai⟩} (by simp)",
+      "symbols": ["ai"]
+    },
+    {
+      "theorem": "influence_value_separable",
+      "prose_anchor": "\\(\\log(p/q) > 0\\)",
+      "prose_relation": ">",
+      "relation_mode": "mirror",
+      "lean_fragment": "0 < Real.log (p / q)",
+      "symbols": ["p", "q"]
+    },
+    {
+      "theorem": "influence_value_separable",
+      "prose_anchor": "\\(\\big|\\log(p/q)\\big| = \\big|\\log(r/s)\\big|\\)",
+      "lean_fragment": "|Real.log (p / q)| = |Real.log (r / s)|",
+      "symbols": ["p", "q", "r", "s"]
+    },
+    {
+      "theorem": "positive_layer_gain_iff_strict_drop",
+      "prose_anchor": "it makes Φ(β) < Φ(α)",
+      "prose_relation": "<",
+      "lean_fragment": "0 < Real.log (Φα / Φβ) ↔ Φβ < Φα",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "missRate_ge_tvFloor",
+      "prose_anchor": "rate is at least `T = λ·TV`.",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "tvFloor V ≤ missRate V N",
+      "symbols": ["V"]
+    },
+    {
+      "theorem": "regret_ge_floor",
+      "prose_anchor": "`R(N) ≥ p·Φ + A·T + c·N`",
+      "prose_relation": "≥",
+      "relation_mode": "mirror",
+      "lean_fragment": "V.p * V.Phi + lossScale V * tvFloor V + V.c * N ≤ regret V N",
+      "symbols": ["Φ"]
+    },
+    {
+      "theorem": "starN_le_floorRounds",
+      "prose_anchor": "N*  ≤  N_0 = ln(1/(λ·TV)) / ln(1/(1−q))",
+      "prose_relation": "≤",
+      "lean_fragment": "starN V ≤ roundsFor V (tvFloor V)",
+      "symbols": ["V"]
+    }
+  ],
+
+  "gaps": [
+    {
+      "theorem": "ai_budget_grows_when_floor_drops",
+      "kind": "actor_not_in_statement",
+      "actors": ["human", "ai"],
+      "note": "The statement quantifies over two floors and one strict inequality between them. It names no agent and no budget. The docstring reads the asymmetry as being between a human and a machine, and ORIENTATION.md section 4 says so in the repository's own words."
+    },
+    {
+      "theorem": "human_gain_unbounded",
+      "kind": "actor_not_in_statement",
+      "actors": ["human"],
+      "note": "The statement is an existential over two floors. 'Human' is the reading, not the content."
+    },
+    {
+      "theorem": "ai_total_gain_bounded",
+      "kind": "actor_not_in_statement",
+      "actors": ["ai"],
+      "note": "The statement bounds a logarithmic ratio between two error values. Which party took the steps is not in it."
+    },
+    {
+      "theorem": "accumulate_no_decay",
+      "kind": "not_formalised",
+      "prose_text": "**This file does not formalise that claim,",
+      "lean_text": "contamIter p 1",
+      "note": "At π = 1 the recursion is `mix p y 1 = y`, so the human source enters with weight 1 − π = 0 and nothing is accumulated. The theorem says that a recursion which replaces nothing loses nothing. The accumulation result of Gersthaler et al. is a different claim and is not formalised here."
+    },
+    {
+      "theorem": "ai_budget_grows_when_floor_drops",
+      "kind": "prose_wider_than_statement",
+      "prose_file": "README.md",
+      "prose_text": "the human's layer move creates the machine's budget, and the machine cannot move the layer",
+      "note": "The README states the thesis flatly. The theorem it rests on has no hypothesis naming a source; ORIENTATION.md section 4 says so, and this record is what keeps that disclosure attached to the claim."
+    },
+    {
+      "theorem": "no_gain_without_floor_drop",
+      "kind": "prose_wider_than_statement",
+      "prose_text": "If switching layers leaves the irreducible error unchanged, the gain from this round",
+      "note": "The hypothesis is `Φα = Φβ`, so the theorem covers the unchanged case. A floor that rises gives a negative gain, and the statement says nothing about it. The prose used to say 'does not bring the irreducible error down', which is broader than the hypothesis."
+    },
+    {
+      "theorem": "positive_layer_gain_iff_strict_drop",
+      "kind": "prose_wider_than_statement",
+      "prose_text": "**a question that leaves \\(\\Phi\\) unchanged has value exactly 0**",
+      "note": "`zero_gain_iff_equal` gives value 0 exactly when the two floors are equal. A question that raises the floor has negative value, which neither theorem says."
+    }
+  ],
+
+  "glossary": [
+    {
+      "symbol": "π",
+      "why": "One symbol, one meaning. The weight π is on the component that carries the discriminating content, so raising it raises the signal. Calling it a contamination rate made the direction read backwards, and an earlier version of this file stated the bound as `π ≤ 2δ/TV₀`, which is the negation of what the theorem proves.",
+      "forbidden": [
+        "`π`\\s+is\\s+the\\s+\\*\\*contamination rate\\*\\*",
+        "contamination rate\\s+π",
+        "π\\s+is\\s+the\\s+contamination rate"
+      ],
+      "required_in": [
+        {
+          "theorem": "contamination_budget",
+          "text": "not a fraction of bad material"
+        },
+        {
+          "theorem": "totalVariation_mix",
+          "text": "the discriminating weight"
+        }
+      ]
+    }
+  ]
+}

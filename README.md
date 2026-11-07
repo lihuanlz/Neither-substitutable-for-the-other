@@ -37,6 +37,7 @@ Three consequences fall out of the same currency, and each is a machine-checked 
 lake build
 python tools\audit_axioms.py     # axiom dependencies for all 164 declarations
 python tools\check_metadata.py   # CITATION.cff / .zenodo.json / README agreement
+python tools\statement_adequacy.py  # the prose says what the statements say
 ```
 
 ## What machine checking did to the argument
@@ -45,7 +46,7 @@ This is the part that is not visible anywhere else, and it is why the formalizat
 
 Checking the proofs falsified a confusion-matrix inequality from an earlier draft, forced a total-variation floor into the residual term, reversed two monotonicity directions we had asserted, and refuted one of our own claims on first attempt. Those reversals are reported in the paper rather than patched out quietly.
 
-It also settled the direction of causality between the two sides, which the prose had left vaguer than it should have been: **the human's layer move creates the machine's budget, and the machine cannot move the layer.** The dependence has a direction, and that direction is what non-substitutability means here.
+It also settled the direction of causality between the two sides, which the prose had left vaguer than it should have been: **the human's layer move creates the machine's budget, and the machine cannot move the layer.** The dependence has a direction, and that direction is what non-substitutability means here. The theorem carries the dependence between two floors; which party moves them is the reading, and [`ORIENTATION.md`](ORIENTATION.md) section 4 says so in this repository's own words.
 
 ## What would falsify this
 
@@ -95,6 +96,8 @@ ORIENTATION.md             Reader's entry point: what the theorems do and do not
 tools/audit_axioms.py      Axiom-dependency audit over the 164 theorems (CI gate)
 tools/check_metadata.py    CITATION.cff / .zenodo.json / README citation check (CI gate)
 tools/contamination_budget.py  Contamination arithmetic, verified against the Lean statements (CI gate)
+tools/statement_adequacy.py   Prose-vs-statement check, against a registered crosswalk (CI gate)
+tools/statement_coverage.json The crosswalk it checks: prose formula, Lean fragment, known gaps
 tools/strip_bom.py         Strips UTF-8 BOMs from Python sources
 .github/workflows/ci.yml   GitHub Actions: Lean build, axiom audit, metadata
 assets/                    Header figure (SVG)
@@ -112,8 +115,9 @@ Every push to `main` and every pull request runs one job:
 2. `tools/audit_axioms.py`, confirming all 164 declarations resolve against only `Classical.choice`, `Quot.sound` and `propext`, with zero `sorryAx`
 3. `tools/check_metadata.py`, confirming the citation files and the README agree
 4. `tools/contamination_budget.py --verify`, re-reading three statements in `Contamination.lean` so the arithmetic and the specification cannot drift apart
+5. `tools/statement_adequacy.py`, confirming each prose claim still matches the Lean statement it stands for, and that no symbol carries two meanings
 
-A passing `lake build` only says the kernel accepted the proofs. The axiom audit is what stops a claim from being quietly weakened by a `sorry`.
+A passing `lake build` only says the kernel accepted the proofs. The axiom audit is what stops a claim from being quietly weakened by a `sorry`, and the statement check is what stops the sentence above a theorem from saying something the theorem does not.
 
 ## Citation
 

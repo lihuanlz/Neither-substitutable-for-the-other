@@ -205,12 +205,13 @@ theorem accuracy_ge (t : Test n) (p q : PMF n) :
   unfold totalVariation
   linarith
 
-/-- **Exact characterisation**: the best attainable advantage is exactly `TV/2`.
+/-- **Upper bound, attained by the Bayes test**: the advantage of any test over random guessing is at most `TV/2`.
 
 This is the most important sharpening of the original analysis. Identifiability is
 not a binary can/cannot switch. It is a real number controlled continuously by
 `TV`, and `TV/2` is the whole advantage available to any test over random
-guessing. -/
+guessing. The bound here is a bound on every test; `bayes_optimal` shows the
+Bayes test reaches it. -/
 theorem accuracy_bounds (t : Test n) (p q : PMF n) :
     |accuracy t p q - 1 / 2| ≤ totalVariation p q / 2 := by
   rw [abs_le]

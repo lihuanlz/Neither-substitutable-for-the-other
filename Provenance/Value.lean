@@ -102,7 +102,9 @@ This turns "what counts as a good question" from rhetoric into a decidable condi
 
     positive human value  ⟺  it makes Φ(β) < Φ(α)  ⟺  it makes "truth" more identifiable
 
-In other words: **a question that does not lower \(\Phi\) has value exactly 0**. -/
+In other words: **a question that leaves \(\Phi\) unchanged has value exactly 0**.
+A question that raises \(\Phi\) has negative value, which is a different case
+and is not claimed here. -/
 theorem positive_layer_gain_iff_strict_drop {Φα Φβ : ℝ}
     (hα : 0 < Φα) (hβ : 0 < Φβ) :
     0 < Real.log (Φα / Φβ) ↔ Φβ < Φα := by

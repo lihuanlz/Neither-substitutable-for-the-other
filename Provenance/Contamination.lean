@@ -6,28 +6,32 @@ original analysis and gives an **exact** quantitative result:
 
     TV( (1-π)·p_H + π·u , (1-π)·p_H + π·v )  =  π · TV(u, v)
 
-That is: **a contamination rate π attenuates the identifiability signal by exactly
-a linear factor π**.
+That is: **the two mixtures are separated by exactly π times the separation of
+the hypotheses they were built from**. The weight π sits on the component that
+carries the discriminating content, so a larger π gives a larger signal. π is
+a weight, not a rate of contamination, and the sections below are careful about
+which component it weights.
 
-Combined with `Provenance.Basic.accuracy_bounds` (best advantage = TV/2) this gives
+Combined with `Provenance.Basic.accuracy_bounds` (best advantage ≤ TV/2) this gives
 
-    best detection advantage after contamination  =  π · TV₀ / 2
+    best detection advantage of the mixture  =  π · TV₀ / 2
 
-which answers "the cost of contamination" in a computable, non-qualitative way, and
-yields directly:
+which answers "how much of a separation survives the mixture" in a computable,
+non-qualitative way, and yields directly:
 
 * `totalVariation_contamIter` - under the **self-consuming** recursion, in which
-  the human source is reinserted every round with weight π, the identifiability
-  signal decays **exponentially** as `π^k` (an exact equation, not an
-  approximation).
+  each round re-mixes the current generation with the human source, keeping a
+  fraction π of what was there and making the rest up with the human source at
+  weight 1 − π, the separation decays **exponentially** as `π^k` (an exact
+  equation, not an approximation).
 * `contam_decay_bound` - with `TV ≤ 1` one gets `signal ≤ π^k`. When `π < 1` we
-  have `π^k → 0`, so the signal from the human source is eventually washed out.
+  have `π^k → 0`, so the separation the hypotheses had is eventually washed out.
   This is the **quantitative version** of the strict picture of
   "model self-eating / model collapse" in the original analysis.
-* `contamination_budget` - the converse gives a **contamination tolerance**: to
-  preserve a target advantage `δ` one needs `π · TV₀ ≥ 2δ`.
-* `accumulate_no_decay` - the accumulation scheme is the case `π = 1`, where the
-  **signal does not decay at all**.
+* `contamination_budget` - the converse gives a **tolerance**: to preserve a
+  target advantage `δ` one needs `π · TV₀ ≥ 2δ`.
+* `accumulate_no_decay` - the case `π = 1`, in which the recursion replaces
+  nothing, so the **separation does not decay at all**.
 
 ## A premise that has to be made explicit
 
@@ -39,22 +43,27 @@ reliable than assuming it verbally in the prose.
 ## An honesty statement that matters
 
 The original analysis claims that accumulating raw data converges back to p_H
-(Gersthaler et al., *Nature* 2024). **This file formalises only the mechanism part
-of that claim (`accumulate_no_decay`), not convergence back to p_H itself.** The
-latter is a convergence theorem about a stochastic generative process and needs an
-"empirical distribution" and a construction of the stochastic process, well beyond
-the present scope.
+(Gersthaler et al., *Nature* 2024). **This file does not formalise that claim,
+and the gap is not a missing convergence proof: it is the parameterisation.**
+
+In `contamIter`, the human source enters with weight `1 - π` and the previous
+generation with weight `π`. So `π = 1` is the case where **nothing is
+replaced**: the corpus is kept whole, the separation is unchanged, and no fresh
+material of any kind enters. That is not accumulation. Accumulation, in this
+parameterisation, is `π < 1`, and that is the case in which the separation
+decays as `π^k`.
 
 Lean earns its keep here: it forces the two claims apart.
 
 * **Proved**: under the recursion that re-mixes with a fixed weight π each round,
-  the signal decays as `π^k`.
-* **Not proved**: that under the accumulation scheme the signal converges back to
-  the **original distribution** (only the absence of decay was proved).
+  the separation decays as `π^k`, and at `π = 1` it does not decay at all.
+* **Not proved, and not claimed anywhere here**: that a corpus built by
+  accumulating real data converges back to the **original distribution**, or that
+  doing so avoids collapse.
 
-So the real driver of the decay is **the weight with which human data is
-reinserted each round**, not the vague notion of "whether there is contamination".
-That is exactly what `totalVariation_contamIter` characterises.
+So the real driver of the decay is **the weight carried by what was already
+there**, not the vague notion of "whether there is contamination". That is
+exactly what `totalVariation_contamIter` characterises.
 
 -/
 
@@ -72,8 +81,13 @@ variable {n : ℕ}
 /-- An admissible contamination rate: `0 ≤ π ≤ 1`. -/
 abbrev MixWeight (π : ℝ) : Prop := 0 ≤ π ∧ π ≤ 1
 
-/-- The mixture: the AI source is layered onto the human source with weight `π`.
-`π` is the **contamination rate**. -/
+/-- The mixture `(1-π)·p + π·q`: the weight on `q` is `π`, the weight on `p` is `1-π`.
+
+`π` is a weight on whichever component the caller puts second. In
+`totalVariation_mix` that component is the hypothesis being discriminated, so
+there π is the **discriminating weight**; in `contamIter` it is the previous
+generation, so there π is the weight carried by what was already there. It is
+not a rate of contamination and not a fraction of bad material. -/
 noncomputable def mix (p q : PMF n) (π : ℝ) (h : MixWeight π) : PMF n where
   val := fun i => (1 - π) * p.val i + π * q.val i
   nonneg := by
@@ -91,12 +105,14 @@ noncomputable def mix (p q : PMF n) (π : ℝ) (h : MixWeight π) : PMF n where
     ring
 
 /-- **The mixing theorem (the core one)**: under mixing, total variation distance
-**scales exactly linearly in the contamination rate**.
+**scales exactly linearly in the discriminating weight**.
 
     TV((1-π)·p_H + π·u, (1-π)·p_H + π·v) = π · TV(u, v)
 
 The two sides share a human source, so subtracting them cancels the human part
-entirely and leaves a difference of `π` times the original. -/
+entirely and leaves a difference of `π` times the original. The weight π here
+is the discriminating weight: it sits on the component that carries the
+hypothesis, and the separation between the mixtures scales with it. -/
 theorem totalVariation_mix (p u v : PMF n) {π : ℝ} (h : MixWeight π) :
     totalVariation (mix p u π h) (mix p v π h) = π * totalVariation u v := by
   unfold totalVariation
@@ -116,11 +132,11 @@ theorem totalVariation_mix (p u v : PMF n) {π : ℝ} (h : MixWeight π) :
   rw [Finset.sum_congr rfl (fun i _ => key i), ← Finset.mul_sum]
   ring
 
-/-- **The best advantage after contamination** is exactly `π · TV₀/2`.
+/-- **The best advantage of the mixture** is exactly `π · TV₀/2`.
 
-With `accuracy_bounds` (advantage = TV/2) this says that the contamination rate π
-multiplies the detectable advantage by exactly π, rather than roughly weakening
-it. -/
+With `accuracy_bounds` (advantage ≤ TV/2) this says that the discriminating
+weight π multiplies the detectable advantage by exactly π, rather than roughly
+weakening it. -/
 theorem maxAdvantage_mix (p u v : PMF n) {π : ℝ} (h : MixWeight π) :
     (1 + totalVariation (mix p u π h) (mix p v π h)) / 2 - 1 / 2
       = π * (totalVariation u v / 2) := by
@@ -152,7 +168,8 @@ theorem contamination_budget (p u v : PMF n) {π δ : ℝ} (h : MixWeight π)
 /-! ## Recursive contamination: self-consuming re-mixing -/
 
 /-- One round of self-consuming re-mixing: every round re-mixes the current
-generation with the human source at a fixed weight `π`. This is a **measurable
+generation with the human source, keeping a fraction `π` of what was there and
+making the rest up with the human source at weight `1 - π`. This is a **measurable
 shell** around the recursion `p_A^{(t+1)} = Fit(π_H·p_H + π_A·p_A^{(t)})` of the
 original analysis (`Fit` is taken to be the identity here, so only the signal is
 tracked). -/
@@ -207,13 +224,14 @@ theorem contam_decay_bound (p u v : PMF n) {π : ℝ} (h : MixWeight π) (k : �
         simpa [mul_comm] using hle'
     _ = π ^ k := by ring
 
-/-- **The accumulation scheme is the case `π = 1`**: the signal then **does not
-decay** (`1^k = 1`).
+/-- **The case `π = 1`**: the recursion replaces nothing, so the separation
+**does not decay** (`1^k = 1`).
 
-This gives a **mechanistic** reading of the conclusion of Gersthaler et al.
-(2024). Accumulating raw data avoids collapse because the human source is
-reinserted at **full weight** every round, so `π = 1` and the decay factor is
-constantly 1. -/
+At `π = 1` the mixture is `(1-π)·p + π·y = y`, so the human source enters with
+weight zero and the corpus is carried over whole. Nothing is accumulated, and
+nothing is lost. This is the case that `accumulate_no_decay` names, and it is
+not the accumulation scheme of the surrounding discussion: see the honesty
+statement at the top of this file. -/
 theorem accumulate_no_decay (p u v : PMF n) (k : ℕ) :
     totalVariation (contamIter p 1 ⟨by norm_num, by norm_num⟩ k u)
       (contamIter p 1 ⟨by norm_num, by norm_num⟩ k v)

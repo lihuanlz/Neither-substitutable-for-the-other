@@ -12,7 +12,60 @@ inline. Nothing in this file is asserted on its own authority.
 
 ---
 
-## 1. Four separations
+## 1. What the checker checks, and what it does not
+
+Everything in this file was written by a language model. The proofs were
+produced by one. That fact deserves an exact answer rather than a reassurance,
+because the answer is more interesting than the worry.
+
+**Verification here is not probabilistic.** A Lean proof is a term of a type. The
+kernel checks it by a deterministic procedure with no sampling anywhere in the
+loop: it either typechecks or it does not. There is no sense in which a proof
+in this repository is probably valid. The generation of a candidate proof is
+probabilistic. The acceptance of one is binary.
+
+**What the kernel cannot do is check that the statement means what you meant.**
+That gap is where everything interesting lives, and it is not a gap in the
+method. It is the division of labour, and it has three parts:
+
+| layer | who | how it fails |
+|---|---|---|
+| proposing candidates | a language model | silently, plausibly |
+| formal validity | the Lean kernel | binary, never ambiguous |
+| whether the statement says the intended thing | a person | direction reversed, predicate conflated, commitment chosen badly |
+
+The middle layer is the reason for doing formalization at all. The third layer
+is the reason the repository reads the way it does.
+
+**The third layer is where this repository's own errors have been.** The
+contamination bound's theorem proved `π * TV₀ ≥ 2δ` while its docstring said
+the negation, `π ≤ 2δ/TV₀`; the proof was correct and the prose was wrong, and
+the error survived until a reader checked the two against each other. The
+question-bank design initially defined its `moved` label as "the participant said
+something the assistant did not", which is textual difference rather than
+dominance, and the formalism prices difference-that-loses at exactly zero. Both
+were meaning-layer failures. The kernel raised no alarm on either, because
+neither was one.
+
+**The repository states this rather than leaving it implicit.** `Corpus.lean`
+opens a section called "Modelling honesty" and says the two omissions there are
+the point rather than an oversight. `Fragmentation.lean` has a section called
+"The modelling choice here, and why it is falsifiable", and states that if
+collaboration really has complementarity then `add_member_same_reach` fails
+immediately. The README lists what would falsify each claim and names the
+commitments that no theorem here establishes: a max-type coalition, a corpus
+read as a set rather than a stream, and a positive floor `Φ`.
+
+**Where the Wittgenstein point lands.** If mathematics is a practice of
+rule-following rather than the discovery of necessary truth, then the theorems
+here are what follows from the chosen rules, and the rules are the part that
+needs judgement. That is precisely the division above. The theorems establish
+consequences; they do not certify the conventions, and no amount of adding
+theorems would.
+
+---
+
+## 2. Four separations
 
 Most of the damage done by over-reading AI output comes from collapsing one of
 these four pairs. Each one has a theorem behind it.
@@ -76,7 +129,7 @@ reliability, not a fact. Two things follow, both practical:
 
 ---
 
-## 2. Reading a headline result
+## 3. Reading a headline result
 
 The four separations above are not academic. This is the procedure applied to a
 real published result, worked end to end.
@@ -100,7 +153,7 @@ reliability figure for the instrument, and it belongs next to the 14.0%.
 no. The LLM judge ranks IdeaScientist above DeepScientist by 14 points. Blind
 human pairwise evaluation of the same two systems, on matched papers, gives
 IdeaScientist a 43% win rate. The sign of the paper's headline quantity flips
-between two instruments. Section 1.4 says what to do with that, and the paper
+between two instruments. Section 2.4 says what to do with that, and the paper
 does something reasonable: it reports the disagreement rather than burying it.
 
 **Does it generate things the literature does not contain?** Partly, and the
@@ -140,7 +193,7 @@ that one is worth a week of anyone's time.
 
 ---
 
-## 3. What this framework does not settle
+## 4. What this framework does not settle
 
 Stated here because a reader who finds these gaps has found something real.
 
@@ -149,6 +202,22 @@ has hypotheses on positivity and one strict inequality between two floors. There
 is no hypothesis naming a source. The claim that only a human can move it lives
 in the docstring, not in the statement. Anyone relying on the asymmetry as a
 result about agents is relying on prose.
+
+**The accumulation result is not in any theorem either.** `Contamination.lean`
+proves a dilution law: each round of re-mixing keeps a fraction `π` of what was
+there and makes the rest up with the human source, and the separation decays as
+`π^k`. The case `π = 1` is the one where nothing is replaced, so nothing is
+lost. Accumulation, in that parameterisation, is `π < 1`, and that is the case
+in which the separation decays. The file's header used to call `π = 1` the
+accumulation scheme and to say the human source was reinserted at full weight;
+at `π = 1` its weight is zero. The prose now says what the statements say, and
+the accumulation claim of the surrounding discussion is not formalised here.
+
+**Two floors and a direction are not a story about lowering.** `no_gain_without_floor_drop`
+has the hypothesis `Φα = Φβ`: the case where the floor is *unchanged*. The
+prose used to say a question that does not lower `Φ` has value exactly zero,
+which is broader than the hypothesis, and false when the floor rises. The same
+correction was made in `Value.lean`.
 
 **New layers cannot be represented.** `Evidence` is a `Finset ℝ`, `Coalition` is
 a `Finset ℝ`, and `reach` is the minimum. Everything is a comparison of depth on
@@ -173,12 +242,13 @@ this repository and has not been run.
 
 ---
 
-## 4. Checking any of it
+## 5. Checking any of it
 
 ```powershell
 lake build
 python tools\audit_axioms.py                     # axiom dependencies for all 164 declarations
 python tools\check_metadata.py                   # citation files and README agreement
+python tools\statement_adequacy.py              # the prose says what the statements say
 python tools\contamination_budget.py --verify    # the arithmetic still matches Contamination.lean
 ```
 
@@ -187,11 +257,20 @@ The axiom audit resolves every declaration against `Classical.choice`,
 passing build only says the kernel accepted the proofs; the audit is what stops
 a claim from being quietly weakened by a `sorry`.
 
+The statement adequacy check is the third layer of the table in section 1, made
+mechanical. `tools/statement_coverage.json` records, for each claim, the prose
+formula and the fragment of the Lean statement it stands for. The check fails
+if either has moved without the other, which is the failure that the
+contamination bound's docstring had and the build could not see. It also keeps
+one meaning per symbol: the file that reads the contamination parameter is
+checked against the wording it must carry everywhere, so two docstrings cannot
+give one symbol two readings.
+
 For the formal record, see the citation block in [`README.md`](README.md).
 
 ---
 
-## 5. One habit worth forming
+## 6. One habit worth forming
 
 The framework is a set of prohibitions: do not read headcount as capability, do
 not read corpus size as coverage, do not read a judge's number as a fact, do not

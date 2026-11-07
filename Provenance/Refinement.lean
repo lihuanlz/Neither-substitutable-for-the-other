@@ -41,8 +41,8 @@ Logarithmic decomposition of the error:
 * `ai_budget_grows_when_floor_drops`: only once a human has pushed \(\Phi\) down does the
   AI's usable budget **grow**. If the human makes no layer change, the AI has no budget
   left to gain.
-* `no_gain_without_floor_drop`: **an unchanged layer means zero human gain**: if the
-  layer changes but \(\Phi\) does not drop, the question was asked for nothing.
+* `no_gain_without_floor_drop`: **an unchanged layer means zero gain**: if the layer
+  changes and \(\Phi\) is unchanged, the question was asked for nothing.
 
 From these follows the **precise version** of "the marginal contribution of AI tends to
 zero": **it holds only under the premise that the layer is fixed**, and a fixed layer is
@@ -68,7 +68,10 @@ If the error sequence has already been driven down to \(e_N\), and \(e_N \ge \Ph
 has taken so far, \(\log(e_0/e_N)\), does not exceed \(\log(e_0/\Phi)\).
 
 The point: this upper bound is **fixed by the layer alone**, and no number of extra AI
-steps can break it. -/
+steps can break it.
+
+The statement bounds a ratio of error values and names no agent. "The AI" is the
+reading of how the error sequence came to be, not part of the theorem. -/
 theorem ai_total_gain_bounded {e0 Φ eN : ℝ}
     (he0 : 0 < e0) (hΦ : 0 < Φ) (heN : 0 < eN) (hΦle : Φ ≤ eN) :
     Real.log (e0 / eN) ≤ Real.log (e0 / Φ) := by
@@ -98,10 +101,11 @@ theorem ai_remaining_gain_nonneg {Φ eN : ℝ} (hΦ : 0 < Φ) (heN : 0 < eN) (h�
 ## 2. The human's gain from a layer change: unbounded
 -/
 
-/-- **An unchanged layer means zero human gain.**
+/-- **An unchanged layer means zero gain.**
 
-If switching layers does not bring the irreducible error down, the gain from this round
-of asking is exactly 0.
+If switching layers leaves the irreducible error unchanged, the gain from this round
+of asking is exactly 0. A layer change that raises the error gives a negative
+gain; that is a different case and is not covered here.
 This supplies a **falsifiable criterion** for "what counts as a good question":
 a good question ⟺ it lowers \(\Phi\). -/
 theorem no_gain_without_floor_drop {Φα Φβ : ℝ} (_hα : 0 < Φα) (hβ : 0 < Φβ)
@@ -114,7 +118,10 @@ theorem no_gain_without_floor_drop {Φα Φβ : ℝ} (_hα : 0 < Φα) (hβ : 0 
 For any target number of bits \(M \ge 0\), there are floors in two layers such that
 \(\log(\Phi(\alpha)/\Phi(\beta)) = M\).
 
-Take \(\Phi(\alpha) = 1\) and \(\Phi(\beta) = e^{-M}\). -/
+Take \(\Phi(\alpha) = 1\) and \(\Phi(\beta) = e^{-M}\).
+
+The statement quantifies over floors and names no agent. "Human" is the reading
+of where the floors come from, not part of the theorem. -/
 theorem human_gain_unbounded {M : ℝ} (hM : 0 ≤ M) :
     ∃ Φα Φβ : ℝ, 0 < Φβ ∧ Φβ ≤ Φα ∧ Real.log (Φα / Φβ) = M := by
   refine ⟨1, Real.exp (-M), Real.exp_pos _, ?_, ?_⟩
@@ -128,7 +135,12 @@ theorem human_gain_unbounded {M : ℝ} (hM : 0 ≤ M) :
 
 This is the **causal direction** that matters most in the whole analysis: it is not that
 a stronger AI makes the human useless, but that **if the human does not push \(\Phi\)
-down, no amount of AI strength buys extra budget**. -/
+down, no amount of AI strength buys extra budget**.
+
+The statement has hypotheses on positivity and one strict inequality between two
+floors. It names no agent and no budget. "A human" and "the AI" are the reading,
+and the reading is an interpretation of how the floors came about rather than
+something this theorem establishes. -/
 theorem ai_budget_grows_when_floor_drops {e0 Φα Φβ : ℝ}
     (he0 : 0 < e0) (hα : 0 < Φα) (hβ : 0 < Φβ) (hdrop : Φβ < Φα) :
     Real.log (e0 / Φβ) > Real.log (e0 / Φα) := by
