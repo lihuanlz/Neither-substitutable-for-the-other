@@ -98,6 +98,7 @@ tools/check_metadata.py    CITATION.cff / .zenodo.json / README citation check (
 tools/contamination_budget.py  Contamination arithmetic, verified against the Lean statements (CI gate)
 tools/statement_adequacy.py   Prose-vs-statement check, against a registered crosswalk (CI gate)
 tools/statement_coverage.json The crosswalk it checks: prose formula, Lean fragment, known gaps
+tools/fault_inject.py        Breaks the tree on purpose and checks the guard catches it
 tools/strip_bom.py         Strips UTF-8 BOMs from Python sources
 .github/workflows/ci.yml   GitHub Actions: Lean build, axiom audit, metadata
 assets/                    Header figure (SVG)
