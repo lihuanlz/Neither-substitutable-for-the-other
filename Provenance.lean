@@ -25,17 +25,19 @@ enough.
 
 ### The verification budget correction (`Provenance.VerifyBudget`)
 
-    miss rate(N) = max( (1−q)^N , λ·TV )        ← TV floor
+    miss rate(N) = max( (1−q)^N , λ·(1−TV)/2 )  ← floor at a fixed fraction of the
+                                                Bayes error of the two hypotheses
 
-    N* = −ln( max( c/(A·d) , λ·TV ) ) / d,     A=(1−p)L,  d=ln(1/(1−q))
+    N* = −ln( max( c/(A·d) , λ·(1−TV)/2 ) ) / d,     A=(1−p)L,  d=ln(1/(1−q))
 
 * `starN_le_floorRounds` - **\(N^\star\) has a hard upper bound independent of
   \(p\)**: however inaccurate the human is, the verification budget cannot grow
   without limit.
 * `starN_mono_in_p` - \(N^\star\) is non-increasing in \(p\), strictly decreasing
-  when the TV floor does not bind.
-* `starN_mono_in_tv` - \(N^\star\) is non-increasing in `TV`: the larger TV, the
-  earlier verification saturates and the smaller the budget.
+  when the floor does not bind.
+* `starN_mono_in_tv` - \(N^\star\) is non-decreasing in `TV`: the closer the two
+  hypotheses, the higher the Bayes error, the earlier verification saturates and
+  the smaller the budget.
 
 ## Layer 2: system layer - contribution decomposition under observation-layer filtering (ex-ante pricing)
 

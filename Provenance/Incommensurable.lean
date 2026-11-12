@@ -103,7 +103,7 @@ the person's reliability.**
 This is the half of incommensurability that genuinely holds: there is not even
 monotonicity.
 
-Consequence: once `λ·TV ≥ c/(A·d)`, **no amount of further verification solves
+Consequence: once `λ·(1−TV)/2 ≥ c/(A·d)`, **no amount of further verification solves
 the problem**, and **trusting anyone else is no use either**, since `N*` no
 longer varies with \(p\). -/
 theorem starN_indep_of_p_when_floor_binds {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
@@ -146,10 +146,10 @@ theorem starN_exp_formula {V : VerifyParams} (hV : VOk V)
 
 /-- **The AI's effort is unbounded.**
 
-As `TV → 0` the floor disappears and the number of verification rounds can be
-arbitrarily large.
-(Construction: take `d = 1`, that is `1−q = e^{−1}`, then `λ = e^{−2M}` and
-`TV = 1`, so `N_0 = −ln(e^{−2M}) = 2M > M`.) -/
+The floor `T = λ·(1−TV)/2` can be arbitrarily low (take `λ → 0` at fixed `TV`), and
+then the number of verification rounds can be arbitrarily large.
+(Construction: take `d = 1`, that is `1−q = e^{−1}`, then `TV = 1/2` and
+`λ = 4·e^{−2M}`, so `T = λ·(1−TV)/2 = e^{−2M}` and `N_0 = −ln(e^{−2M}) = 2M > M`.) -/
 theorem ai_effort_arbitrarily_large {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ M < roundsFor V (tvFloor V) := by
   have he1 : 0 < Real.exp (-1) := Real.exp_pos (-1)
@@ -159,17 +159,21 @@ theorem ai_effort_arbitrarily_large {M : ℝ} (hM : 0 < M) :
     exact h
   set V : VerifyParams :=
     { p := (1 : ℝ) / 2, Phi := 1, L := 1, q := 1 - Real.exp (-1), c := 1,
-      tv := 1, lam := Real.exp (-2 * M) } with hVdef
+      tv := (1 : ℝ) / 2, lam := 4 * Real.exp (-2 * M) } with hVdef
   have hV : VOk V := by
     refine ⟨by norm_num, by norm_num, by norm_num, by norm_num, ?_, ?_,
       by norm_num, by norm_num, by norm_num, ?_, ?_⟩
     · simp only [hVdef]; linarith
     · simp only [hVdef]; linarith
-    · simp only [hVdef]; exact Real.exp_pos _
+    · simp only [hVdef]; positivity
     · simp only [hVdef]
-      rw [mul_one]
-      have h : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
-      simpa using h
+      have h : Real.exp (-2 * M) < 1 := by
+        have h' : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
+        simpa using h'
+      have heq : (4:ℝ) * Real.exp (-2 * M) * (1 - 1 / 2) / 2 = Real.exp (-2 * M) := by
+        ring
+      rw [heq]
+      exact h
   refine ⟨V, hV, ?_⟩
   have hd : decay V = 1 := by
     simp only [decay, hVdef]
@@ -189,7 +193,7 @@ The person is almost always right and the AI almost never has to work.
 theorem human_value_arbitrarily_small {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ lossScale V < M := by
   set V : VerifyParams :=
-    { p := (1 : ℝ) / 2, Phi := 1, L := M, q := (1 : ℝ) / 2, c := 1, tv := 1,
+    { p := (1 : ℝ) / 2, Phi := 1, L := M, q := (1 : ℝ) / 2, c := 1, tv := (1 : ℝ) / 2,
       lam := (1 : ℝ) / 2 } with hVdef
   have hV : VOk V := by
     refine ⟨by norm_num, by norm_num, by norm_num, hM, by norm_num, by norm_num,
@@ -209,7 +213,7 @@ theorem incommensurable_witness {M : ℝ} (hM : 0 < M) :
     ∃ V : VerifyParams, VOk V ∧ M < roundsFor V (tvFloor V) ∧ lossScale V < M := by
   set V : VerifyParams :=
     { p := 1 - M / (2 * (M + 1)), Phi := 1, L := 1, q := 1 - Real.exp (-1), c := 1,
-      tv := 1, lam := Real.exp (-2 * M) } with hVdef
+      tv := (1 : ℝ) / 2, lam := 4 * Real.exp (-2 * M) } with hVdef
   have he1 : 0 < Real.exp (-1) := Real.exp_pos (-1)
   have he1' : Real.exp (-1) < 1 := by
     have h : Real.exp (-1) < Real.exp 0 := Real.exp_lt_exp.mpr (by norm_num : (-1:ℝ) < 0)
@@ -226,11 +230,15 @@ theorem incommensurable_witness {M : ℝ} (hM : 0 < M) :
       by norm_num, by norm_num, by norm_num, ?_, ?_⟩
     · simp only [hVdef]; linarith
     · simp only [hVdef]; linarith
-    · simp only [hVdef]; exact Real.exp_pos _
+    · simp only [hVdef]; positivity
     · simp only [hVdef]
-      rw [mul_one]
-      have h : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
-      simpa using h
+      have h : Real.exp (-2 * M) < 1 := by
+        have h' : Real.exp (-2 * M) < Real.exp 0 := Real.exp_lt_exp.mpr (by linarith)
+        simpa using h'
+      have heq : (4:ℝ) * Real.exp (-2 * M) * (1 - 1 / 2) / 2 = Real.exp (-2 * M) := by
+        ring
+      rw [heq]
+      exact h
   refine ⟨V, hV, ?_, ?_⟩
   · have hd : decay V = 1 := by
       simp only [decay, hVdef]

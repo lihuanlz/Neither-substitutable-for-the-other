@@ -1,5 +1,6 @@
 /-
-# Verification budget: the optimal number of verification rounds \(N^\star\) under a TV floor
+# Verification budget: the optimal number of verification rounds \(N^\star\) under a
+verification floor
 
 This file answers section 6 of the original analysis. The expected regret there is
 written
@@ -11,23 +12,26 @@ a result of `Provenance.HypothesisTest`:
 
     |power − false positive rate| ≤ TV(p, q)      (`Provenance.abs_mass_diff_le_tv`)
 
-**However many rounds are run, net discrimination never exceeds `TV`.** The residual
-miss rate therefore has a **floor**:
+A residual miss rate of exactly 0 cannot be right: \(N\) rounds of verification are
+themselves a statistical test of the two hypotheses, and the Bayes bound of
+`Provenance.HypothesisTest` puts every such test's error at \((1−TV)/2\) or worse.
+The residual miss rate therefore has a **floor** at a fixed fraction of that bound:
 
-    missRate(N) = max( (1−q)^N , T ),      T = λ·TV
+    missRate(N) = max( (1−q)^N , T ),      T = λ·(1−TV)/2
 
 ## The corrected model
 
     R(N) = p·Φ(α) + A·max( (1−q)^N , T ) + c·N
 
-    A = (1−p)·L      miss-cost scale (larger when the human is less reliable)
-    T = λ·TV         **TV floor** (independent of N)
-    s = 1−q ∈ (0,1)  residual factor of one round, d = |ln s| > 0
+    A = (1−p)·L        miss-cost scale (larger when the human is less reliable)
+    T = λ·(1−TV)/2     **verification floor**: a fixed fraction of the Bayes error of
+                       the two hypotheses (independent of N)
+    s = 1−q ∈ (0,1)    residual factor of one round, d = |ln s| > 0
 
 ## Key derivation
 
 The first-order condition `c = A·s^N·d` gives the **unconstrained optimal residual**
-`x_c = c/(A·d)`, while the TV floor requires `x ≥ T`. Hence the optimal attainable
+`x_c = c/(A·d)`, while the floor requires `x ≥ T`. Hence the optimal attainable
 residual is
 
     x* = max( x_c , T )
@@ -36,25 +40,28 @@ Reaching residual `x` requires `N = −ln x / d`, which is **decreasing** in `x`
 
 > **\(N^\star = \dfrac{-\ln\big(\max(x_c,\ T)\big)}{d} = \min(N_c,\ N_0)\)**
 
-`x*` takes a `max` and `N*` takes a `min`: **the TV floor only ever buys you fewer
+`x*` takes a `max` and `N*` takes a `min`: **the floor only ever buys you fewer
 verification rounds, never more.**
 
 ## Main results
 
+* `tvFloor_eq_lam_bayes`, `tvFloor_le_bayes`: the floor **is** a fixed fraction `λ` of
+  the Bayes error `(1−TV)/2` of the two hypotheses, and for `λ ≤ 1` never exceeds that
+  error.
 * `starN_le_floorRounds`: **a hard upper bound, independent of \(p\)**:
-  \(N^\star \le N_0 = \dfrac{\ln\frac{1}{\lambda\,TV}}{\ln\frac1{1-q}}\).
+  \(N^\star \le N_0 = \dfrac{\ln\frac{2}{\lambda\,(1-TV)}}{\ln\frac1{1-q}}\).
   This is the mathematical form of "an unreliable human does not license unbounded
   verification".
 * `starN_mono_in_p`: **\(N^\star\) is non-increasing in \(p\)**: the more reliable the
   human, the smaller the verification budget.
-* `starN_strictly_mono_in_p`: strictly decreasing when the TV floor is **not binding**.
-* `starN_mono_in_tv`: **\(N^\star\) is non-increasing in \(TV\)** (counterintuitive but
-  correct): the further apart the two distributions, the earlier verification saturates
-  and the smaller the budget.
+* `starN_strictly_mono_in_p`: strictly decreasing when the floor is **not binding**.
+* `starN_mono_in_tv`: **\(N^\star\) is non-decreasing in \(TV\)**: the closer the two
+  hypotheses, the higher the Bayes error, the earlier the floor binds and the smaller
+  the budget that can pay off. Better-separated hypotheses (larger `TV`) lower the
+  floor and let more rounds pay; they do not by themselves make review safer.
 * `regret_ge_floor`: the floor of the regret: `R(N) ≥ pΦ + A·T + cN`.
-* `missRate_eq_pow_of_tv_zero`: when `TV = 0` the floor vanishes and the **original
-  formula is recovered**. That is: TV is both the ceiling of the verification budget and
-  its only binding constraint.
+* `missRate_eq_pow_of_tv_one`: at `TV = 1` (perfectly distinguishable hypotheses) the
+  floor vanishes and the **original formula is recovered**.
 
 ## Relation to layer 2
 
@@ -88,7 +95,7 @@ structure VerifyParams where
   c : ℝ
   /-- total variation distance of the content layer `TV(p_H, p_A)` -/
   tv : ℝ
-  /-- TV → cost conversion coefficient -/
+  /-- floor as a fraction of the Bayes error `(1 − TV)/2` -/
   lam : ℝ
 
 /-- Admissibility of the parameters. A structure rather than a conjunction, so that the
@@ -108,15 +115,16 @@ structure VOk (V : VerifyParams) : Prop where
   q_lt_1 : V.q < 1
   /-- single-round cost positive -/
   c_pos : 0 < V.c
-  /-- TV strictly positive (the degenerate case `TV = 0` is handled separately) -/
+  /-- TV strictly positive (the degenerate case `TV = 0` is excluded) -/
   tv_pos : 0 < V.tv
-  /-- TV at most 1 -/
-  tv_le_1 : V.tv ≤ 1
-  /-- conversion coefficient positive -/
+  /-- TV strictly below 1 (the boundary case `TV = 1`, perfectly distinguishable
+  hypotheses, is handled separately in `missRate_eq_pow_of_tv_one`) -/
+  tv_lt_1 : V.tv < 1
+  /-- floor fraction positive -/
   lam_pos : 0 < V.lam
-  /-- the floor `T = λ·TV` is a probability, so the miss rate `max((1−q)^N, T)` never
-  exceeds 1 and `N*` is never negative -/
-  floor_lt_one : V.lam * V.tv < 1
+  /-- the floor `T = λ·(1−TV)/2` is a probability, so the miss rate `max((1−q)^N, T)`
+  never exceeds 1 and `N*` is never negative -/
+  floor_lt_one : V.lam * (1 - V.tv) / 2 < 1
 
 /-- The **decay rate** of a single verification round, `d = |ln(1−q)| = ln(1/(1−q)) > 0`. -/
 noncomputable def decay (V : VerifyParams) : ℝ := |Real.log (1 - V.q)|
@@ -124,9 +132,10 @@ noncomputable def decay (V : VerifyParams) : ℝ := |Real.log (1 - V.q)|
 /-- The miss-cost scale `A = (1−p)·L`. The less reliable the human, the larger `A`. -/
 noncomputable def lossScale (V : VerifyParams) : ℝ := (1 - V.p) * V.L
 
-/-- The **TV floor** `T = λ·TV`: the residual miss rate that no number of verification
-rounds can push down. -/
-noncomputable def tvFloor (V : VerifyParams) : ℝ := V.lam * V.tv
+/-- The **verification floor** `T = λ·(1−TV)/2`: a fixed fraction `λ` of the Bayes
+error `(1−TV)/2` of the two hypotheses. This is the residual miss rate that no number
+of verification rounds can push down. -/
+noncomputable def tvFloor (V : VerifyParams) : ℝ := V.lam * (1 - V.tv) / 2
 
 /-- The **residual miss rate** `max((1−q)^N, T)`. -/
 noncomputable def missRate (V : VerifyParams) (N : ℝ) : ℝ :=
@@ -143,16 +152,16 @@ noncomputable def regret (V : VerifyParams) (N : ℝ) : ℝ :=
 noncomputable def roundsFor (V : VerifyParams) (x : ℝ) : ℝ :=
   -(Real.log x) / decay V
 
-/-- Optimal residual ignoring the TV floor (first-order condition `c = A·s^N·d`):
+/-- Optimal residual ignoring the floor (first-order condition `c = A·s^N·d`):
 `x_c = c/(A·d)`. -/
 noncomputable def idealResidual (V : VerifyParams) : ℝ :=
   V.c / (lossScale V * decay V)
 
 /-- **The optimal verification budget**
 
-    N* = −ln( max( c/(A·d) , λ·TV ) ) / d
+    N* = −ln( max( c/(A·d) , λ·(1−TV)/2 ) ) / d
 
-With no TV floor (`TV = 0`, `T = 0`) this degenerates to the closed form of section 6,
+With no floor (`TV = 1`, `T = 0`) this degenerates to the closed form of section 6,
 `ln(A·d/c)/d`, that is `ln((1−p)L·|ln(1−q)|/c) / ln(1/(1−q))`. -/
 noncomputable def starN (V : VerifyParams) : ℝ :=
   roundsFor V (max (idealResidual V) (tvFloor V))
@@ -187,7 +196,8 @@ theorem lossScale_pos {V : VerifyParams} (hV : VOk V) : 0 < lossScale V := by
 
 theorem tvFloor_pos {V : VerifyParams} (hV : VOk V) : 0 < tvFloor V := by
   unfold tvFloor
-  exact mul_pos hV.lam_pos hV.tv_pos
+  have h : 0 < 1 - V.tv := by linarith [hV.tv_lt_1]
+  exact div_pos (mul_pos hV.lam_pos h) (by norm_num)
 
 theorem idealResidual_pos {V : VerifyParams} (hV : VOk V) : 0 < idealResidual V := by
   unfold idealResidual
@@ -235,12 +245,32 @@ theorem inv_lt_inv_of_lt {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (h : a < b) :
     exact absurd h (not_lt_of_ge hba)
   exact hnot hcon
 
-/-! ## 3. The TV floor: the miss rate cannot be pushed to 0 -/
+/-! ## 3. The floor: the miss rate cannot be pushed to 0 -/
+
+/-- The floor is **a fixed fraction `λ` of the Bayes error `(1 − TV)/2`** of the two
+hypotheses (the Bayes bound is `Provenance.HypothesisTest`). The identification of the
+two sides is by rearrangement. -/
+theorem tvFloor_eq_lam_bayes (V : VerifyParams) :
+    tvFloor V = V.lam * ((1 - V.tv) / 2) := by
+  unfold tvFloor
+  ring
+
+/-- With `λ ≤ 1` the floor never exceeds the Bayes error itself: the residual miss
+rate stays at or below the error of the best possible test of the two hypotheses. -/
+theorem tvFloor_le_bayes {V : VerifyParams} (hV : VOk V) (hlam : V.lam ≤ 1) :
+    tvFloor V ≤ (1 - V.tv) / 2 := by
+  unfold tvFloor
+  have h : 0 ≤ 1 - V.tv := by linarith [hV.tv_lt_1]
+  have h2 : V.lam * (1 - V.tv) ≤ 1 * (1 - V.tv) :=
+    mul_le_mul_of_nonneg_right hlam h
+  linarith
 
 /-- **The floor exists**: under any number of verification rounds, the residual miss
-rate is at least `T = λ·TV`.
+rate is at least `T = λ·(1−TV)/2`.
 
-This is what `|power − false positive rate| ≤ TV` looks like in the language of budgets. -/
+This is what `|power − false positive rate| ≤ TV` looks like in the language of
+budgets: `N` rounds of verification are a statistical test of the two hypotheses, and
+no test beats its own Bayes floor. -/
 theorem missRate_ge_tvFloor (V : VerifyParams) (N : ℝ) :
     tvFloor V ≤ missRate V N :=
   le_max_right _ _
@@ -260,11 +290,11 @@ theorem regret_ge_floor {V : VerifyParams} (hV : VOk V) {N : ℝ} :
 
 /-- **Core: \(N^\star\) has a hard upper bound that does not depend on \(p\).**
 
-    N*  ≤  N_0 = ln(1/(λ·TV)) / ln(1/(1−q))
+    N*  ≤  N_0 = ln(2/(λ·(1−TV))) / ln(1/(1−q))
 
 The right-hand side contains **no `p`**. So: **an unreliable human (\(p \to 0\)) does
-not license unbounded verification**: TV puts a floor under the residual miss rate, and
-no amount of extra verification pushes it below that floor.
+not license unbounded verification**: the hypotheses' Bayes floor puts a floor under
+the residual miss rate, and no amount of extra verification pushes it below that floor.
 
 This revises the conclusion of section 6 that "smaller \(p\) means larger \(N^\star\)":
 \(N^\star\) does indeed grow as \(p\) falls, but **it has a ceiling**. -/
@@ -274,7 +304,7 @@ theorem starN_le_floorRounds {V : VerifyParams} (hV : VOk V) :
   exact roundsFor_mono hV (tvFloor_pos hV) (maxResidual_pos hV)
     (le_max_right (idealResidual V) (tvFloor V))
 
-/-- Closed form of the upper bound: `N_0 = ln(1/(λ·TV)) / ln(1/(1−q))`, **with no
+/-- Closed form of the upper bound: `N_0 = ln(2/(λ·(1−TV))) / ln(1/(1−q))`, **with no
 \(p\)**. -/
 theorem starN_le_floorRounds_closed {V : VerifyParams} (hV : VOk V) :
     starN V ≤ Real.log (1 / tvFloor V) / Real.log (1 / (1 - V.q)) := by
@@ -296,14 +326,14 @@ optimal verification budget.
 
 This confirms the directional claim of section 6 (`N*` decreasing in `p`), while
 `starN_le_floorRounds` puts a ceiling on it. -/
-theorem lossScale_mono_in_p {V V' : VerifyParams} (hV : VOk V)
+theorem lossScale_mono_in_p {V : VerifyParams} (hV : VOk V)
     (hp : V.p ≤ V'.p) (hL : V'.L = V.L) :
     lossScale V' ≤ lossScale V := by
   have h1 : (1 : ℝ) - V'.p ≤ 1 - V.p := sub_le_sub_left hp 1
   rw [lossScale, lossScale, hL]
   exact mul_le_mul_of_nonneg_right h1 (le_of_lt hV.L_pos)
 
-theorem lossScale_strict_mono_in_p {V V' : VerifyParams} (hV : VOk V)
+theorem lossScale_strict_mono_in_p {V : VerifyParams} (hV : VOk V)
     (hp : V.p < V'.p) (hL : V'.L = V.L) :
     lossScale V' < lossScale V := by
   have h1 : (1 : ℝ) - V'.p < 1 - V.p := sub_lt_sub_left hp 1
@@ -374,13 +404,13 @@ theorem starN_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
   rw [starN, starN, ← roundsFor_congr hdc (max (idealResidual V') (tvFloor V'))]
   exact roundsFor_mono hV (maxResidual_pos hV) (maxResidual_pos hV') hmax
 
-/-- **Strictness**: when the TV floor is **not binding** (`T < x_c`), \(N^\star\) is
+/-- **Strictness**: when the floor is **not binding** (`T < x_c`), \(N^\star\) is
 **strictly** decreasing in `p`.
 
-For the verification budget to genuinely respond to the human's reliability, TV has to
-be non-binding. Once TV is the bottleneck, `N*` is pinned to the constant `N_0` and
-trusting anyone more changes nothing: **the bottleneck is the distinguishability of
-the content layer, not the intensity of verification**. -/
+For the verification budget to genuinely respond to the human's reliability, the floor
+has to be non-binding. Once the floor is the bottleneck, `N*` is pinned to the
+constant `N_0` and trusting anyone more changes nothing: **the bottleneck is the
+distinguishability of the content layer, not the intensity of verification**. -/
 theorem starN_strictly_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam) (htv : V'.tv = V.tv)
     (hL : V'.L = V.L) (hp : V.p < V'.p) (hfree : tvFloor V' < idealResidual V') :
@@ -401,43 +431,46 @@ theorem starN_strictly_mono_in_p {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V
 
 /-! ## 6. Main theorem: \(N^\star\) is monotone in `TV` -/
 
-/-- **\(N^\star\) is non-increasing in `TV`**.
+/-- **\(N^\star\) is non-decreasing in `TV`**.
 
-Counterintuitive but correct: the further apart the two distributions, the earlier
-verification saturates and the **smaller** the budget needed. Raising `TV` therefore does
-not make human review safer; it makes machine verification cheaper. -/
+The closer the two hypotheses (the smaller `TV`), the higher the Bayes error
+`(1−TV)/2`, the higher the floor, the earlier verification saturates and the
+**smaller** the budget that can pay off. Raising `TV` (better-separated hypotheses)
+lowers the floor and lets more rounds pay; it does not by itself make review safer. -/
 theorem starN_mono_in_tv {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
     (hq : V'.q = V.q) (hc : V'.c = V.c) (hlam : V'.lam = V.lam)
     (hL : V'.L = V.L) (hp : V'.p = V.p) (htv : V.tv ≤ V'.tv) :
-    starN V' ≤ starN V := by
+    starN V ≤ starN V' := by
   have hdc : decay V' = decay V := by rw [decay, decay, hq]
-  have hdt : tvFloor V ≤ tvFloor V' := by
+  have hdt : tvFloor V' ≤ tvFloor V := by
     unfold tvFloor
     rw [hlam]
-    exact mul_le_mul_of_nonneg_left htv (le_of_lt hV.lam_pos)
+    have h1 : (1 : ℝ) - V'.tv ≤ 1 - V.tv := sub_le_sub_left htv 1
+    have h2 : V.lam * (1 - V'.tv) ≤ V.lam * (1 - V.tv) :=
+      mul_le_mul_of_nonneg_left h1 (le_of_lt hV.lam_pos)
+    linarith
   have hid1 := idealResidual_mono_in_p hV hV' hq hc hp.symm.le hL
   have hid2 := idealResidual_mono_in_p hV' hV hq.symm hc.symm hp.le hL.symm
   have hid : idealResidual V = idealResidual V' := le_antisymm hid1 hid2
-  have hmax : max (idealResidual V) (tvFloor V) ≤ max (idealResidual V') (tvFloor V') :=
-    max_le_max (le_of_eq hid) hdt
-  have hstep : roundsFor V (max (idealResidual V') (tvFloor V'))
-      ≤ roundsFor V (max (idealResidual V) (tvFloor V)) :=
-    roundsFor_mono hV (maxResidual_pos hV) (maxResidual_pos hV') hmax
-  rw [starN, starN, roundsFor_congr hdc.symm (max (idealResidual V') (tvFloor V'))]
-  exact hstep
+  have hmax : max (idealResidual V') (tvFloor V') ≤ max (idealResidual V) (tvFloor V) :=
+    max_le_max (le_of_eq hid.symm) hdt
+  rw [starN, starN, ← roundsFor_congr hdc (max (idealResidual V') (tvFloor V'))]
+  exact roundsFor_mono hV (maxResidual_pos hV') (maxResidual_pos hV) hmax
 
-/-! ## 7. Degenerate case: `TV = 0` recovers the original formula -/
+/-! ## 7. Boundary case: `TV = 1` recovers the original formula -/
 
-/-- **When `TV = 0` the floor disappears**: the miss rate is just `(1−q)^N`, and
+/-- **At `TV = 1` the floor disappears**: the two hypotheses are perfectly
+distinguishable, the Bayes error is `0`, the miss rate is just `(1−q)^N`, and
 verification can approach 0 arbitrarily closely.
 
-That is: TV is both the ceiling of the verification budget and its only binding
-constraint. `TV = 0` means the two distributions coincide exactly, and only then is it
-worth speaking of "a few more rounds". -/
-theorem missRate_eq_pow_of_tv_zero {V : VerifyParams} (hV : VOk V) (htv : V.tv = 0)
+Only then is it worth speaking of "a few more rounds". (Stated without `VOk`, since
+`TV = 1` is exactly the boundary `VOk` excludes; `q ≤ 1` suffices.) -/
+theorem missRate_eq_pow_of_tv_one {V : VerifyParams} (htv : V.tv = 1) (hq : V.q ≤ 1)
     (N : ℝ) : missRate V N = (1 - V.q) ^ N := by
   unfold missRate tvFloor
-  rw [htv, mul_zero]
-  exact max_eq_left (Real.rpow_nonneg (show (0:ℝ) ≤ 1 - V.q by linarith [hV.q_lt_1]) N)
+  rw [htv]
+  have h0 : V.lam * (1 - 1) / 2 = 0 := by ring
+  rw [h0]
+  exact max_eq_left (Real.rpow_nonneg (show (0:ℝ) ≤ 1 - V.q by linarith) N)
 
 end Provenance

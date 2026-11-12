@@ -282,7 +282,7 @@
     },
     {
       "theorem": "missRate_ge_tvFloor",
-      "prose_anchor": "rate is at least `T = λ·TV`.",
+      "prose_anchor": "rate is at least `T = λ·(1−TV)/2`.",
       "prose_relation": "≥",
       "relation_mode": "mirror",
       "lean_fragment": "tvFloor V ≤ missRate V N",
@@ -298,7 +298,7 @@
     },
     {
       "theorem": "starN_le_floorRounds",
-      "prose_anchor": "N*  ≤  N_0 = ln(1/(λ·TV)) / ln(1/(1−q))",
+      "prose_anchor": "N*  ≤  N_0 = ln(2/(λ·(1−TV))) / ln(1/(1−q))",
       "prose_relation": "≤",
       "lean_fragment": "starN V ≤ roundsFor V (tvFloor V)",
       "symbols": ["V"]
