@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/two-operators-adaptive.svg" width="820" alt="Two operators on two separate axes: machine compression flattens at a floor it cannot pass, human refinement steps that floor down without limit.">
+  <img src="https://cdn.jsdelivr.net/gh/lihuanlz/Neither-substitutable-for-the-other@main/assets/two-operators-adaptive.svg" width="820" alt="Two operators on two separate axes: machine compression flattens at a floor it cannot pass, human refinement steps that floor down without limit.">
 </p>
 
 <h1 align="center">Neither substitutable for the other</h1>
