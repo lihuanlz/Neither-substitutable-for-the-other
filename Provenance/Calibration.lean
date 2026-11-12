@@ -97,8 +97,10 @@ theorem signOf_pos (s tau : ℝ) (hs : 0 < s) :
     linarith
 
 /-- **Main statement.** For every output there are two calibrations of the bar,
-one below and one above the output's surprisal, that give opposite signs. The
-sign is therefore not determined by the output-plus-human pair. -/
+one below and one above the output's surprisal, that give opposite signs.
+`minContribution` contains no term for the human input, so the sign is set by
+the fitted bar, not by the output and not by the collaboration. -/
+
 theorem sign_not_identified (s : ℝ) (hs : 0 < s) :
     ∃ tau₁ tau₂ : ℝ,
       0 < tau₁ ∧ tau₁ < s ∧ s < tau₂ ∧
