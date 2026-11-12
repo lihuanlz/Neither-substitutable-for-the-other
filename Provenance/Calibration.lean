@@ -168,6 +168,100 @@ theorem estimator_not_a_proportion (s : ℝ) (hs : 0 < s) :
   have ht : 0 < tau₂ := lt_trans hs hlt
   exact (not_lt_of_ge (hall tau₂ ht)) hneg
 
+/-! ### Partial identification: the identified set is exactly an interval
+
+`sign_not_identified` says one output does not pin down a sign. The accurate
+positive statement is an interval-identification result in the sense of
+Manski: if the bar is known only to lie in `[tauLo, tauHi]`, the values the
+estimator can report form **exactly** the interval `[1 - tauHi/s, 1 - tauLo/s]`
+— membership is `identifiedSet_subset`, sharpness is `identifiedSet_covers`,
+and the width is `interval_width`. The sign is identified exactly when the
+output's surprisal lies outside the bar range (`sign_identified_above`,
+`sign_identified_below`); strictly inside it, two admissible midpoints give
+opposite signs (`sign_not_identified_of_straddle`). The dual statement,
+`estimator_recovers_truth`, marks the other end of the boundary: with the bar
+calibrated in distribution (`tau = s·(1 − phi)` for the true `phi`) the
+estimator recovers `phi` exactly. Out of distribution, only the interval
+remains. -/
+
+/-- Every admissible calibration reports within the interval. -/
+theorem identifiedSet_subset {s tauLo tauHi tau : ℝ} (hs : 0 < s)
+    (hlo : tauLo ≤ tau) (hhi : tau ≤ tauHi) :
+    1 - tauHi / s ≤ minContribution s tau ∧ minContribution s tau ≤ 1 - tauLo / s := by
+  have h1 : tau / s ≤ tauHi / s := (div_le_div_iff_of_pos_right hs).mpr hhi
+  have h2 : tauLo / s ≤ tau / s := (div_le_div_iff_of_pos_right hs).mpr hlo
+  unfold minContribution
+  constructor <;> linarith
+
+/-- **The interval is sharp**: every point of it is reported by some admissible
+calibration, namely the bar `tau = s·(1 − z)`. So the identified set is not
+merely contained in the interval — it *is* the interval. -/
+theorem identifiedSet_covers {s tauLo tauHi : ℝ} (hs : 0 < s) {z : ℝ}
+    (hzlo : 1 - tauHi / s ≤ z) (hzhi : z ≤ 1 - tauLo / s) :
+    ∃ tau : ℝ, tauLo ≤ tau ∧ tau ≤ tauHi ∧ minContribution s tau = z := by
+  have hne : s ≠ 0 := ne_of_gt hs
+  have h1 : tauLo / s ≤ 1 - z := by linarith
+  have h2 : 1 - z ≤ tauHi / s := by linarith
+  have h1' : tauLo ≤ (1 - z) * s := by
+    have hmul := mul_le_mul_of_nonneg_right h1 (le_of_lt hs)
+    rwa [div_mul_cancel₀ tauLo hne] at hmul
+  have h2' : (1 - z) * s ≤ tauHi := by
+    have hmul := mul_le_mul_of_nonneg_right h2 (le_of_lt hs)
+    rwa [div_mul_cancel₀ _ hne] at hmul
+  refine ⟨s * (1 - z), by rw [mul_comm]; exact h1', by rw [mul_comm]; exact h2', ?_⟩
+  unfold minContribution
+  rw [mul_div_cancel_left₀ _ hne]
+  ring
+
+/-- The width of the identified set is the bar's uncertainty divided by the
+surprisal: the lower the output's surprisal, the wider the interval of values
+consistent with it. -/
+theorem interval_width (s tauLo tauHi : ℝ) (hs : 0 < s) :
+    (1 - tauLo / s) - (1 - tauHi / s) = (tauHi - tauLo) / s := by
+  have hne : s ≠ 0 := ne_of_gt hs
+  field_simp
+
+/-- If the output's surprisal clears the whole bar range, every admissible
+calibration reports a positive contribution: the sign is identified. -/
+theorem sign_identified_above {s tauLo tauHi tau : ℝ} (hs : 0 < s)
+    (hclear : tauHi < s) (_hlo : tauLo ≤ tau) (hhi : tau ≤ tauHi) :
+    0 < minContribution s tau :=
+  (signOf_pos s tau hs).mpr (lt_of_le_of_lt hhi hclear)
+
+/-- If the output's surprisal undercuts the whole bar range, every admissible
+calibration reports a negative contribution: the sign is identified, and it is
+negative. -/
+theorem sign_identified_below {s tauLo tauHi tau : ℝ} (hs : 0 < s)
+    (hclear : s < tauLo) (hlo : tauLo ≤ tau) (_hhi : tau ≤ tauHi) :
+    minContribution s tau < 0 :=
+  (signOf s tau hs).mpr (lt_of_lt_of_le hclear hlo)
+
+/-- **Strictly inside the bar range the sign is not identified**: two
+admissible midpoint calibrations straddle the surprisal and give opposite
+signs. Together with `sign_identified_above` and `sign_identified_below` this
+says the sign is identified exactly off the open interval `(tauLo, tauHi)`. -/
+theorem sign_not_identified_of_straddle {s tauLo tauHi : ℝ} (hs : 0 < s)
+    (hlo : tauLo < s) (hhi : s < tauHi) :
+    ∃ tau₁ tau₂ : ℝ, tauLo ≤ tau₁ ∧ tau₁ ≤ tauHi ∧ tauLo ≤ tau₂ ∧ tau₂ ≤ tauHi ∧
+      0 < minContribution s tau₁ ∧ minContribution s tau₂ < 0 := by
+  refine ⟨(tauLo + s) / 2, (s + tauHi) / 2, by linarith, by linarith, by linarith,
+    by linarith, ?_, ?_⟩
+  · exact (signOf_pos s _ hs).mpr (by linarith)
+  · exact (signOf s _ hs).mpr (by linarith)
+
+/-- **The dual statement: calibrated in distribution, the estimator is exact.**
+If the bar equals `s·(1 − phi)` — the value the source's own model assigns to
+the true contribution `phi` — the estimator recovers `phi` exactly. The
+boundary of the framework is sharp: in-distribution calibration gives a point
+answer; out of distribution only the interval of `identifiedSet_subset` and
+`identifiedSet_covers` remains. -/
+theorem estimator_recovers_truth {s tau phi : ℝ} (hs : 0 < s)
+    (h : tau = s * (1 - phi)) :
+    minContribution s tau = phi := by
+  unfold minContribution
+  rw [h, mul_div_cancel_left₀ _ (ne_of_gt hs)]
+  ring
+
 /-! ### Exact instances -/
 
 example : minContribution 4 1 = 3 / 4 := by norm_num [minContribution]

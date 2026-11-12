@@ -281,6 +281,80 @@ theorem selection_filter_survives_dilution {D₁ D₂ : Evidence} {c : ℝ} (hc 
   · exact hall₁ a h
   · exact hall₂ a h
 
+/-
+## 5. Weighted corpora: which dilution results survive re-weighting
+
+The corpus above is a set; a real corpus is a stream, whose items carry
+weights (recency, trust, retrieval rank). This section adds a weight function
+and asks exactly which dilution results survive.
+
+The answer is sharp. `wfloorOf` certifies over the positive-weight part only,
+and:
+
+* `wfloorOf_eq_floorOf_of_weights_pos` — while every item keeps positive
+  weight, the weighted floor **is** the unweighted floor: dilution invariance
+  survives arbitrary re-weighting verbatim;
+* `wfloorOf_insert_of_pos` — a positively weighted item moves the floor
+  exactly as in the unweighted model;
+* `wfloorOf_insert_of_zero` — an item whose weight hits zero is simply not
+  there.
+
+So the stream picture adds exactly one new phenomenon to the set picture:
+decay to zero deletes an item, and everything short of zero changes nothing.
+-/
+
+/-- `min'` depends only on the set, not on the nonemptiness proof. -/
+theorem min'_congr {s t : Finset ℝ} {hs : s.Nonempty} {ht : t.Nonempty} (h : s = t) :
+    s.min' hs = t.min' ht := by
+  subst h
+  rfl
+
+/-- The weighted certified floor: the minimum over the items with positive
+weight. -/
+noncomputable def wfloorOf (D : Evidence) (w : ℝ → ℝ)
+    (h : (D.filter fun a => 0 < w a).Nonempty) : ℝ :=
+  (D.filter fun a => 0 < w a).min' h
+
+/-- **Positive weights are invisible.** While every item keeps positive
+weight, the weighted floor equals the unweighted one: re-weighting alone —
+recency decay, trust scores, retrieval ranks — changes nothing the corpus
+certifies. -/
+theorem wfloorOf_eq_floorOf_of_weights_pos {D : Evidence} (hD : D.Nonempty) (w : ℝ → ℝ)
+    (hall : ∀ a ∈ D, 0 < w a) (hw : (D.filter fun a => 0 < w a).Nonempty) :
+    wfloorOf D w hw = floorOf D hD := by
+  have hset : D.filter (fun a => 0 < w a) = D := Finset.filter_true_of_mem hall
+  unfold wfloorOf floorOf
+  exact min'_congr hset
+
+/-- **A positively weighted new item moves the floor exactly as before**:
+the insert law of the unweighted model, verbatim. -/
+theorem wfloorOf_insert_of_pos {D : Evidence} (w : ℝ → ℝ) {a : ℝ}
+    (ha : 0 < w a) (hwD : (D.filter fun b => 0 < w b).Nonempty)
+    (hw : ((insert a D).filter fun b => 0 < w b).Nonempty) :
+    wfloorOf (insert a D) w hw = min (wfloorOf D w hwD) a := by
+  have hset : (insert a D).filter (fun b => 0 < w b)
+      = insert a (D.filter fun b => 0 < w b) := by
+    rw [Finset.filter_insert, if_pos ha]
+  unfold wfloorOf
+  calc ((insert a D).filter fun b => 0 < w b).min' hw
+      = (insert a (D.filter fun b => 0 < w b)).min'
+          ((D.filter fun b => 0 < w b).insert_nonempty a) :=
+        min'_congr hset
+    _ = min ((D.filter fun b => 0 < w b).min' hwD) a :=
+        Finset.min'_insert a (D.filter fun b => 0 < w b) hwD
+
+/-- **A zero-weighted new item is invisible.** Decay to exactly zero deletes
+the item from what the corpus certifies; this is the only way weighting
+changes the floor at all. -/
+theorem wfloorOf_insert_of_zero {D : Evidence} (w : ℝ → ℝ) {a : ℝ}
+    (ha : ¬ 0 < w a) (hwD : (D.filter fun b => 0 < w b).Nonempty)
+    (hw : ((insert a D).filter fun b => 0 < w b).Nonempty) :
+    wfloorOf (insert a D) w hw = wfloorOf D w hwD := by
+  have hset : (insert a D).filter (fun b => 0 < w b) = D.filter fun b => 0 < w b := by
+    rw [Finset.filter_insert, if_neg ha]
+  unfold wfloorOf
+  exact min'_congr hset
+
 end
 end Corpus
 end Provenance

@@ -56,6 +56,7 @@ other words.
 
 import Mathlib.Tactic
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Exp
 import Provenance.Refinement
 
 namespace Provenance
@@ -320,6 +321,99 @@ comes from **layers being changeable**. -/
 theorem scale_by_new_layers_not_by_headcount {M : ℝ} (hM : 0 ≤ M) :
     ∃ Φα Φβ : ℝ, 0 < Φβ ∧ Φβ ≤ Φα ∧ Real.log (Φα / Φβ) = M :=
   human_gain_unbounded hM
+
+/-
+## 7. The synergy parameter: where headcount starts paying
+
+The coalition model above is max-type: the coalition reaches exactly what its
+best member reaches, and the header flags this as the brittle point of the
+topic. Here the assumption is unfolded into a one-parameter family. With
+synergy `σ ∈ [0, 1)`, a coalition of `k` members whose best member reaches
+`m` is taken to reach
+
+    reachSyn σ k m = m · (1 − σ)^(k − 1) .
+
+At `σ = 0` this is the max-type model verbatim (`reachSyn_zero`); synergy only
+ever lowers the coalition floor (`reachSyn_le`). Every member after the first
+then adds the constant log-gain `−log(1 − σ)` (`marginal_gain_syn`), so with a
+per-head cost `c`, headcount has positive net return exactly when
+
+    σ > 1 − exp(−c)        (headcount_pays_iff).
+
+The brittle assumption has become a boundary theorem: the max-type model is
+the zero-synergy slice, and on that slice the condition is never met for a
+positive cost (`headcount_never_pays_at_zero`), which is
+`marginal_agent_pure_waste` read as a boundary case.
+-/
+
+/-- The synergy-adjusted floor of a `k`-member coalition whose best member
+reaches `m`: `m·(1 − σ)^(k−1)`. -/
+def reachSyn (σ : ℝ) (k : ℕ) (m : ℝ) : ℝ := m * (1 - σ) ^ (k - 1)
+
+/-- **At zero synergy the family is the max-type model exactly**: the
+coalition floor is the best member's floor, for every headcount. -/
+theorem reachSyn_zero (k : ℕ) (m : ℝ) : reachSyn 0 k m = m := by
+  unfold reachSyn
+  rw [sub_zero, one_pow, mul_one]
+
+/-- **Synergy only lowers the coalition floor**: a coalition with synergy
+reaches at least what its best member reaches. -/
+theorem reachSyn_le {σ : ℝ} (h0 : 0 ≤ σ) (h1 : σ < 1) {m : ℝ} (hm : 0 < m)
+    (k : ℕ) (_hk : 1 ≤ k) : reachSyn σ k m ≤ m := by
+  have hσ : (0 : ℝ) < 1 - σ := by linarith
+  have hle1 : (1 - σ) ≤ 1 := by linarith
+  calc reachSyn σ k m ≤ m * 1 ^ (k - 1) := by
+        unfold reachSyn
+        exact mul_le_mul_of_nonneg_left
+          (pow_le_pow_left₀ (le_of_lt hσ) hle1 _) (le_of_lt hm)
+    _ = m := by rw [one_pow, mul_one]
+
+/-- **The marginal member pays a constant.** The (k+1)-th member adds exactly
+`−log(1 − σ)` to the coalition's log-gain, independently of `k` and of the
+best member's floor. At `σ = 0` this is `0`: the max-type
+`marginal_agent_pure_waste` is the zero-synergy slice of this family. -/
+theorem marginal_gain_syn {σ : ℝ} (_h0 : 0 ≤ σ) (h1 : σ < 1) {m : ℝ} (hm : 0 < m)
+    (k : ℕ) (hk : 1 ≤ k) :
+    Real.log (reachSyn σ k m / reachSyn σ (k + 1) m) = -Real.log (1 - σ) := by
+  have hσ : (0 : ℝ) < 1 - σ := by linarith
+  have hx : (0 : ℝ) < (1 - σ) ^ (k - 1) := pow_pos hσ _
+  have hk1 : k + 1 - 1 = k := Nat.add_sub_cancel k 1
+  have hpow : (1 - σ) ^ k = (1 - σ) ^ (k - 1) * (1 - σ) := by
+    conv_lhs => rw [← Nat.sub_add_cancel hk]
+    rw [pow_succ]
+  have hratio : reachSyn σ k m / reachSyn σ (k + 1) m = 1 / (1 - σ) := by
+    unfold reachSyn
+    rw [hk1, hpow]
+    field_simp [hm.ne', hσ.ne', hx.ne']
+    ring
+  rw [hratio, one_div, Real.log_inv]
+
+/-- **The boundary theorem.** With per-head cost `c`, adding members has
+positive net return exactly when `σ > 1 − exp(−c)`. -/
+theorem headcount_pays_iff {c : ℝ} (_hc : 0 < c) {σ : ℝ} (_h0 : 0 ≤ σ) (h1 : σ < 1) :
+    c < -Real.log (1 - σ) ↔ 1 - Real.exp (-c) < σ := by
+  have hσ : (0 : ℝ) < 1 - σ := by linarith
+  constructor
+  · intro h
+    have h2 : Real.log (1 - σ) < -c := by linarith
+    have h3 : Real.exp (Real.log (1 - σ)) < Real.exp (-c) :=
+      Real.exp_strictMono h2
+    rw [Real.exp_log hσ] at h3
+    linarith
+  · intro h
+    have h3 : 1 - σ < Real.exp (-c) := by linarith
+    have h4 : Real.log (1 - σ) < Real.log (Real.exp (-c)) :=
+      (Real.log_lt_log_iff hσ (Real.exp_pos _)).mpr h3
+    rw [Real.log_exp] at h4
+    linarith
+
+/-- **The zero-synergy slice never pays**: at `σ = 0` the boundary condition
+of `headcount_pays_iff` fails for every positive per-head cost. This is
+`marginal_agent_pure_waste` read as the boundary case of the family. -/
+theorem headcount_never_pays_at_zero {c : ℝ} (hc : 0 < c) :
+    ¬ (c < -Real.log (1 - 0)) := by
+  rw [sub_zero, Real.log_one, neg_zero]
+  exact not_lt_of_ge (le_of_lt hc)
 
 end
 end Fragmentation

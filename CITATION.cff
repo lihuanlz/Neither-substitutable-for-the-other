@@ -17,8 +17,9 @@ abstract: >-
   saturations fall out of the same currency: headcount saturates immediately
   because a max-type coalition's marginal member earns exactly zero, and corpus
   size saturates because only the single item certifying the lowest floor
-  determines the attainable bound. We formalize all of this in Lean 4: 164
-  machine-checked theorems and 20 worked examples across thirteen modules, with
+  determines the attainable bound. We formalize all of this in Lean 4: 198
+  machine-checked declarations, including 20 worked examples, across fifteen
+  modules, with
   zero sorry and no axioms beyond Classical.choice, Quot.sound and propext.
 type: article
 authors:

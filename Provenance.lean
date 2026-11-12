@@ -175,3 +175,5 @@ import Provenance.Examples
 import Provenance.Fragmentation
 import Provenance.Corpus
 import Provenance.Tagged
+import Provenance.VerifyFloor
+import Provenance.Bridge
