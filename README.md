@@ -9,7 +9,7 @@
   <a href="https://aixiv.online/abs/2611.01168"><img src="https://img.shields.io/badge/aiXiv-2611.01168-b31b1b" alt="aiXiv:2611.01168"></a>
   <a href="https://doi.org/10.5281/zenodo.23321578"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23321578-1682d4" alt="DOI"></a>
   <img src="https://img.shields.io/badge/Lean-4.15.0-blue" alt="Lean 4.15.0">
-  <img src="https://img.shields.io/badge/declarations-198-0969da" alt="198 declarations">
+  <img src="https://img.shields.io/badge/declarations-214-0969da" alt="214 declarations">
   <img src="https://img.shields.io/badge/sorry-0-success" alt="zero sorry">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT">
 </p>
@@ -37,11 +37,11 @@ Three consequences fall out of the same currency, and each is a machine-checked 
 
 ## What is machine-checked
 
-198 machine-checked declarations, including 20 worked examples, across fifteen Lean 4 modules, against Mathlib. Zero `sorry`. The axiom audit resolves every declaration against `Classical.choice`, `Quot.sound` and `propext` and nothing else, and it runs in CI on every push.
+214 machine-checked declarations, including 20 worked examples, across fifteen Lean 4 modules, against Mathlib. Zero `sorry`. The axiom audit resolves every declaration against `Classical.choice`, `Quot.sound` and `propext` and nothing else, and it runs in CI on every push.
 
 ```powershell
 lake build
-python tools\audit_axioms.py     # axiom dependencies for all 198 declarations
+python tools\audit_axioms.py     # axiom dependencies for all 214 declarations
 python tools\check_metadata.py   # CITATION.cff / .zenodo.json / README agreement
 python tools\statement_adequacy.py  # the prose says what the statements say
 ```
@@ -103,7 +103,7 @@ apart on purpose.
 Provenance.lean            Main entry point (module guide + reproduction notes)
 Provenance/                15 Lean modules
 ORIENTATION.md             Reader's entry point: what the theorems do and do not settle
-tools/audit_axioms.py      Axiom-dependency audit over the 198 declarations (CI gate)
+tools/audit_axioms.py      Axiom-dependency audit over the 214 declarations (CI gate)
 tools/check_metadata.py    CITATION.cff / .zenodo.json / README citation check (CI gate)
 tools/contamination_budget.py  Contamination arithmetic, verified against the Lean statements (CI gate)
 tools/statement_adequacy.py   Prose-vs-statement check, against a registered crosswalk (CI gate)
@@ -123,7 +123,7 @@ lakefile.lean, lean-toolchain, lake-manifest.json
 Every push to `main` and every pull request runs one job:
 
 1. `lake build` via [leanprover/lean-action](https://github.com/leanprover/lean-action), which installs the pinned toolchain and fetches the Mathlib cache before compiling
-2. `tools/audit_axioms.py`, confirming all 198 declarations resolve against only `Classical.choice`, `Quot.sound` and `propext`, with zero `sorryAx`
+2. `tools/audit_axioms.py`, confirming all 214 declarations resolve against only `Classical.choice`, `Quot.sound` and `propext`, with zero `sorryAx`
 3. `tools/check_metadata.py`, confirming the citation files and the README agree
 4. `tools/contamination_budget.py --verify`, re-reading three statements in `Contamination.lean` so the arithmetic and the specification cannot drift apart
 5. `tools/statement_adequacy.py`, confirming each prose claim still matches the Lean statement it stands for, and that no symbol carries two meanings

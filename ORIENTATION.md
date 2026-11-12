@@ -246,7 +246,7 @@ this repository and has not been run.
 
 ```powershell
 lake build
-python tools\audit_axioms.py                     # axiom dependencies for all 164 declarations
+python tools\audit_axioms.py                     # axiom dependencies for all 214 declarations
 python tools\check_metadata.py                   # citation files and README agreement
 python tools\statement_adequacy.py              # the prose says what the statements say
 python tools\fault_inject.py                     # and the check fails when it should

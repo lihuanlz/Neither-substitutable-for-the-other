@@ -318,4 +318,39 @@ theorem testClass_attainsBound (p q : PMF n) (𝒯 : Set (Test n))
     ∃ t ∈ 𝒯, accuracy t p q = (1 + totalVariation p q) / 2 :=
   ⟨bayes p q, hb, bayes_optimal p q⟩
 
+/-! ## Minimax over a family of generators
+
+The ceiling `accuracy ≤ (1 + TV)/2` is stated against a single generator `q`.
+In practice the candidate generator is not known: it ranges over a finite
+family. The worst-case form of the ceiling says that the family member that
+sets it is the **best mimic** — the one whose `TV` against the reference is
+smallest. No detector can guarantee more than `(1 + min_q TV(p, q))/2` against
+every member of the family, and the Bayes test against the best mimic attains
+exactly that against it. -/
+
+/-- **The minimax ceiling.** For any test `t` and any nonempty finite family
+`F` of generators, some member of the family holds `t` to an accuracy of at
+most `(1 + min_{q ∈ F} TV(p, q))/2`: the best mimic in the family sets the
+ceiling, whatever the detector. -/
+theorem worstCase_accuracy_le_min_tv (t : Test n) (p : PMF n)
+    (F : Finset (PMF n)) (hF : F.Nonempty) :
+    ∃ q ∈ F, accuracy t p q
+      ≤ (1 + (F.image (totalVariation p)).min' (hF.image _)) / 2 := by
+  have hmem := Finset.min'_mem (F.image (totalVariation p)) (hF.image _)
+  rw [Finset.mem_image] at hmem
+  obtain ⟨q, hqF, hq⟩ := hmem
+  exact ⟨q, hqF, hq ▸ accuracy_le t p q⟩
+
+/-- **The minimax ceiling is attained.** The Bayes test against the best
+mimic reaches exactly the ceiling of `worstCase_accuracy_le_min_tv`, so the
+minimum `TV` over the family is not merely a bound: it is the answer. -/
+theorem worstCase_accuracy_attains_min_tv (p : PMF n)
+    (F : Finset (PMF n)) (hF : F.Nonempty) :
+    ∃ q ∈ F, accuracy (bayes p q) p q
+      = (1 + (F.image (totalVariation p)).min' (hF.image _)) / 2 := by
+  have hmem := Finset.min'_mem (F.image (totalVariation p)) (hF.image _)
+  rw [Finset.mem_image] at hmem
+  obtain ⟨q, hqF, hq⟩ := hmem
+  exact ⟨q, hqF, hq ▸ bayes_optimal p q⟩
+
 end Provenance

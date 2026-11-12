@@ -133,5 +133,161 @@ theorem floor_under_rounds_or (p q : PMF n) (S₁ S₂ : Finset (Fin n)) {α : �
     1 - α - totalVariation p q ≤ missRate q (S₁ ∪ S₂) :=
   floor_from_detection p q _ hfp
 
+/-! ## Two observations: the product space
+
+The floor derived above is a **single-observation** statement. A verifier with
+two independent draws acts on the product space, where the attainable error is
+strictly lower. This section makes the comparison exact: the product
+distribution is defined, the Bayes error of any pair of hypotheses is bounded
+by half the Bhattacharyya coefficient `BC(p, q) = Σᵢ √(pᵢ qᵢ)`, and `BC`
+multiplies over independent observations — so the bound on the attainable
+error decays geometrically in the number of independent observations. A worked
+example shows the decay is real: two draws of a biased-coin pair push the
+Bayes error strictly below the single-observation floor. The postulated floor
+of the text is therefore conservative exactly in the regime the text reserves
+for it: repetition that buys genuinely new observations. -/
+
+/-- The product of two finite distributions, carried on `Fin (m * k)` through
+the pairing equivalence. -/
+noncomputable def prodPMF {m k : ℕ} (p : PMF m) (q : PMF k) : PMF (m * k) where
+  val i := p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).2
+  nonneg i := mul_nonneg (p.nonneg _) (q.nonneg _)
+  sum_one := by
+    dsimp only
+    have key : (∑ i : Fin (m * k),
+        p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).2)
+        = ∑ x : Fin m × Fin k, p.val x.1 * q.val x.2 :=
+      Fintype.sum_equiv finProdFinEquiv.symm _ _ (fun _ => rfl)
+    rw [key, Fintype.sum_prod_type, ← Finset.sum_mul_sum, p.sum_one, q.sum_one, one_mul]
+
+/-- The Bhattacharyya coefficient `BC(p, q) = Σᵢ √(pᵢ qᵢ)`, the affinity
+between the two hypotheses. -/
+noncomputable def bc (p q : PMF n) : ℝ := ∑ i, Real.sqrt (p.val i * q.val i)
+
+/-- `min a b ≤ √(a·b)` for non-negative `a, b`: the geometric mean of two
+non-negative numbers is at least their minimum. -/
+theorem min_le_sqrt_mul {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    min a b ≤ Real.sqrt (a * b) := by
+  rcases le_total a b with h | h
+  · rw [min_eq_left h]
+    have h2 : a * a ≤ a * b := mul_le_mul_of_nonneg_left h ha
+    have hs := (Real.sqrt_le_sqrt_iff (mul_nonneg ha (ha.trans h))).2 h2
+    rwa [Real.sqrt_mul_self ha] at hs
+  · rw [min_eq_right h]
+    have h2 : b * b ≤ a * b := mul_le_mul_of_nonneg_right h hb
+    have hs := (Real.sqrt_le_sqrt_iff (mul_nonneg (hb.trans h) hb)).2 h2
+    rwa [Real.sqrt_mul_self hb] at hs
+
+/-- The Bayes error is the mean of the pointwise minima:
+`(1 − TV)/2 = (Σᵢ min (pᵢ, qᵢ)) / 2`. -/
+theorem bayes_errRate_eq_sum_min (p q : PMF n) :
+    errRate (bayes p q) p q = (∑ i, min (p.val i) (q.val i)) / 2 := by
+  rw [bayes_errRate]
+  have key : ∀ i : Fin n, min (p.val i) (q.val i)
+      = (p.val i + q.val i - |p.val i - q.val i|) / 2 := by
+    intro i
+    rcases le_total (p.val i) (q.val i) with h | h
+    · rw [min_eq_left h, abs_of_nonpos (sub_nonpos.mpr h)]; ring
+    · rw [min_eq_right h, abs_of_nonneg (sub_nonneg.mpr h)]; ring
+  have hsum : ∑ i, min (p.val i) (q.val i) = 1 - totalVariation p q := by
+    rw [Finset.sum_congr rfl (fun i _ => key i), ← Finset.sum_div]
+    rw [Finset.sum_sub_distrib, Finset.sum_add_distrib, p.sum_one, q.sum_one]
+    unfold totalVariation
+    ring
+  rw [hsum]
+
+/-- **The Bhattacharyya bound on one observation**: the optimal error rate is
+at most `BC(p, q)/2`. -/
+theorem bayes_errRate_le_bc (p q : PMF n) :
+    errRate (bayes p q) p q ≤ bc p q / 2 := by
+  rw [bayes_errRate_eq_sum_min]
+  refine div_le_div_of_nonneg_right ?_ (by norm_num : (0:ℝ) ≤ 2)
+  exact Finset.sum_le_sum fun i _ => min_le_sqrt_mul (p.nonneg i) (q.nonneg i)
+
+/-- The mass of the product at a point, exposed for rewriting. -/
+theorem prodPMF_val {m k : ℕ} (p : PMF m) (q : PMF k) (i : Fin (m * k)) :
+    (prodPMF p q).val i
+      = p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).2 := rfl
+
+/-- **Affinity multiplies over independent observations.** The Bhattacharyya
+coefficient of two product distributions is the product of the coefficients —
+the formal content of "the error bound decays geometrically in the number of
+independent observations". -/
+theorem bc_prod {m k : ℕ} (p q : PMF m) (p' q' : PMF k) :
+    bc (prodPMF p p') (prodPMF q q') = bc p q * bc p' q' := by
+  have hv : ∀ i : Fin (m * k),
+      Real.sqrt ((prodPMF p p').val i * (prodPMF q q').val i)
+        = Real.sqrt (p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).1)
+          * Real.sqrt (p'.val (finProdFinEquiv.symm i).2 * q'.val (finProdFinEquiv.symm i).2) := by
+    intro i
+    have e : (prodPMF p p').val i * (prodPMF q q').val i
+        = (p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).1)
+          * (p'.val (finProdFinEquiv.symm i).2 * q'.val (finProdFinEquiv.symm i).2) := by
+      show p.val _ * p'.val _ * (q.val _ * q'.val _) = _
+      ring
+    rw [e, Real.sqrt_mul (mul_nonneg (p.nonneg _) (q.nonneg _))]
+  unfold bc
+  rw [Finset.sum_congr rfl (fun i _ => hv i)]
+  have key : (∑ i : Fin (m * k),
+      Real.sqrt (p.val (finProdFinEquiv.symm i).1 * q.val (finProdFinEquiv.symm i).1)
+        * Real.sqrt (p'.val (finProdFinEquiv.symm i).2 * q'.val (finProdFinEquiv.symm i).2))
+      = ∑ x : Fin m × Fin k,
+        Real.sqrt (p.val x.1 * q.val x.1) * Real.sqrt (p'.val x.2 * q'.val x.2) :=
+    Fintype.sum_equiv finProdFinEquiv.symm _ _ (fun _ => rfl)
+  rw [key, Fintype.sum_prod_type, Finset.sum_mul_sum]
+
+/-- **Two observations: the error bound squares.** The Bayes error on two
+independent draws is at most `BC(p,q)·BC(p',q')/2`; for identical draws, at
+most `BC(p,q)²/2`. -/
+theorem bayes_errRate_two_obs_le {m k : ℕ} (p q : PMF m) (p' q' : PMF k) :
+    errRate (bayes (prodPMF p p') (prodPMF q q')) (prodPMF p p') (prodPMF q q')
+      ≤ bc p q * bc p' q' / 2 := by
+  rw [← bc_prod]
+  exact bayes_errRate_le_bc _ _
+
+/-- **The decay is real: a worked example.** Take the certified coin
+`p = (1, 0)` against the candidate `q = (1/2, 1/2)`. One observation gives a
+Bayes error of `1/4`; two independent observations give exactly `1/8` —
+strictly below the single-observation floor `(1 − TV)/2 = 1/4`. This is why
+the floor of the text is stated per observation. -/
+noncomputable def coinP : PMF 2 where
+  val := ![1, 0]
+  nonneg := by intro i; fin_cases i <;> norm_num
+  sum_one := by rw [Fin.sum_univ_two]; norm_num
+
+noncomputable def coinQ : PMF 2 where
+  val := ![1/2, 1/2]
+  nonneg := by intro i; fin_cases i <;> norm_num
+  sum_one := by rw [Fin.sum_univ_two]; norm_num
+
+/-- The product of the certified coin with itself, as an explicit
+distribution on four points: `(1, 0, 0, 0)`. -/
+noncomputable def coinPP : PMF 4 where
+  val := ![1, 0, 0, 0]
+  nonneg := by intro i; fin_cases i <;> norm_num
+  sum_one := by rw [Fin.sum_univ_four]; norm_num
+
+/-- The product of the candidate coin with itself: `(1/4, 1/4, 1/4, 1/4)`. -/
+noncomputable def coinQQ : PMF 4 where
+  val := ![1/4, 1/4, 1/4, 1/4]
+  nonneg := by intro i; fin_cases i <;> norm_num
+  sum_one := by rw [Fin.sum_univ_four]; norm_num
+
+theorem coin_single_err : errRate (bayes coinP coinQ) coinP coinQ = 1/4 := by
+  rw [bayes_errRate_eq_sum_min, Fin.sum_univ_two]
+  norm_num [coinP, coinQ]
+
+theorem coin_double_err : errRate (bayes coinPP coinQQ) coinPP coinQQ = 1/8 := by
+  rw [bayes_errRate_eq_sum_min, Fin.sum_univ_four]
+  norm_num [coinPP, coinQQ]
+
+/-- Two independent draws push the attainable error strictly below the
+single-observation floor: `1/8 < 1/4 = (1 − TV)/2`. -/
+theorem coin_double_below_single_floor :
+    errRate (bayes coinPP coinQQ) coinPP coinQQ
+      < (1 - totalVariation coinP coinQ) / 2 := by
+  rw [← bayes_errRate coinP coinQ, coin_double_err, coin_single_err]
+  norm_num
+
 end VerifyFloor
 end Provenance

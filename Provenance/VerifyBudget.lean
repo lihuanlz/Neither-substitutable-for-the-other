@@ -457,6 +457,234 @@ theorem starN_mono_in_tv {V V' : VerifyParams} (hV : VOk V) (hV' : VOk V')
   rw [starN, starN, ← roundsFor_congr hdc (max (idealResidual V') (tvFloor V'))]
   exact roundsFor_mono hV (maxResidual_pos hV') (maxResidual_pos hV) hmax
 
+/-! ## 8. Optimality: `starN` minimizes the regret
+
+The text defines `N* = starN` and derives its properties around the
+minimization of `R(N) = p·Φ + A·max((1−q)^N, T) + c·N`. The theorems above
+bound and compare `starN`; this section closes the gap and proves, inside
+Lean, that `starN` is the exact minimizer of the regret over all real `N`.
+The argument is the discrete structure of the cost: with the floor slack the
+regret is convex in `N` with its minimum where the marginal round pays exactly
+its cost; with the floor binding, every round past the crossing buys nothing. -/
+
+/-- The residual decay written as an exponential: `(1−q)^N = exp(−d·N)`. -/
+theorem rpow_eq_exp (V : VerifyParams) (hV : VOk V) (N : ℝ) :
+    (1 - V.q) ^ N = Real.exp (-(decay V) * N) := by
+  have hs0 : (0:ℝ) < 1 - V.q := by linarith [hV.q_lt_1]
+  have hs1 : (1:ℝ) - V.q < 1 := by linarith [hV.q_pos]
+  have hlog : Real.log (1 - V.q) = -decay V := by
+    unfold decay
+    rw [abs_of_neg (Real.log_neg hs0 hs1)]
+    ring
+  rw [Real.rpow_def_of_pos hs0, hlog]
+
+/-- At the recommended budget the residual hits the target exactly:
+`(1−q)^{roundsFor x} = x`. -/
+theorem rpow_roundsFor (V : VerifyParams) (hV : VOk V) {x : ℝ} (hx : 0 < x) :
+    (1 - V.q) ^ (roundsFor V x) = x := by
+  rw [rpow_eq_exp V hV, roundsFor]
+  have hd : decay V ≠ 0 := ne_of_gt (decay_pos hV)
+  have h : -(decay V) * (-(Real.log x) / decay V) = Real.log x := by
+    field_simp
+  rw [h, Real.exp_log hx]
+
+/-- The residual at the optimal budget is exactly the binding target. -/
+theorem starN_missRate (V : VerifyParams) (hV : VOk V) :
+    missRate V (starN V) = max (idealResidual V) (tvFloor V) := by
+  unfold missRate starN
+  rw [rpow_roundsFor V hV (maxResidual_pos hV)]
+  exact max_eq_left (le_max_right _ _)
+
+/-- The decay is antitone in the number of rounds. -/
+theorem rpow_antitone (V : VerifyParams) (hV : VOk V) {M M' : ℝ} (h : M ≤ M') :
+    (1 - V.q) ^ M' ≤ (1 - V.q) ^ M := by
+  rw [rpow_eq_exp V hV, rpow_eq_exp V hV, Real.exp_le_exp]
+  have hd : 0 < decay V := decay_pos hV
+  have hneg : -(decay V) ≤ 0 := by linarith
+  exact mul_le_mul_of_nonpos_left h hneg
+
+/-- **The optimality theorem**: `starN` minimizes
+`R(N) = p·Φ + A·max((1−q)^N, T) + c·N` over all real `N`.
+
+With the floor slack (`T ≤ x_c`) the optimum is interior and sits where one
+more round costs exactly what it saves; with the floor binding (`T > x_c`) it
+sits exactly at the crossing. Either way `starN` is the exact minimizer, not
+a rounding of one — this closes the last prose derivation of section 3.2. -/
+theorem starN_optimal {V : VerifyParams} (hV : VOk V) (N : ℝ) :
+    regret V (starN V) ≤ regret V N := by
+  have hd : 0 < decay V := decay_pos hV
+  have hA : 0 < lossScale V := lossScale_pos hV
+  have hT : 0 < tvFloor V := tvFloor_pos hV
+  have hxc : 0 < idealResidual V := idealResidual_pos hV
+  have hc : 0 < V.c := hV.c_pos
+  have hAd : lossScale V * decay V ≠ 0 := mul_ne_zero (ne_of_gt hA) (ne_of_gt hd)
+  -- `A · x_c · d = c`: one marginal round at the ideal residual pays its cost.
+  have hAxc : lossScale V * idealResidual V * decay V = V.c := by
+    unfold idealResidual
+    field_simp [hAd]
+    ring
+  have hreg : ∀ M : ℝ, regret V M
+      = V.p * V.Phi + lossScale V * missRate V M + V.c * M := fun _ => rfl
+  rcases le_or_lt (tvFloor V) (idealResidual V) with hle | hlt
+  · -- Floor slack: the optimum is interior, at `N* = −ln x_c / d`.
+    have hstar : starN V = roundsFor V (idealResidual V) := by
+      rw [starN, max_eq_left hle]
+    have hsN : (1 - V.q) ^ (starN V) = idealResidual V := by
+      rw [hstar]; exact rpow_roundsFor V hV hxc
+    have hlogxc : Real.log (idealResidual V) = -(decay V) * starN V := by
+      have e := hsN
+      rw [rpow_eq_exp V hV] at e
+      rw [← e, Real.log_exp]
+    have hregS : regret V (starN V)
+        = V.p * V.Phi + lossScale V * idealResidual V + V.c * starN V := by
+      rw [hreg, starN_missRate V hV, max_eq_left hle]
+    rcases le_or_lt N (starN V) with hN | hN
+    · -- Below the optimum: residual above `x_c`, so rounds are underpaid.
+      have hge : tvFloor V ≤ (1 - V.q) ^ N := by
+        have e : idealResidual V ≤ (1 - V.q) ^ N := by
+          rw [← hsN]; exact rpow_antitone V hV hN
+        exact hle.trans e
+      have hmiss : missRate V N = (1 - V.q) ^ N := by
+        unfold missRate; exact max_eq_left hge
+      have hpow : (1 - V.q) ^ N
+          = idealResidual V * Real.exp (decay V * (starN V - N)) := by
+        rw [rpow_eq_exp V hV]
+        have he : -(decay V) * N
+            = Real.log (idealResidual V) + decay V * (starN V - N) := by
+          linarith [hlogxc]
+        rw [he, Real.exp_add, Real.exp_log hxc]
+      have hexp := Real.add_one_le_exp (decay V * (starN V - N))
+      have hu : 0 ≤ starN V - N := sub_nonneg.mpr hN
+      have e1 : lossScale V * idealResidual V * (1 + decay V * (starN V - N))
+          ≤ lossScale V * idealResidual V
+            * Real.exp (decay V * (starN V - N)) :=
+        mul_le_mul_of_nonneg_left (by linarith [hexp])
+          (mul_nonneg (le_of_lt hA) (le_of_lt hxc))
+      have e2 : lossScale V * idealResidual V * decay V * (starN V - N)
+          = V.c * (starN V - N) := by rw [hAxc]
+      rw [hregS, hreg, hmiss, hpow]
+      nlinarith [e1, e2, mul_nonneg (le_of_lt hc) hu]
+    · -- Above the optimum.
+      rcases le_or_lt N (roundsFor V (tvFloor V)) with hNT | hNT
+      · -- Middle region: residual still above the floor, rounds are overpaid.
+        have hge : tvFloor V ≤ (1 - V.q) ^ N := by
+          have e : (1 - V.q) ^ (roundsFor V (tvFloor V)) ≤ (1 - V.q) ^ N :=
+            rpow_antitone V hV hNT
+          rwa [rpow_roundsFor V hV hT] at e
+        have hmiss : missRate V N = (1 - V.q) ^ N := by
+          unfold missRate; exact max_eq_left hge
+        have hpow : (1 - V.q) ^ N
+            = idealResidual V * Real.exp (-(decay V * (N - starN V))) := by
+          rw [rpow_eq_exp V hV]
+          have he : -(decay V) * N
+              = Real.log (idealResidual V) + -(decay V * (N - starN V)) := by
+            linarith [hlogxc]
+          rw [he, Real.exp_add, Real.exp_log hxc]
+        have hexp := Real.add_one_le_exp (-(decay V * (N - starN V)))
+        have hu : 0 ≤ N - starN V := sub_nonneg.mpr (le_of_lt hN)
+        have e1 : lossScale V * idealResidual V * (1 - decay V * (N - starN V))
+            ≤ lossScale V * idealResidual V
+              * Real.exp (-(decay V * (N - starN V))) :=
+          mul_le_mul_of_nonneg_left (by linarith [hexp])
+            (mul_nonneg (le_of_lt hA) (le_of_lt hxc))
+        have e2 : lossScale V * idealResidual V * decay V * (N - starN V)
+            = V.c * (N - starN V) := by rw [hAxc]
+        rw [hregS, hreg, hmiss, hpow]
+        nlinarith [e1, e2, mul_nonneg (le_of_lt hc) hu]
+      · -- Past the crossing: the floor binds and rounds buy nothing.
+        have hle2 : (1 - V.q) ^ N ≤ tvFloor V := by
+          have e : (1 - V.q) ^ N ≤ (1 - V.q) ^ (roundsFor V (tvFloor V)) :=
+            rpow_antitone V hV (le_of_lt hNT)
+          rwa [rpow_roundsFor V hV hT] at e
+        have hmiss : missRate V N = tvFloor V := by
+          unfold missRate; exact max_eq_right hle2
+        have hgap : roundsFor V (tvFloor V) - starN V
+            = Real.log (idealResidual V / tvFloor V) / decay V := by
+          rw [hstar, roundsFor, roundsFor,
+            Real.log_div (ne_of_gt hxc) (ne_of_gt hT)]
+          field_simp [ne_of_gt hd]
+          ring
+        have hw : (0:ℝ) < idealResidual V / tvFloor V := div_pos hxc hT
+        have hlogw : 1 - (idealResidual V / tvFloor V)⁻¹
+            ≤ Real.log (idealResidual V / tvFloor V) := by
+          have h1 := Real.log_le_sub_one_of_pos (inv_pos.mpr hw)
+          rw [Real.log_inv] at h1
+          linarith [h1]
+        have hxcT : idealResidual V - tvFloor V
+            = idealResidual V * (1 - (idealResidual V / tvFloor V)⁻¹) := by
+          rw [inv_div]
+          field_simp [ne_of_gt hxc]
+        -- `A·(x_c − T) ≤ c·log(x_c/T)/d`: the exact form of `log w ≥ 1 − 1/w`.
+        have hfinal : lossScale V * (idealResidual V - tvFloor V)
+            ≤ V.c * (Real.log (idealResidual V / tvFloor V) / decay V) := by
+          rw [← hAxc]
+          have eRHS : lossScale V * idealResidual V * decay V
+              * (Real.log (idealResidual V / tvFloor V) / decay V)
+              = lossScale V * idealResidual V
+                * Real.log (idealResidual V / tvFloor V) := by
+            field_simp [ne_of_gt hd]
+            ring
+          rw [eRHS, hxcT, mul_assoc]
+          exact mul_le_mul_of_nonneg_left
+            (mul_le_mul_of_nonneg_left hlogw (le_of_lt hxc)) (le_of_lt hA)
+        rw [hregS, hreg, hmiss]
+        have e1 : lossScale V * idealResidual V - lossScale V * tvFloor V
+            ≤ V.c * (roundsFor V (tvFloor V) - starN V) := by
+          rw [← mul_sub, hgap]
+          exact hfinal
+        have e2 : V.c * roundsFor V (tvFloor V) ≤ V.c * N :=
+          mul_le_mul_of_nonneg_left (le_of_lt hNT) (le_of_lt hc)
+        linarith [e1, e2]
+  · -- Floor binds: the optimum sits exactly at the crossing.
+    have hstar : starN V = roundsFor V (tvFloor V) := by
+      rw [starN, max_eq_right (le_of_lt hlt)]
+    have hsN : (1 - V.q) ^ (starN V) = tvFloor V := by
+      rw [hstar]; exact rpow_roundsFor V hV hT
+    have hlogT : Real.log (tvFloor V) = -(decay V) * starN V := by
+      have e := hsN
+      rw [rpow_eq_exp V hV] at e
+      rw [← e, Real.log_exp]
+    have hregS : regret V (starN V)
+        = V.p * V.Phi + lossScale V * tvFloor V + V.c * starN V := by
+      rw [hreg, starN_missRate V hV, max_eq_right (le_of_lt hlt)]
+    rcases le_or_lt N (starN V) with hN | hN
+    · -- Below the crossing: residual above the floor, rounds are underpaid.
+      have hge : tvFloor V ≤ (1 - V.q) ^ N := by
+        rw [← hsN]; exact rpow_antitone V hV hN
+      have hmiss : missRate V N = (1 - V.q) ^ N := by
+        unfold missRate; exact max_eq_left hge
+      have hpow : (1 - V.q) ^ N
+          = tvFloor V * Real.exp (decay V * (starN V - N)) := by
+        rw [rpow_eq_exp V hV]
+        have he : -(decay V) * N
+            = Real.log (tvFloor V) + decay V * (starN V - N) := by
+          linarith [hlogT]
+        rw [he, Real.exp_add, Real.exp_log hT]
+      have hexp := Real.add_one_le_exp (decay V * (starN V - N))
+      have hu : 0 ≤ starN V - N := sub_nonneg.mpr hN
+      have e1 : lossScale V * tvFloor V * (1 + decay V * (starN V - N))
+          ≤ lossScale V * tvFloor V
+            * Real.exp (decay V * (starN V - N)) :=
+        mul_le_mul_of_nonneg_left (by linarith [hexp])
+          (mul_nonneg (le_of_lt hA) (le_of_lt hT))
+      have e2 : V.c ≤ lossScale V * tvFloor V * decay V := by
+        have h1 := mul_le_mul_of_nonneg_right
+          (mul_le_mul_of_nonneg_left (le_of_lt hlt) (le_of_lt hA)) (le_of_lt hd)
+        rw [hAxc] at h1
+        exact h1
+      rw [hregS, hreg, hmiss, hpow]
+      nlinarith [e1, mul_nonneg (sub_nonneg.mpr e2) hu,
+        mul_nonneg (le_of_lt hc) hu]
+    · -- Above the crossing: the floor binds on both sides; only cost grows.
+      have hmissN : missRate V N = tvFloor V := by
+        have hle2 : (1 - V.q) ^ N ≤ tvFloor V := by
+          rw [← hsN]; exact rpow_antitone V hV (le_of_lt hN)
+        unfold missRate; exact max_eq_right hle2
+      rw [hregS, hreg, hmissN]
+      have e1 : V.c * starN V ≤ V.c * N :=
+        mul_le_mul_of_nonneg_left (le_of_lt hN) (le_of_lt hc)
+      linarith [e1]
+
 /-! ## 7. Boundary case: `TV = 1` recovers the original formula -/
 
 /-- **At `TV = 1` the floor disappears**: the two hypotheses are perfectly
