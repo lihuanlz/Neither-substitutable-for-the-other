@@ -6,10 +6,16 @@
 
 <p align="center">
   <a href="https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml"><img src="https://github.com/lihuanlz/Neither-substitutable-for-the-other/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://aixiv.online/abs/2611.01168"><img src="https://img.shields.io/badge/aiXiv-2611.01168-b31b1b" alt="aiXiv:2611.01168"></a>
+  <a href="https://doi.org/10.5281/zenodo.23321578"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23321578-1682d4" alt="DOI"></a>
   <img src="https://img.shields.io/badge/Lean-4.15.0-blue" alt="Lean 4.15.0">
   <img src="https://img.shields.io/badge/theorems-166-0969da" alt="166 theorems">
   <img src="https://img.shields.io/badge/sorry-0-success" alt="zero sorry">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT">
+</p>
+
+<p align="center">
+  Companion paper: <a href="https://aixiv.online/abs/2611.01168">Two saturating operators: non-substitutability of human and machine contribution in AI-assisted discovery</a> (aiXiv:2611.01168)
 </p>
 
 <p align="center">
